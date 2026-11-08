@@ -81,4 +81,37 @@ void main() {
     final all = await repo.watchAll(limit: 2).first;
     expect(all.map((r) => r.newValue), ['3', '2']);
   });
+
+  test('inserted encodes enums and DateTime values', () async {
+    await audit.inserted('x', 'id1', {
+      'status': DayStatus.open,
+      'at': DateTime.utc(2026, 1, 2, 3),
+      'n': 5,
+    });
+    final row = (await db.select(db.changeLog).get()).single;
+    expect(
+      row.newValue,
+      '{"status":"open","at":"2026-01-02T03:00:00.000Z","n":5}',
+    );
+  });
+
+  test(
+    'HistoryRepository keeps insertion order for equal timestamps',
+    () async {
+      await audit.event('x', 'a', 'f', newValue: 1);
+      await audit.event('x', 'a', 'g', newValue: 2);
+      await audit.event('x', 'a', 'h', newValue: 3);
+      final repo = HistoryRepository(db);
+      expect((await repo.watchFor('x', 'a').first).map((r) => r.field), [
+        'f',
+        'g',
+        'h',
+      ]);
+      expect((await repo.watchAll().first).map((r) => r.field), [
+        'h',
+        'g',
+        'f',
+      ]);
+    },
+  );
 }

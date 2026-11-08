@@ -23,7 +23,14 @@ class AuditWriter {
     String id,
     Map<String, Object?> values, {
     String? reason,
-  }) => _write(entity, id, '*', null, jsonEncode(values), reason);
+  }) => _write(
+    entity,
+    id,
+    '*',
+    null,
+    jsonEncode(values.map((k, v) => MapEntry(k, _json(v)))),
+    reason,
+  );
 
   /// Logs one row per key whose value differs between [before] and [after].
   Future<void> updated(
@@ -75,6 +82,13 @@ class AuditWriter {
           ),
         );
   }
+
+  /// Keeps JSON-native values (num, bool, null, String, Map, List) as they are
+  /// and serializes everything else (enums, DateTime) through [_text].
+  static Object? _json(Object? v) =>
+      v == null || v is num || v is bool || v is Map || v is List
+      ? v
+      : _text(v);
 
   static String? _text(Object? v) {
     if (v == null) return null;
