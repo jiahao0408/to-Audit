@@ -48,12 +48,13 @@ void main() {
 
   test('duplicate day date throws SqliteException', () async {
     await insertDay('a', '2026-11-01');
-    expect(insertDay('b', '2026-11-01'), throwsA(isA<SqliteException>()));
+    await expectLater(
+        insertDay('b', '2026-11-01'), throwsA(isA<SqliteException>()));
   });
 
   test('foreign keys are enforced', () async {
     final pm = (await db.select(db.paymentMethods).get()).first;
-    expect(
+    await expectLater(
       db.into(db.sales).insert(SalesCompanion.insert(
             id: 's1',
             createdAt: nowIso(),

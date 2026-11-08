@@ -3647,11 +3647,11 @@ class $FixedCostsTable extends FixedCosts
   );
   static const VerificationMeta _vatPctMeta = const VerificationMeta('vatPct');
   @override
-  late final GeneratedColumn<double> vatPct = GeneratedColumn<double>(
+  late final GeneratedColumn<int> vatPct = GeneratedColumn<int>(
     'vat_pct',
     aliasedName,
     false,
-    type: DriftSqlType.double,
+    type: DriftSqlType.int,
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
@@ -3846,7 +3846,7 @@ class $FixedCostsTable extends FixedCosts
         data['${effectivePrefix}planned_amount_cents'],
       )!,
       vatPct: attachedDatabase.typeMapping.read(
-        DriftSqlType.double,
+        DriftSqlType.int,
         data['${effectivePrefix}vat_pct'],
       )!,
       periodicity: $FixedCostsTable.$converterperiodicity.fromSql(
@@ -3887,7 +3887,7 @@ class FixedCostData extends DataClass implements Insertable<FixedCostData> {
   final String concept;
   final String categoryId;
   final int plannedAmountCents;
-  final double vatPct;
+  final int vatPct;
   final Periodicity periodicity;
   final int chargeDay;
   final String startMonth;
@@ -3916,7 +3916,7 @@ class FixedCostData extends DataClass implements Insertable<FixedCostData> {
     map['concept'] = Variable<String>(concept);
     map['category_id'] = Variable<String>(categoryId);
     map['planned_amount_cents'] = Variable<int>(plannedAmountCents);
-    map['vat_pct'] = Variable<double>(vatPct);
+    map['vat_pct'] = Variable<int>(vatPct);
     {
       map['periodicity'] = Variable<String>(
         $FixedCostsTable.$converterperiodicity.toSql(periodicity),
@@ -3958,7 +3958,7 @@ class FixedCostData extends DataClass implements Insertable<FixedCostData> {
       concept: serializer.fromJson<String>(json['concept']),
       categoryId: serializer.fromJson<String>(json['categoryId']),
       plannedAmountCents: serializer.fromJson<int>(json['plannedAmountCents']),
-      vatPct: serializer.fromJson<double>(json['vatPct']),
+      vatPct: serializer.fromJson<int>(json['vatPct']),
       periodicity: $FixedCostsTable.$converterperiodicity.fromJson(
         serializer.fromJson<String>(json['periodicity']),
       ),
@@ -3978,7 +3978,7 @@ class FixedCostData extends DataClass implements Insertable<FixedCostData> {
       'concept': serializer.toJson<String>(concept),
       'categoryId': serializer.toJson<String>(categoryId),
       'plannedAmountCents': serializer.toJson<int>(plannedAmountCents),
-      'vatPct': serializer.toJson<double>(vatPct),
+      'vatPct': serializer.toJson<int>(vatPct),
       'periodicity': serializer.toJson<String>(
         $FixedCostsTable.$converterperiodicity.toJson(periodicity),
       ),
@@ -3996,7 +3996,7 @@ class FixedCostData extends DataClass implements Insertable<FixedCostData> {
     String? concept,
     String? categoryId,
     int? plannedAmountCents,
-    double? vatPct,
+    int? vatPct,
     Periodicity? periodicity,
     int? chargeDay,
     String? startMonth,
@@ -4100,7 +4100,7 @@ class FixedCostsCompanion extends UpdateCompanion<FixedCostData> {
   final Value<String> concept;
   final Value<String> categoryId;
   final Value<int> plannedAmountCents;
-  final Value<double> vatPct;
+  final Value<int> vatPct;
   final Value<Periodicity> periodicity;
   final Value<int> chargeDay;
   final Value<String> startMonth;
@@ -4152,7 +4152,7 @@ class FixedCostsCompanion extends UpdateCompanion<FixedCostData> {
     Expression<String>? concept,
     Expression<String>? categoryId,
     Expression<int>? plannedAmountCents,
-    Expression<double>? vatPct,
+    Expression<int>? vatPct,
     Expression<String>? periodicity,
     Expression<int>? chargeDay,
     Expression<String>? startMonth,
@@ -4185,7 +4185,7 @@ class FixedCostsCompanion extends UpdateCompanion<FixedCostData> {
     Value<String>? concept,
     Value<String>? categoryId,
     Value<int>? plannedAmountCents,
-    Value<double>? vatPct,
+    Value<int>? vatPct,
     Value<Periodicity>? periodicity,
     Value<int>? chargeDay,
     Value<String>? startMonth,
@@ -4234,7 +4234,7 @@ class FixedCostsCompanion extends UpdateCompanion<FixedCostData> {
       map['planned_amount_cents'] = Variable<int>(plannedAmountCents.value);
     }
     if (vatPct.present) {
-      map['vat_pct'] = Variable<double>(vatPct.value);
+      map['vat_pct'] = Variable<int>(vatPct.value);
     }
     if (periodicity.present) {
       map['periodicity'] = Variable<String>(
@@ -4385,11 +4385,11 @@ class $ExpensesTable extends Expenses
   );
   static const VerificationMeta _vatPctMeta = const VerificationMeta('vatPct');
   @override
-  late final GeneratedColumn<double> vatPct = GeneratedColumn<double>(
+  late final GeneratedColumn<int> vatPct = GeneratedColumn<int>(
     'vat_pct',
     aliasedName,
     false,
-    type: DriftSqlType.double,
+    type: DriftSqlType.int,
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
@@ -4737,7 +4737,7 @@ class $ExpensesTable extends Expenses
         data['${effectivePrefix}base_cents'],
       )!,
       vatPct: attachedDatabase.typeMapping.read(
-        DriftSqlType.double,
+        DriftSqlType.int,
         data['${effectivePrefix}vat_pct'],
       )!,
       vatCents: attachedDatabase.typeMapping.read(
@@ -4820,7 +4820,7 @@ class ExpenseData extends DataClass implements Insertable<ExpenseData> {
   final String categoryId;
   final String? invoiceNumber;
   final int baseCents;
-  final double vatPct;
+  final int vatPct;
   final int vatCents;
   final int totalCents;
   final String? paymentMethodId;
@@ -4871,7 +4871,7 @@ class ExpenseData extends DataClass implements Insertable<ExpenseData> {
       map['invoice_number'] = Variable<String>(invoiceNumber);
     }
     map['base_cents'] = Variable<int>(baseCents);
-    map['vat_pct'] = Variable<double>(vatPct);
+    map['vat_pct'] = Variable<int>(vatPct);
     map['vat_cents'] = Variable<int>(vatCents);
     map['total_cents'] = Variable<int>(totalCents);
     if (!nullToAbsent || paymentMethodId != null) {
@@ -4965,7 +4965,7 @@ class ExpenseData extends DataClass implements Insertable<ExpenseData> {
       categoryId: serializer.fromJson<String>(json['categoryId']),
       invoiceNumber: serializer.fromJson<String?>(json['invoiceNumber']),
       baseCents: serializer.fromJson<int>(json['baseCents']),
-      vatPct: serializer.fromJson<double>(json['vatPct']),
+      vatPct: serializer.fromJson<int>(json['vatPct']),
       vatCents: serializer.fromJson<int>(json['vatCents']),
       totalCents: serializer.fromJson<int>(json['totalCents']),
       paymentMethodId: serializer.fromJson<String?>(json['paymentMethodId']),
@@ -4998,7 +4998,7 @@ class ExpenseData extends DataClass implements Insertable<ExpenseData> {
       'categoryId': serializer.toJson<String>(categoryId),
       'invoiceNumber': serializer.toJson<String?>(invoiceNumber),
       'baseCents': serializer.toJson<int>(baseCents),
-      'vatPct': serializer.toJson<double>(vatPct),
+      'vatPct': serializer.toJson<int>(vatPct),
       'vatCents': serializer.toJson<int>(vatCents),
       'totalCents': serializer.toJson<int>(totalCents),
       'paymentMethodId': serializer.toJson<String?>(paymentMethodId),
@@ -5029,7 +5029,7 @@ class ExpenseData extends DataClass implements Insertable<ExpenseData> {
     String? categoryId,
     Value<String?> invoiceNumber = const Value.absent(),
     int? baseCents,
-    double? vatPct,
+    int? vatPct,
     int? vatCents,
     int? totalCents,
     Value<String?> paymentMethodId = const Value.absent(),
@@ -5205,7 +5205,7 @@ class ExpensesCompanion extends UpdateCompanion<ExpenseData> {
   final Value<String> categoryId;
   final Value<String?> invoiceNumber;
   final Value<int> baseCents;
-  final Value<double> vatPct;
+  final Value<int> vatPct;
   final Value<int> vatCents;
   final Value<int> totalCents;
   final Value<String?> paymentMethodId;
@@ -5284,7 +5284,7 @@ class ExpensesCompanion extends UpdateCompanion<ExpenseData> {
     Expression<String>? categoryId,
     Expression<String>? invoiceNumber,
     Expression<int>? baseCents,
-    Expression<double>? vatPct,
+    Expression<int>? vatPct,
     Expression<int>? vatCents,
     Expression<int>? totalCents,
     Expression<String>? paymentMethodId,
@@ -5334,7 +5334,7 @@ class ExpensesCompanion extends UpdateCompanion<ExpenseData> {
     Value<String>? categoryId,
     Value<String?>? invoiceNumber,
     Value<int>? baseCents,
-    Value<double>? vatPct,
+    Value<int>? vatPct,
     Value<int>? vatCents,
     Value<int>? totalCents,
     Value<String?>? paymentMethodId,
@@ -5405,7 +5405,7 @@ class ExpensesCompanion extends UpdateCompanion<ExpenseData> {
       map['base_cents'] = Variable<int>(baseCents.value);
     }
     if (vatPct.present) {
-      map['vat_pct'] = Variable<double>(vatPct.value);
+      map['vat_pct'] = Variable<int>(vatPct.value);
     }
     if (vatCents.present) {
       map['vat_cents'] = Variable<int>(vatCents.value);
@@ -12927,7 +12927,7 @@ typedef $$FixedCostsTableCreateCompanionBuilder = FixedCostsCompanion Function({
   required String concept,
   required String categoryId,
   required int plannedAmountCents,
-  Value<double> vatPct,
+  Value<int> vatPct,
   required Periodicity periodicity,
   required int chargeDay,
   required String startMonth,
@@ -12942,7 +12942,7 @@ typedef $$FixedCostsTableUpdateCompanionBuilder = FixedCostsCompanion Function({
   Value<String> concept,
   Value<String> categoryId,
   Value<int> plannedAmountCents,
-  Value<double> vatPct,
+  Value<int> vatPct,
   Value<Periodicity> periodicity,
   Value<int> chargeDay,
   Value<String> startMonth,
@@ -13030,7 +13030,7 @@ class $$FixedCostsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<double> get vatPct => $composableBuilder(
+  ColumnFilters<int> get vatPct => $composableBuilder(
     column: $table.vatPct,
     builder: (column) => ColumnFilters(column),
   );
@@ -13144,7 +13144,7 @@ class $$FixedCostsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<double> get vatPct => $composableBuilder(
+  ColumnOrderings<int> get vatPct => $composableBuilder(
     column: $table.vatPct,
     builder: (column) => ColumnOrderings(column),
   );
@@ -13222,7 +13222,7 @@ class $$FixedCostsTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<double> get vatPct =>
+  GeneratedColumn<int> get vatPct =>
       $composableBuilder(column: $table.vatPct, builder: (column) => column);
 
   GeneratedColumnWithTypeConverter<Periodicity, String> get periodicity =>
@@ -13327,7 +13327,7 @@ class $$FixedCostsTableTableManager
                 Value<String> concept = const Value.absent(),
                 Value<String> categoryId = const Value.absent(),
                 Value<int> plannedAmountCents = const Value.absent(),
-                Value<double> vatPct = const Value.absent(),
+                Value<int> vatPct = const Value.absent(),
                 Value<Periodicity> periodicity = const Value.absent(),
                 Value<int> chargeDay = const Value.absent(),
                 Value<String> startMonth = const Value.absent(),
@@ -13357,7 +13357,7 @@ class $$FixedCostsTableTableManager
                 required String concept,
                 required String categoryId,
                 required int plannedAmountCents,
-                Value<double> vatPct = const Value.absent(),
+                Value<int> vatPct = const Value.absent(),
                 required Periodicity periodicity,
                 required int chargeDay,
                 required String startMonth,
@@ -13474,7 +13474,7 @@ typedef $$ExpensesTableCreateCompanionBuilder = ExpensesCompanion Function({
   required String categoryId,
   Value<String?> invoiceNumber,
   required int baseCents,
-  Value<double> vatPct,
+  Value<int> vatPct,
   Value<int> vatCents,
   required int totalCents,
   Value<String?> paymentMethodId,
@@ -13498,7 +13498,7 @@ typedef $$ExpensesTableUpdateCompanionBuilder = ExpensesCompanion Function({
   Value<String> categoryId,
   Value<String?> invoiceNumber,
   Value<int> baseCents,
-  Value<double> vatPct,
+  Value<int> vatPct,
   Value<int> vatCents,
   Value<int> totalCents,
   Value<String?> paymentMethodId,
@@ -13666,7 +13666,7 @@ class $$ExpensesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<double> get vatPct => $composableBuilder(
+  ColumnFilters<int> get vatPct => $composableBuilder(
     column: $table.vatPct,
     builder: (column) => ColumnFilters(column),
   );
@@ -13899,7 +13899,7 @@ class $$ExpensesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<double> get vatPct => $composableBuilder(
+  ColumnOrderings<int> get vatPct => $composableBuilder(
     column: $table.vatPct,
     builder: (column) => ColumnOrderings(column),
   );
@@ -14092,7 +14092,7 @@ class $$ExpensesTableAnnotationComposer
   GeneratedColumn<int> get baseCents =>
       $composableBuilder(column: $table.baseCents, builder: (column) => column);
 
-  GeneratedColumn<double> get vatPct =>
+  GeneratedColumn<int> get vatPct =>
       $composableBuilder(column: $table.vatPct, builder: (column) => column);
 
   GeneratedColumn<int> get vatCents =>
@@ -14315,7 +14315,7 @@ class $$ExpensesTableTableManager
                 Value<String> categoryId = const Value.absent(),
                 Value<String?> invoiceNumber = const Value.absent(),
                 Value<int> baseCents = const Value.absent(),
-                Value<double> vatPct = const Value.absent(),
+                Value<int> vatPct = const Value.absent(),
                 Value<int> vatCents = const Value.absent(),
                 Value<int> totalCents = const Value.absent(),
                 Value<String?> paymentMethodId = const Value.absent(),
@@ -14363,7 +14363,7 @@ class $$ExpensesTableTableManager
                 required String categoryId,
                 Value<String?> invoiceNumber = const Value.absent(),
                 required int baseCents,
-                Value<double> vatPct = const Value.absent(),
+                Value<int> vatPct = const Value.absent(),
                 Value<int> vatCents = const Value.absent(),
                 required int totalCents,
                 Value<String?> paymentMethodId = const Value.absent(),

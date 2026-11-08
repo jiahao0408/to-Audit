@@ -107,7 +107,7 @@ class FixedCosts extends Table with CommonColumns {
   TextColumn get concept => text()();
   TextColumn get categoryId => text().references(ExpenseCategories, #id)();
   IntColumn get plannedAmountCents => integer()();
-  RealColumn get vatPct => real().withDefault(const Constant(0))();
+  IntColumn get vatPct => integer().withDefault(const Constant(0))();
   TextColumn get periodicity => textEnum<Periodicity>()();
   IntColumn get chargeDay => integer()();
   TextColumn get startMonth => text()();
@@ -124,7 +124,7 @@ class Expenses extends Table with CommonColumns {
   TextColumn get categoryId => text().references(ExpenseCategories, #id)();
   TextColumn get invoiceNumber => text().nullable()();
   IntColumn get baseCents => integer()();
-  RealColumn get vatPct => real().withDefault(const Constant(0))();
+  IntColumn get vatPct => integer().withDefault(const Constant(0))();
   IntColumn get vatCents => integer().withDefault(const Constant(0))();
   IntColumn get totalCents => integer()();
   TextColumn get paymentMethodId =>
