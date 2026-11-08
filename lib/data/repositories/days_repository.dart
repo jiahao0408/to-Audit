@@ -1,3 +1,6 @@
+// Named constructor parameters cannot be private, hence the initializer list.
+// ignore_for_file: prefer_initializing_formals
+
 import 'dart:convert';
 
 import 'package:drift/drift.dart';
