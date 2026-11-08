@@ -56,4 +56,24 @@ void main() {
     final b = await s.save(pdf, ReceiptKind.pdf);
     expect(a, isNot(b));
   });
+
+  test('failed write leaves no partial file', () async {
+    final s = ReceiptStore(
+      Directory('${tmp.path}/root'),
+      compressor: (source, {int maxSide = 1600, int quality = 75}) async =>
+          throw StateError('boom'),
+    );
+    await expectLater(s.save(photo, ReceiptKind.photo), throwsStateError);
+    final dir = Directory('${tmp.path}/root/receipts');
+    expect(dir.listSync(), isEmpty);
+  });
+
+  group('compressMinSide', () {
+    int f(int w, int h) =>
+        compressMinSide(width: w, height: h, maxLongSide: 1600);
+    test('portrait 3000x4000 -> 1200', () => expect(f(3000, 4000), 1200));
+    test('landscape 4000x3000 -> 1200', () => expect(f(4000, 3000), 1200));
+    test('small image is not downscaled', () => expect(f(1000, 800), 800));
+    test('square 1600x1600 -> 1600', () => expect(f(1600, 1600), 1600));
+  });
 }
