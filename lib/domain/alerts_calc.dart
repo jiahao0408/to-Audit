@@ -37,7 +37,8 @@ class Alert {
   int get hashCode => Object.hash(type, recordId, date);
 
   @override
-  String toString() => 'Alert(${type.name}, recordId: $recordId, '
+  String toString() =>
+      'Alert(${type.name}, recordId: $recordId, '
       'date: ${date == null ? null : ymd(date!)})';
 }
 
@@ -63,10 +64,10 @@ class DaySnapshot {
   /// Float left in the drawer: counted cash when closed, the opening float
   /// when there was no activity, unknown (null) while the day is open.
   Money? get closingFloat => switch (status) {
-        DayStatus.closed => countedCash,
-        DayStatus.noActivity => openingFloat,
-        DayStatus.open => null,
-      };
+    DayStatus.closed => countedCash,
+    DayStatus.noActivity => openingFloat,
+    DayStatus.open => null,
+  };
 }
 
 class ExpenseSnapshot {
@@ -113,7 +114,8 @@ List<Alert> computeAlerts(AlertInputs i) {
         (!day.cashDiff.isZero || !day.cardDiff.isZero) &&
         !i.closedMonths.contains(monthKey(date))) {
       alerts.add(
-          Alert(type: AlertType.discrepancy, recordId: day.id, date: date));
+        Alert(type: AlertType.discrepancy, recordId: day.id, date: date),
+      );
     }
     if (day.status == DayStatus.open && date.isBefore(today)) {
       alerts.add(Alert(type: AlertType.dayOpen, recordId: day.id, date: date));
@@ -154,8 +156,9 @@ List<Alert> computeAlerts(AlertInputs i) {
     if (!prevDate.isBefore(curDate)) continue; // same date: no earlier day
     final closing = prev.closingFloat;
     if (closing != null && closing != cur.openingFloat) {
-      alerts.add(Alert(
-          type: AlertType.floatMismatch, recordId: cur.id, date: curDate));
+      alerts.add(
+        Alert(type: AlertType.floatMismatch, recordId: cur.id, date: curDate),
+      );
     }
   }
 

@@ -5,7 +5,21 @@ import 'money.dart';
 
 /// Euro banknote and coin values, in cents, largest first.
 const List<int> euroDenominations = [
-  50000, 20000, 10000, 5000, 2000, 1000, 500, 200, 100, 50, 20, 10, 5, 2, 1,
+  50000,
+  20000,
+  10000,
+  5000,
+  2000,
+  1000,
+  500,
+  200,
+  100,
+  50,
+  20,
+  10,
+  5,
+  2,
+  1,
 ];
 
 /// Total value of a count of banknotes and coins.
@@ -62,8 +76,7 @@ Money cardDiscrepancy({
   required Money terminalTotal,
   required Money cardSales,
   required Money cardTips,
-}) =>
-    terminalTotal - (cardSales + cardTips);
+}) => terminalTotal - (cardSales + cardTips);
 
 /// Whether either discrepancy exceeds [threshold] in absolute value.
 bool requiresComment({

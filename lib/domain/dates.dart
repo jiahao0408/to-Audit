@@ -47,8 +47,8 @@ int daysInMonth(int year, int month) {
 /// An inclusive range of calendar days: both [start] and [end] are included.
 class DateRange {
   DateRange(DateTime start, DateTime end)
-      : start = dateOnly(start),
-        end = dateOnly(end) {
+    : start = dateOnly(start),
+      end = dateOnly(end) {
     if (this.end.isBefore(this.start)) {
       throw ArgumentError.value(end, 'end', 'must not be before start');
     }

@@ -56,8 +56,8 @@ class Sales extends Table with CommonColumns {
 
   @override
   List<Set<Column>> get uniqueKeys => [
-        {dayId, shift, paymentMethodId},
-      ];
+    {dayId, shift, paymentMethodId},
+  ];
 }
 
 @DataClassName('CoverData')
@@ -71,8 +71,8 @@ class Covers extends Table with CommonColumns {
 
   @override
   List<Set<Column>> get uniqueKeys => [
-        {dayId, shift},
-      ];
+    {dayId, shift},
+  ];
 }
 
 @DataClassName('ExpenseCategoryData')
@@ -133,16 +133,15 @@ class Expenses extends Table with CommonColumns {
   TextColumn get paymentStatus => textEnum<PaymentStatus>()();
   TextColumn get dueDate => text().nullable()();
   TextColumn get origin => textEnum<ExpenseOrigin>()();
-  TextColumn get fixedCostId =>
-      text().nullable().references(FixedCosts, #id)();
+  TextColumn get fixedCostId => text().nullable().references(FixedCosts, #id)();
   TextColumn get fixedStatus => textEnum<FixedStatus>().nullable()();
   BoolColumn get voided => boolean().withDefault(const Constant(false))();
   TextColumn get voidReason => text().nullable()();
 
   @override
   List<Set<Column>> get uniqueKeys => [
-        {fixedCostId, date},
-      ];
+    {fixedCostId, date},
+  ];
 }
 
 @DataClassName('ReceiptData')

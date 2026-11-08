@@ -50,7 +50,10 @@ void main() {
 
   group('DateRange', () {
     test('days is inclusive', () {
-      final r = DateRange(DateTime.utc(2026, 10, 30), DateTime.utc(2026, 11, 2));
+      final r = DateRange(
+        DateTime.utc(2026, 10, 30),
+        DateTime.utc(2026, 11, 2),
+      );
       expect(r.days, 4);
     });
 
@@ -60,7 +63,10 @@ void main() {
     });
 
     test('contains is inclusive on both ends', () {
-      final r = DateRange(DateTime.utc(2026, 10, 30), DateTime.utc(2026, 11, 2));
+      final r = DateRange(
+        DateTime.utc(2026, 10, 30),
+        DateTime.utc(2026, 11, 2),
+      );
       expect(r.contains(DateTime.utc(2026, 10, 30)), isTrue);
       expect(r.contains(DateTime.utc(2026, 11, 2)), isTrue);
       expect(r.contains(DateTime.utc(2026, 10, 29)), isFalse);
@@ -68,9 +74,16 @@ void main() {
     });
 
     test('dates iterates every day inclusive across month boundary', () {
-      final r = DateRange(DateTime.utc(2026, 10, 30), DateTime.utc(2026, 11, 2));
-      expect(r.dates.map(ymd).toList(),
-          ['2026-10-30', '2026-10-31', '2026-11-01', '2026-11-02']);
+      final r = DateRange(
+        DateTime.utc(2026, 10, 30),
+        DateTime.utc(2026, 11, 2),
+      );
+      expect(r.dates.map(ymd).toList(), [
+        '2026-10-30',
+        '2026-10-31',
+        '2026-11-01',
+        '2026-11-02',
+      ]);
     });
 
     test('value equality and hashCode', () {
@@ -143,13 +156,17 @@ void main() {
   group('rangeCustom', () {
     test('rejects inverted range with ArgumentError', () {
       expect(
-        () => rangeCustom(DateTime.utc(2026, 11, 2), DateTime.utc(2026, 10, 30)),
+        () =>
+            rangeCustom(DateTime.utc(2026, 11, 2), DateTime.utc(2026, 10, 30)),
         throwsArgumentError,
       );
     });
 
     test('dates for 2026-10-30..2026-11-02 yields 4 dates', () {
-      final r = rangeCustom(DateTime.utc(2026, 10, 30), DateTime.utc(2026, 11, 2));
+      final r = rangeCustom(
+        DateTime.utc(2026, 10, 30),
+        DateTime.utc(2026, 11, 2),
+      );
       expect(r.dates.length, 4);
     });
   });
