@@ -27,7 +27,11 @@ class ToAuditApp extends StatelessWidget {
         brightness: Brightness.dark,
         fontFamily: 'NotoSansSC',
       ),
-      home: const Scaffold(body: Center(child: Text('to Audit'))),
+      home: Builder(
+        builder: (context) => Scaffold(
+          body: Center(child: Text(AppLocalizations.of(context)!.appTitle)),
+        ),
+      ),
     );
   }
 }
