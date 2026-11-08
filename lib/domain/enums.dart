@@ -28,3 +28,5 @@ enum Periodicity {
 }
 
 enum ReceiptKind { photo, pdf }
+
+enum PeriodStatus { open, closed }
