@@ -538,6 +538,21 @@ class DaysRepository {
             cardSales: card,
             cardTips: cardTips,
           );
+    if (day.status != DayStatus.open) {
+      // Closed days keep the figures stored at close; later edits and
+      // threshold changes must not alter them.
+      return DaySummary(
+        cashSales: cash,
+        cardSales: card,
+        totalSales: total,
+        cashExpenses: cashExpenses,
+        withdrawals: withdrawals,
+        expected: expected,
+        cashDiff: _money(day.cashDiffCents),
+        cardDiff: _money(day.cardDiffCents),
+        commentRequired: false,
+      );
+    }
     final threshold = await _settings.threshold();
     return DaySummary(
       cashSales: cash,
@@ -657,6 +672,12 @@ class DaysRepository {
         DaysCompanion(
           status: const Value(DayStatus.noActivity),
           openingFloatCents: Value(float.cents),
+          countedCashCents: const Value(null),
+          terminalTotalCents: const Value(null),
+          cashDiffCents: const Value(null),
+          cardDiffCents: const Value(null),
+          comment: const Value(null),
+          denominationCounts: const Value(null),
           closedAt: Value(closedText),
           updatedAt: Value(nowIso()),
         ),
@@ -664,8 +685,26 @@ class DaysRepository {
       await _audit.updated(
         _dayEntity,
         row.id,
-        {'openingFloat': row.openingFloatCents, 'closedAt': row.closedAt},
-        {'openingFloat': float.cents, 'closedAt': closedText},
+        {
+          'openingFloat': row.openingFloatCents,
+          'countedCash': row.countedCashCents,
+          'terminalTotal': row.terminalTotalCents,
+          'cashDiff': row.cashDiffCents,
+          'cardDiff': row.cardDiffCents,
+          'comment': row.comment,
+          'denominationCounts': row.denominationCounts,
+          'closedAt': row.closedAt,
+        },
+        {
+          'openingFloat': float.cents,
+          'countedCash': null,
+          'terminalTotal': null,
+          'cashDiff': null,
+          'cardDiff': null,
+          'comment': null,
+          'denominationCounts': null,
+          'closedAt': closedText,
+        },
       );
       await _audit.event(
         _dayEntity,

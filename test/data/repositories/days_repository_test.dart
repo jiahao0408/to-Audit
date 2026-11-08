@@ -196,9 +196,27 @@ void main() {
 
   test('closing needs counted cash and terminal total', () async {
     final day = await repo.openDay(d(10, 1));
-    expect(() => repo.closeDay(day.id), throwsStateError);
+    await expectLater(
+      repo.closeDay(day.id),
+      throwsA(
+        isA<StateError>().having(
+          (e) => e.message,
+          'message',
+          contains('counted cash is not set'),
+        ),
+      ),
+    );
     await repo.saveDraft(day.id, draft(counted: 20000));
-    expect(() => repo.closeDay(day.id), throwsStateError);
+    await expectLater(
+      repo.closeDay(day.id),
+      throwsA(
+        isA<StateError>().having(
+          (e) => e.message,
+          'message',
+          contains('terminal total is not set'),
+        ),
+      ),
+    );
   });
 
   test('closing 31 Oct updates an open 1 Nov opening float', () async {
@@ -237,15 +255,15 @@ void main() {
 
   test('reopenDay validates reason and status', () async {
     final id = await closedDay(d(10, 1), 30000);
-    expect(() => repo.reopenDay(id, '  '), throwsArgumentError);
+    await expectLater(() => repo.reopenDay(id, '  '), throwsArgumentError);
     final open = await repo.openDay(d(10, 2));
-    expect(() => repo.reopenDay(open.id, 'x'), throwsStateError);
+    await expectLater(repo.reopenDay(open.id, 'x'), throwsStateError);
   });
 
   test('saveDraft on a closed day throws DayNotOpenException', () async {
     final id = await closedDay(d(10, 1), 30000);
-    expect(
-      () => repo.saveDraft(id, draft(counted: 1)),
+    await expectLater(
+      repo.saveDraft(id, draft(counted: 1)),
       throwsA(isA<DayNotOpenException>()),
     );
   });
@@ -311,12 +329,44 @@ void main() {
   test('markNoActivity rejects a day with sales', () async {
     final day = await repo.openDay(d(10, 1));
     await repo.saveDraft(day.id, draft(sales: [sale(cashId, 500)]));
-    expect(() => repo.markNoActivity(d(10, 1)), throwsStateError);
+    await expectLater(repo.markNoActivity(d(10, 1)), throwsStateError);
   });
 
   test('markNoActivity rejects a closed day', () async {
     await closedDay(d(10, 1), 30000);
-    expect(() => repo.markNoActivity(d(10, 1)), throwsStateError);
+    await expectLater(repo.markNoActivity(d(10, 1)), throwsStateError);
+  });
+
+  test('summary of a closed day returns the stored diffs', () async {
+    final day = await repo.openDay(d(10, 1));
+    await repo.saveDraft(
+      day.id,
+      draft(counted: 19999, terminal: 0, comment: 'x'),
+    );
+    await repo.closeDay(day.id);
+    // A later change to the data must not alter the closed day's figures.
+    await addWithdrawal(day.id, 5000);
+    await settings.setThreshold(const Money(100));
+    final s = await repo.summary(day.id);
+    expect(s.cashDiff, const Money(-1));
+    expect(s.cardDiff, Money.zero);
+    expect(s.commentRequired, isFalse);
+  });
+
+  test('markNoActivity after a reopen clears the stale figures', () async {
+    final id = await closedDay(d(10, 1), 12345);
+    await repo.reopenDay(id, 'error');
+    await repo.markNoActivity(d(10, 1));
+    final row = await (db.select(
+      db.days,
+    )..where((x) => x.id.equals(id))).getSingle();
+    expect(row.status, DayStatus.noActivity);
+    expect(row.countedCashCents, isNull);
+    expect(row.terminalTotalCents, isNull);
+    expect(row.cashDiffCents, isNull);
+    expect(row.cardDiffCents, isNull);
+    expect(row.comment, isNull);
+    expect(row.denominationCounts, isNull);
   });
 
   test('nextPendingDate skips closed days', () async {
@@ -336,7 +386,7 @@ void main() {
 
   test('denominationCounts must match countedCash', () async {
     final day = await repo.openDay(d(10, 1));
-    expect(
+    await expectLater(
       () => repo.saveDraft(
         day.id,
         draft(counted: 1000, counts: {500: 1, 100: 2}),
