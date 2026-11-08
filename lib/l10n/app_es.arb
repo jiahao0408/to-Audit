@@ -1,0 +1,7 @@
+{
+  "@@locale": "es",
+  "appTitle": "to Audit",
+  "@appTitle": {
+    "description": "Nombre de la aplicación"
+  }
+}
