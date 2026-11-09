@@ -44,6 +44,7 @@ class SettingsRepository {
   static const _lastBackupAt = 'last_backup_at';
   static const _initialFloat = 'initial_float_cents';
   static const _onboardingDone = 'onboarding_done';
+  static const _biometricsEnabled = 'biometrics_enabled';
 
   Future<String?> _get(String key) async {
     final row = await (_db.select(
@@ -136,4 +137,10 @@ class SettingsRepository {
   Future<bool> onboardingDone() async => await _get(_onboardingDone) == 'true';
 
   Future<void> setOnboardingDone() => _set(_onboardingDone, 'true');
+
+  Future<bool> biometricsEnabled() async =>
+      await _get(_biometricsEnabled) == 'true';
+
+  Future<void> setBiometricsEnabled(bool enabled) =>
+      _set(_biometricsEnabled, enabled ? 'true' : 'false');
 }

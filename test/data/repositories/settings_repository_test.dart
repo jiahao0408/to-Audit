@@ -22,6 +22,7 @@ void main() {
     expect(await repo.lastBackupAt(), isNull);
     expect(await repo.initialFloat(), Money.zero);
     expect(await repo.onboardingDone(), isFalse);
+    expect(await repo.biometricsEnabled(), isFalse);
   });
 
   test('setThreshold stores the value and writes a history row', () async {
@@ -90,5 +91,15 @@ void main() {
     expect(await repo.onboardingDone(), isTrue);
     await repo.setOnboardingDone();
     expect(await db.select(db.changeLog).get(), hasLength(1));
+  });
+
+  test('biometrics flag round trips and is audited', () async {
+    await repo.setBiometricsEnabled(true);
+    expect(await repo.biometricsEnabled(), isTrue);
+    await repo.setBiometricsEnabled(false);
+    expect(await repo.biometricsEnabled(), isFalse);
+    final rows = await db.select(db.changeLog).get();
+    expect(rows.map((r) => r.recordId), everyElement('biometrics_enabled'));
+    expect(rows.map((r) => r.newValue), containsAll(['true', 'false']));
   });
 }

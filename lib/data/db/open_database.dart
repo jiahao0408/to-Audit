@@ -44,7 +44,8 @@ Future<AppDatabase> openEncryptedDatabase({
 /// first run. First undoes or completes an interrupted restore (see
 /// [recoverInterruptedRestore]; receipts live under [filesRoot]), so a kill
 /// in the middle of a restore never leads to a new empty database. Throws
-/// [DatabaseKeyMissingException] when [file] exists but no key is stored.
+/// [DatabaseKeyMissingException] when no key is stored but [file], its `.bak`
+/// or its `.restore-in-progress` marker exists.
 Future<AppDatabase> openAppDatabase({
   required File file,
   required DbKeyManager keys,
@@ -57,7 +58,11 @@ Future<AppDatabase> openAppDatabase({
       filesRoot: filesRoot,
       hexKey: existing,
     );
-  } else if (await file.exists()) {
+  } else if (await file.exists() ||
+      await File('${file.path}.bak').exists() ||
+      await File('${file.path}.restore-in-progress').exists()) {
+    // Any trace of a database (or of a restore that moved it aside) with no
+    // key: never create a new database over it.
     throw DatabaseKeyMissingException(file.path);
   }
   return openEncryptedDatabase(file: file, hexKey: await keys.getOrCreateKey());

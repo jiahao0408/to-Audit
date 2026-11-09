@@ -137,4 +137,18 @@ void main() {
     expect(await File('${file.path}.restore-in-progress').exists(), isFalse);
     expect(await File('${file.path}.restoring').exists(), isFalse);
   });
+
+  for (final suffix in ['.bak', '.restore-in-progress']) {
+    test('no key plus a $suffix file is a missing key, not a new DB', () async {
+      await File('${file.path}$suffix').writeAsString('leftover');
+
+      final store = MemoryKeyStore();
+      await expectLater(
+        openAppDatabase(file: file, keys: DbKeyManager(store), filesRoot: dir),
+        throwsA(isA<DatabaseKeyMissingException>()),
+      );
+      expect(store.values, isEmpty);
+      expect(await file.exists(), isFalse);
+    });
+  }
 }

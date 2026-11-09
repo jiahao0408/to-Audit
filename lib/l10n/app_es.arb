@@ -1,7 +1,232 @@
 {
   "@@locale": "es",
   "appTitle": "to Audit",
-  "@appTitle": {
-    "description": "Nombre de la aplicación"
-  }
+  "actionCancel": "Cancelar",
+  "actionAccept": "Aceptar",
+  "actionContinue": "Continuar",
+  "actionBack": "Atrás",
+  "screenHome": "Inicio",
+  "screenCalendar": "Calendario",
+  "screenDay": "Día",
+  "screenExpenses": "Gastos",
+  "screenExpenseNew": "Nuevo gasto",
+  "screenExpenseDetail": "Gasto",
+  "screenSuppliers": "Proveedores",
+  "screenFixedCosts": "Gastos fijos",
+  "screenPayroll": "Nóminas",
+  "screenWithdrawals": "Retiradas de caja",
+  "screenReports": "Informes",
+  "screenAlerts": "Alertas",
+  "screenHistory": "Historial de cambios",
+  "screenSettings": "Ajustes",
+  "screenCatalogs": "Catálogos",
+  "screenBackup": "Copia de seguridad",
+  "fieldRequired": "Obligatorio",
+  "amountInvalid": "Importe no válido",
+  "reasonLabel": "Motivo",
+  "reasonRequired": "Escribe un motivo",
+  "lockTitle": "Introduce tu PIN",
+  "pinDelete": "Borrar",
+  "pinWrong": "PIN incorrecto. Intentos antes del bloqueo: {attempts}",
+  "@pinWrong": {
+    "placeholders": {
+      "attempts": {
+        "type": "int"
+      }
+    }
+  },
+  "pinLockedSeconds": "Demasiados intentos. Espera {seconds} s.",
+  "@pinLockedSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "pinLockedMinutes": "Demasiados intentos. Espera {minutes} min.",
+  "@pinLockedMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "pinUseBiometrics": "Usar huella o rostro",
+  "pinCheckError": "No se pudo comprobar el PIN",
+  "biometricReason": "Desbloquea to Audit",
+  "authPinTitle": "Confirma con tu PIN",
+  "onbStep": "Paso {current} de {total}",
+  "@onbStep": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "onbLanguageTitle": "Elige el idioma",
+  "languageEs": "Español",
+  "languageZh": "中文",
+  "onbRestaurantTitle": "Datos del restaurante",
+  "restaurantName": "Nombre del restaurante",
+  "restaurantNif": "NIF",
+  "restaurantAddress": "Dirección",
+  "onbPinTitle": "Crea tu PIN",
+  "onbPinCreateLabel": "PIN de 6 dígitos",
+  "onbPinConfirmLabel": "Repite el PIN",
+  "onbPinInvalid": "El PIN debe tener exactamente 6 dígitos",
+  "onbPinMismatch": "Los PIN no coinciden",
+  "onbPinWarning": "Si olvidas el PIN y no tienes biometría activada, la única forma de volver a entrar es reinstalar la app y restaurar una copia de seguridad. Haz copias con regularidad.",
+  "onbBiometricsTitle": "Huella o rostro",
+  "onbBiometricsBody": "Puedes desbloquear la app con la biometría de tu móvil. El PIN seguirá siendo el respaldo.",
+  "onbBiometricsEnable": "Activar biometría",
+  "onbBiometricsFailed": "No se pudo activar la biometría",
+  "onbFloatTitle": "Fondo de caja inicial",
+  "onbFloatBody": "Dinero que hay en caja al empezar el primer día.",
+  "onbFloatLabel": "Fondo de caja (€)",
+  "onbFinish": "Empezar",
+  "onbSaveError": "No se pudo guardar. Inténtalo de nuevo.",
+  "keyMissingTitle": "No se puede abrir la base de datos",
+  "keyMissingBody": "La clave de cifrado de este dispositivo no está disponible. Tus datos no se han modificado. Restaura una copia de seguridad para continuar.",
+  "restoreBackupButton": "Restaurar copia",
+  "startupErrorTitle": "Error al iniciar la app",
+  "startupErrorBody": "No se pudo abrir la base de datos. Cierra la app y vuelve a abrirla. Si el problema continúa, restaura una copia de seguridad.",
+  "homeMonthSales": "Ventas del mes",
+  "homeProfit": "Beneficio acumulado",
+  "homeProfitUntil": "Hasta el último día cerrado ({date})",
+  "@homeProfitUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "homeProfitNone": "Aún no hay días cerrados",
+  "homeRegisterNext": "Registrar siguiente día pendiente",
+  "homeAllUpToDate": "Todos los días están al día",
+  "homeAlertsCount": "{count, plural, =0{Sin alertas} one{1 alerta} other{{count} alertas}}",
+  "@homeAlertsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeBackupBannerNever": "Aún no has hecho ninguna copia de seguridad",
+  "homeBackupBannerDays": "{days, plural, one{Tu última copia de seguridad fue hace 1 día} other{Tu última copia de seguridad fue hace {days} días}}",
+  "@homeBackupBannerDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "homeBackupAction": "Hacer copia",
+  "homeBackupDialogTitle": "Copia de seguridad pendiente",
+  "homeBackupDialogBody": "Hace mucho tiempo que no haces una copia de seguridad. Si pierdes o cambias de móvil, perderás tus datos.",
+  "homeBackupDialogLater": "Más tarde",
+  "homeBackupDialogNow": "Hacer copia ahora",
+  "homeLoadError": "No se pudieron cargar los datos",
+  "calendarPrevMonth": "Mes anterior",
+  "calendarNextMonth": "Mes siguiente",
+  "dayStateUnregistered": "Sin registrar",
+  "dayStateOpen": "Abierto",
+  "dayStateBalanced": "Cuadrado",
+  "dayStateDiscrepancy": "Descuadre",
+  "dayStateNoActivity": "Sin actividad",
+  "dayStateFuture": "Futuro",
+  "dayCellLabel": "{date}: {state}",
+  "@dayCellLabel": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "state": {
+        "type": "String"
+      }
+    }
+  },
+  "markNoActivity": "Marcar sin actividad",
+  "markNoActivityDone": "Día marcado sin actividad",
+  "markNoActivityError": "No se pudo marcar el día",
+  "catalog_cash": "Efectivo",
+  "catalog_card": "Tarjeta CaixaBank",
+  "catalog_bizum": "Bizum",
+  "catalog_vouchers": "Vales",
+  "catalog_glovo": "Glovo",
+  "catalog_justeat": "Just Eat",
+  "catalog_ubereats": "Uber Eats",
+  "catalog_meat": "Carne",
+  "catalog_fish": "Pescado",
+  "catalog_vegetables": "Verdura",
+  "catalog_drinks": "Bebidas",
+  "catalog_groceries": "Alimentación",
+  "catalog_cleaning": "Limpieza",
+  "catalog_utilities": "Suministros",
+  "catalog_rent": "Alquiler",
+  "catalog_insurance": "Seguros",
+  "catalog_selfemployed": "Autónomos",
+  "catalog_advisor": "Gestoría",
+  "catalog_other": "Otros",
+  "catalog_bank_deposit": "Ingreso en banco",
+  "catalog_owner": "Retirada del dueño",
+  "catalog_cash_payment": "Pago en mano",
+  "catalog_change": "Cambio",
+  "export_sheetSummary": "Resumen",
+  "export_sheetDays": "Días",
+  "export_sheetSales": "Ventas",
+  "export_sheetExpenses": "Gastos",
+  "export_sheetPayroll": "Nóminas",
+  "export_sheetWithdrawals": "Retiradas",
+  "export_colConcept": "Concepto",
+  "export_colAmount": "Importe",
+  "export_colDate": "Fecha",
+  "export_colStatus": "Estado",
+  "export_colSales": "Ventas",
+  "export_colCovers": "Comensales",
+  "export_colExpenses": "Gastos",
+  "export_colCashDiff": "Descuadre efectivo",
+  "export_colCardDiff": "Descuadre tarjeta",
+  "export_colPaymentMethod": "Forma de pago",
+  "export_colSupplier": "Proveedor",
+  "export_colInvoice": "Nº factura",
+  "export_colCategory": "Categoría",
+  "export_colBase": "Base imponible",
+  "export_colVatPct": "IVA %",
+  "export_colVat": "IVA",
+  "export_colTotal": "Total",
+  "export_colPayment": "Pago",
+  "export_colReceipts": "Justificantes",
+  "export_colEmployee": "Empleado",
+  "export_colRole": "Puesto",
+  "export_colMonth": "Mes",
+  "export_colGross": "Bruto",
+  "export_colNet": "Neto",
+  "export_colEmployerSs": "SS empresa",
+  "export_colWithdrawalType": "Tipo de retirada",
+  "export_reportTitle": "Informe de gestión",
+  "export_restaurantNif": "NIF",
+  "export_period": "Período",
+  "export_generatedOn": "Generado el",
+  "export_totalSales": "Ventas totales",
+  "export_totalPurchases": "Compras",
+  "export_totalFixedCosts": "Gastos fijos",
+  "export_totalOtherExpenses": "Otros gastos",
+  "export_totalExpenses": "Gastos totales",
+  "export_totalPayroll": "Personal",
+  "export_totalWithdrawals": "Retiradas de caja",
+  "export_totalCashDiscrepancy": "Descuadre de efectivo",
+  "export_totalCardDiscrepancy": "Descuadre de tarjeta",
+  "export_pendingFixed": "Fijos pendientes de confirmar",
+  "export_vatPaid": "IVA soportado",
+  "export_averageTicket": "Ticket medio",
+  "export_profit": "Beneficio",
+  "export_dailyDetail": "Detalle diario",
+  "export_statusOpen": "Abierto",
+  "export_statusClosed": "Cerrado",
+  "export_statusNoActivity": "Sin actividad",
+  "export_paymentPaid": "Pagado",
+  "export_paymentPending": "Pendiente"
 }
