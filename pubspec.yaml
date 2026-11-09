@@ -54,6 +54,7 @@ dependencies:
   uuid: ^4.6.0
   path: ^1.9.1
   crypto: ^3.0.8
+  sqlite3: ^3.5.2
   flutter_localizations:
     sdk: flutter
 
