@@ -9,10 +9,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:to_audit/data/audit/audit_writer.dart';
 import 'package:to_audit/data/backup/backup_service.dart';
 import 'package:to_audit/data/backup/db_snapshotter.dart';
+import 'package:to_audit/data/backup/restore_recovery.dart';
 import 'package:to_audit/data/backup/toaudit_format.dart';
 import 'package:to_audit/data/db/app_database.dart';
 import 'package:to_audit/data/db/open_database.dart';
 import 'package:to_audit/data/repositories/settings_repository.dart';
+import 'package:to_audit/data/security/db_key_manager.dart';
+import 'package:to_audit/data/security/key_store.dart';
 import 'package:to_audit/domain/enums.dart';
 
 import '../../support/sqlcipher.dart';
@@ -61,7 +64,10 @@ class Phone {
     return row.read<int>('c');
   }
 
-  BackupService service({DbSnapshotter? snapshotter}) => BackupService(
+  BackupService service({
+    DbSnapshotter? snapshotter,
+    Future<AppDatabase> Function()? reopenDb,
+  }) => BackupService(
     db: db,
     snapshotter:
         snapshotter ??
@@ -70,7 +76,7 @@ class Phone {
     tempRoot: tempRoot,
     settings: SettingsRepository(db, AuditWriter(db)),
     closeDb: () => db.close(),
-    reopenDb: reopen,
+    reopenDb: reopenDb ?? reopen,
     dbFile: dbFile,
     hexKey: () async => hexKey ?? '',
     iterations: _iterations,
@@ -224,7 +230,8 @@ void main() {
   Future<List<String>> restoreLeftovers(Phone p) async => [
     for (final d in [p.dir, p.filesRoot])
       for (final e in await d.list().toList())
-        if (RegExp(r'\.(bak|restoring)|-(journal|wal|shm)$').hasMatch(e.path))
+        if (RegExp(r'\.(bak|restoring|restore-in-progress)|-(journal|wal|shm)$')
+            .hasMatch(e.path))
           e.path,
   ];
 
@@ -369,20 +376,131 @@ void main() {
     expect(await tempLeftovers(target), isEmpty);
   });
 
-  test('stale .bak and .restoring files do not block a restore', () async {
+  test('a stale .bak or marker blocks a restore and is kept', () async {
     final source = await phone('backup_src');
     await source.seed();
     final backup = await source.service().export(_password, now: now);
 
     final target = await phone('backup_dst');
-    await File('${target.dbFile.path}.bak').writeAsString('old');
+    await target.seed();
+    final service = target.service();
+    final paths = RestorePaths(
+      dbFile: target.dbFile,
+      filesRoot: target.filesRoot,
+    );
+
+    for (final leftover in <FileSystemEntity>[paths.dbBak, paths.marker]) {
+      await File(leftover.path).writeAsString('only good copy');
+      final preview = await service.inspect(backup, _password);
+      await expectLater(service.restore(preview), throwsStateError);
+      expect(await File(leftover.path).readAsString(), 'only good copy');
+      expect(await target.count('dia_caja'), 2); // still open, untouched
+      await File(leftover.path).delete();
+    }
+
+    await paths.receiptsBak.create();
+    final preview = await service.inspect(backup, _password);
+    await expectLater(service.restore(preview), throwsStateError);
+    expect(await paths.receiptsBak.exists(), isTrue);
+  });
+
+  test('.restoring leftovers without a marker are cleared', () async {
+    final source = await phone('backup_src');
+    await source.seed();
+    final backup = await source.service().export(_password, now: now);
+
+    final target = await phone('backup_dst');
+    await File('${target.dbFile.path}.restoring').writeAsString('partial');
     await File('${target.dbFile.path}.restoring-journal').writeAsString('x');
-    await Directory('${target.receipts.path}.bak').create(recursive: true);
+    await Directory('${target.receipts.path}.restoring')
+        .create(recursive: true);
     final service = target.service();
     await service.restore(await service.inspect(backup, _password));
     expect(await target.count('dia_caja'), 2);
     expect(await restoreLeftovers(target), isEmpty);
   });
+
+  test('a rollback that cannot put .bak back keeps the marker; the next '
+      'start recovers the original', () async {
+    final source = await phone('backup_src', hexKey: keyA);
+    await source.seed();
+    final backup = await source.service().export(_password, now: now);
+
+    final target = await phone('backup_dst', hexKey: keyB);
+    await target.seed();
+    await target.db.customStatement("DELETE FROM gasto WHERE id = 'e3'");
+    final paths = RestorePaths(
+      dbFile: target.dbFile,
+      filesRoot: target.filesRoot,
+    );
+    var reopens = 0;
+    final service = target.service(
+      reopenDb: () async {
+        reopens++;
+        // Injected fault: the live path turns into a folder, so neither
+        // the reopen nor the rollback's move of .bak back can succeed.
+        await deleteDbFiles(target.dbFile);
+        await Directory(target.dbFile.path).create();
+        throw const FileSystemException('injected');
+      },
+    );
+
+    await expectLater(
+      service.restore(await service.inspect(backup, _password)),
+      throwsA(isA<FileSystemException>()),
+    );
+    expect(reopens, 1, reason: 'not reopened over a failed rollback');
+    expect(await paths.marker.exists(), isTrue);
+    expect(await paths.dbBak.exists(), isTrue);
+    // The receipts part of the rollback still went through.
+    expect(
+      await File('${target.receipts.path}/r1.jpg').readAsBytes(),
+      receiptBytes(1),
+    );
+
+    // Next start, the fault is gone.
+    await Directory(target.dbFile.path).delete();
+    final store = MemoryKeyStore()..values['db_key'] = keyB;
+    target.db = await openAppDatabase(
+      file: target.dbFile,
+      keys: DbKeyManager(store),
+      filesRoot: target.filesRoot,
+    );
+    expect(await target.count('dia_caja'), 2);
+    expect(await target.count('gasto'), 2);
+    expect(await restoreLeftovers(target), isEmpty);
+  });
+
+  test(
+    'verify failure with openEncryptedDatabase keeps the original',
+    () async {
+      final source = await phone('backup_src', hexKey: keyA);
+      await source.seed();
+      final backup = await source.service().export(_password, now: now);
+
+      final target = await phone('backup_dst', hexKey: keyB);
+      await target.seed();
+      await target.db.customStatement("DELETE FROM gasto WHERE id = 'e3'");
+      final service = target.service(); // reopen = openEncryptedDatabase
+      final real = await service.inspect(backup, _password);
+      final wrong = BackupPreview(
+        decryptedDir: real.decryptedDir,
+        createdAt: real.createdAt,
+        schemaVersion: real.schemaVersion,
+        days: real.days,
+        expenses: real.expenses + 5,
+      );
+
+      await expectLater(
+        service.restore(wrong),
+        throwsA(isA<BackupVerifyException>()),
+      );
+      expect(await target.count('dia_caja'), 2);
+      expect(await target.count('gasto'), 2);
+      expect(await restoreLeftovers(target), isEmpty);
+      expect(await tempLeftovers(target), isEmpty);
+    },
+  );
 
   test('cleanTemp removes work folders and keeps .toaudit files', () async {
     final p = await phone('backup_clean');

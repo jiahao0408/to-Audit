@@ -124,6 +124,7 @@ void main() {
     // Killed between "rename db to .bak" and "rename .restoring into place".
     await file.rename('${file.path}.bak');
     await File('${file.path}.restoring').writeAsString('staged');
+    await File('${file.path}.restore-in-progress').writeAsString('restore');
 
     final reopened = await openAppDatabase(
       file: file,
@@ -133,6 +134,7 @@ void main() {
     expect(await reopened.select(reopened.days).get(), hasLength(1));
     await reopened.close();
     expect(await File('${file.path}.bak').exists(), isFalse);
+    expect(await File('${file.path}.restore-in-progress').exists(), isFalse);
     expect(await File('${file.path}.restoring').exists(), isFalse);
   });
 }

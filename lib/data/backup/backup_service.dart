@@ -51,9 +51,12 @@ class BackupVerifyException implements Exception {
 /// Exports and restores `.toaudit` backups: a ZIP with `db.sqlite`,
 /// `receipts/...` and `manifest.json`, encrypted with [ToauditFormat].
 ///
-/// `reopenDb` must open the database file and return it (a broken file must
-/// make it or the first query fail). After [restore] the `db` given here is
-/// closed: build a new service for further work.
+/// `reopenDb` must open the database file with `openEncryptedDatabase` and
+/// return it (a broken file must make it or the first query fail). It must
+/// NOT use `openAppDatabase`: that runs [recoverInterruptedRestore], which is
+/// only for app start and would act on the restore in progress. After
+/// [restore] the `db` given here is closed: build a new service for further
+/// work.
 class BackupService {
   BackupService({
     required this._db,
@@ -182,20 +185,27 @@ class BackupService {
 
   /// Replaces the database and receipts with those of [preview].
   ///
-  /// The new data is first staged in `.restoring` files while the current
-  /// database stays open. Then the database is closed, the current files are
-  /// renamed to `.bak` and the staged ones into place, so only renames run
-  /// while there is no database. The reopened database must hold
-  /// [BackupPreview.days] days and [BackupPreview.expenses] expenses, else
-  /// [BackupVerifyException]. On any failure the previous files are put back,
-  /// the database is reopened (when it was closed) and the error is rethrown.
-  /// A kill at any point is undone or completed by [recoverInterruptedRestore]
-  /// at the next start.
+  /// 1. Refuses with [StateError] while a marker or `.bak` of an earlier
+  ///    restore exists: only [recoverInterruptedRestore] at app start may
+  ///    decide about them.
+  /// 2. Stages the new data in `.restoring` files while the current database
+  ///    stays open.
+  /// 3. Writes the in-progress marker, closes the database, renames the
+  ///    current files to `.bak` and the staged ones into place (only renames
+  ///    run while there is no database), reopens and checks that it holds
+  ///    [BackupPreview.days] days and [BackupPreview.expenses] expenses (else
+  ///    [BackupVerifyException]), then deletes the marker and, best effort,
+  ///    the `.bak` files.
+  ///
+  /// On a failure in step 3 every `.bak` is put back and the database is
+  /// reopened before the error is rethrown. If something cannot be put back
+  /// the marker stays, the database is left closed and the next start
+  /// finishes the rollback. A kill at any point is handled the same way.
   Future<void> restore(BackupPreview preview) async {
     final source = preview.decryptedDir;
     final paths = RestorePaths(dbFile: _dbFile, filesRoot: _filesRoot);
 
-    // Best effort, step by step: a failing step must not stop the rest.
+    // Best effort: a failing cleanup step must not stop the rest.
     Future<void> step(Future<void> Function() action) async {
       try {
         await action();
@@ -208,13 +218,23 @@ class BackupService {
     }
 
     try {
+      if (await paths.marker.exists() ||
+          await paths.dbBak.exists() ||
+          await paths.receiptsBak.exists()) {
+        throw StateError(
+          'An earlier restore was not finished: restart the app to recover '
+          'it before restoring again',
+        );
+      }
+      if (!await paths.dbFile.exists()) {
+        throw StateError('There is no database file to replace');
+      }
       final key = await _hexKey();
-      // While the app runs, `.bak` files can only be left by a verified
-      // restore whose cleanup failed (an interrupted one is handled at start).
-      await deleteDbFiles(paths.dbBak);
-      await deleteDirIfExists(paths.receiptsBak);
+      // No marker: `.restoring` files are leftovers of an aborted staging.
       await deleteDbFiles(paths.dbStaged);
       await deleteDirIfExists(paths.receiptsStaged);
+      // Always present, so both the database and the receipts get a `.bak`.
+      await paths.receipts.create(recursive: true);
 
       try {
         await _snapshotter.importPlain(
@@ -231,52 +251,48 @@ class BackupService {
         rethrow;
       }
 
-      var closed = false, dbMoved = false, receiptsMoved = false;
-      var dbSwapped = false, receiptsSwapped = false;
+      var closed = false;
       AppDatabase? reopened;
       try {
+        await paths.marker.writeAsString('restore', flush: true);
         await _closeDb();
         closed = true;
-        if (await paths.dbFile.exists()) {
-          await moveDbFiles(paths.dbFile, paths.dbBak);
-          dbMoved = true;
-        }
-        if (await paths.receipts.exists()) {
-          await paths.receipts.rename(paths.receiptsBak.path);
-          receiptsMoved = true;
-        }
-        dbSwapped = true;
+        await moveDbFiles(paths.dbFile, paths.dbBak);
+        await paths.receipts.rename(paths.receiptsBak.path);
         await moveDbFiles(paths.dbStaged, paths.dbFile);
-        receiptsSwapped = true;
         await paths.receiptsStaged.rename(paths.receipts.path);
 
-        reopened = await _reopenDb();
-        final days = await _countIn(reopened, 'dia_caja');
-        final expenses = await _countIn(reopened, 'gasto');
+        final db = reopened = await _reopenDb();
+        final days = await _countIn(db, 'dia_caja');
+        final expenses = await _countIn(db, 'gasto');
         if (days != preview.days || expenses != preview.expenses) {
           throw BackupVerifyException(
             'Restored $days days and $expenses expenses, '
             'expected ${preview.days} and ${preview.expenses}',
           );
         }
+        await paths.marker.delete();
       } catch (e, st) {
         final db = reopened;
         if (db != null) await step(db.close);
-        if (dbSwapped) await step(() => deleteDbFiles(paths.dbFile));
-        if (dbMoved) await step(() => moveDbFiles(paths.dbBak, paths.dbFile));
-        if (receiptsSwapped) {
-          await step(() => deleteDirIfExists(paths.receipts));
-        }
-        if (receiptsMoved) {
-          await step(() => paths.receiptsBak.rename(paths.receipts.path));
+        var putBack = true;
+        try {
+          await putBackupsBack(paths);
+        } catch (_) {
+          putBack = false;
         }
         await dropStaging();
-        if (closed) await step(_reopenDb);
+        if (putBack) {
+          await step(() async {
+            if (await paths.marker.exists()) await paths.marker.delete();
+          });
+          if (closed) await step(() => _reopenDb());
+        }
         Error.throwWithStackTrace(e, st);
       }
 
-      // The restore is verified: a failed cleanup is not a failure, the next
-      // start removes what is left.
+      // Verified: a failed cleanup is not a failure, the next start deletes
+      // `.bak` files that have no marker.
       await step(() => deleteDbFiles(paths.dbBak));
       await step(() => deleteDirIfExists(paths.receiptsBak));
     } finally {

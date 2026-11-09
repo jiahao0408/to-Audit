@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sqlite3/sqlite3.dart' show sqlite3;
 import 'package:to_audit/data/backup/restore_recovery.dart';
 import 'package:to_audit/data/db/app_database.dart';
 import 'package:to_audit/data/db/open_database.dart';
@@ -44,6 +45,14 @@ void main() {
     await d.close();
   }
 
+  /// A keyed database that opens but has none of the app tables.
+  void makeEmptySchemaDb(File file) {
+    final raw = sqlite3.open(file.path);
+    raw.execute("PRAGMA key = \"x'$key'\"");
+    raw.execute('CREATE TABLE other (x)');
+    raw.close();
+  }
+
   Future<List<String>> datesIn(File file) async {
     final d = await openEncryptedDatabase(file: file, hexKey: key);
     try {
@@ -66,10 +75,15 @@ void main() {
 
   Future<List<String>> leftovers() async => [
     for (final e in await dir.list().toList())
-      if (RegExp(r'\.(bak|restoring)|-journal').hasMatch(e.path)) e.path,
+      if (RegExp(r'\.(bak|restoring|restore-in-progress)|-journal')
+          .hasMatch(e.path))
+        e.path,
   ];
 
+  Future<void> mark() => at('.restore-in-progress').writeAsString('restore');
+
   test('killed after renaming the db to .bak: old data comes back', () async {
+    await mark();
     await makeDb(at('.bak'), '2026-11-01');
     await makeReceipts(receiptsAt('.bak'), 'old');
     await makeDb(at('.restoring'), '2026-12-01');
@@ -82,6 +96,7 @@ void main() {
   });
 
   test('killed between the db and the receipts swap: rolled back', () async {
+    await mark();
     await makeDb(db, '2026-12-01'); // new one already in place
     await makeDb(at('.bak'), '2026-11-01');
     await makeReceipts(receiptsAt('.bak'), 'old');
@@ -136,6 +151,66 @@ void main() {
 
     await recover();
     expect(await db.readAsBytes(), before);
+    expect(await receiptIn(receipts), 'old');
+    expect(await leftovers(), isEmpty);
+  });
+
+  test('killed in a rollback after receipts were deleted: put back', () async {
+    await mark();
+    await makeDb(db, '2026-11-01'); // the db was already moved back
+    await makeReceipts(receiptsAt('.bak'), 'old');
+
+    await recover();
+    expect(await datesIn(db), ['2026-11-01']);
+    expect(await receiptIn(receipts), 'old');
+    expect(await leftovers(), isEmpty);
+  });
+
+  test(
+    'without marker, receipts.bak with no live receipts goes back',
+    () async {
+      await makeDb(db, '2026-11-01');
+      await makeReceipts(receiptsAt('.bak'), 'old');
+
+      await recover();
+      expect(await receiptIn(receipts), 'old');
+      expect(await leftovers(), isEmpty);
+    },
+  );
+
+  test('marker with an empty-schema live db: rolled back', () async {
+    await mark();
+    makeEmptySchemaDb(db);
+    await makeDb(at('.bak'), '2026-11-01');
+    await makeReceipts(receipts, 'new');
+    await makeReceipts(receiptsAt('.bak'), 'old');
+
+    await recover();
+    expect(await datesIn(db), ['2026-11-01']);
+    expect(await receiptIn(receipts), 'old');
+    expect(await leftovers(), isEmpty);
+  });
+
+  test(
+    'without marker, an empty-schema live db does not count as opening',
+    () async {
+      makeEmptySchemaDb(db);
+      await makeDb(at('.bak'), '2026-11-01');
+
+      await recover();
+      expect(await datesIn(db), ['2026-11-01']);
+      expect(await leftovers(), isEmpty);
+    },
+  );
+
+  test('a marker with nothing moved yet is just removed', () async {
+    await mark();
+    await makeDb(db, '2026-11-01');
+    await makeReceipts(receipts, 'old');
+    await makeReceipts(receiptsAt('.restoring'), 'new');
+
+    await recover();
+    expect(await datesIn(db), ['2026-11-01']);
     expect(await receiptIn(receipts), 'old');
     expect(await leftovers(), isEmpty);
   });

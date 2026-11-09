@@ -5,8 +5,9 @@ import 'package:sqlite3/sqlite3.dart';
 
 /// Files a restore works with, next to the database and the receipts.
 ///
-/// A restore stages the new data in `.restoring`, moves the current data to
-/// `.bak`, then moves `.restoring` into place (see `BackupService.restore`).
+/// A restore stages the new data in `.restoring`, writes the [marker], moves
+/// the current data to `.bak`, moves `.restoring` into place and deletes the
+/// marker once the new database is verified (see `BackupService.restore`).
 class RestorePaths {
   RestorePaths({required this.dbFile, required Directory filesRoot})
     : receipts = Directory(p.join(filesRoot.path, 'receipts'));
@@ -16,6 +17,10 @@ class RestorePaths {
 
   File get dbBak => File('${dbFile.path}.bak');
   File get dbStaged => File('${dbFile.path}.restoring');
+
+  /// Exists from just before the database is closed until the restored one
+  /// is verified, or until a rollback has put every `.bak` back.
+  File get marker => File('${dbFile.path}.restore-in-progress');
   Directory get receiptsBak => Directory('${receipts.path}.bak');
   Directory get receiptsStaged => Directory('${receipts.path}.restoring');
 }
@@ -48,7 +53,36 @@ Future<void> deleteDirIfExists(Directory dir) async {
   if (await dir.exists()) await dir.delete(recursive: true);
 }
 
-/// Whether [db] opens as a SQLCipher database with [hexKey].
+/// Puts every `.bak` of [paths] back in place, replacing the live database
+/// (with its journals) and receipts. Each part is attempted even when the
+/// other fails; the first error is rethrown at the end. Nothing happens to a
+/// live file that has no `.bak`.
+Future<void> putBackupsBack(RestorePaths paths) async {
+  Object? error;
+  StackTrace? trace;
+  Future<void> attempt(Future<void> Function() action) async {
+    try {
+      await action();
+    } catch (e, st) {
+      error ??= e;
+      trace ??= st;
+    }
+  }
+
+  await attempt(() async {
+    if (!await paths.dbBak.exists()) return;
+    await deleteDbFiles(paths.dbFile);
+    await moveDbFiles(paths.dbBak, paths.dbFile);
+  });
+  await attempt(() async {
+    if (!await paths.receiptsBak.exists()) return;
+    await deleteDirIfExists(paths.receipts);
+    await paths.receiptsBak.rename(paths.receipts.path);
+  });
+  if (error case final e?) Error.throwWithStackTrace(e, trace!);
+}
+
+/// Whether [db] opens with [hexKey] and holds the app tables.
 bool _opens(File db, String hexKey) {
   final Database conn;
   try {
@@ -58,7 +92,8 @@ bool _opens(File db, String hexKey) {
   }
   try {
     conn.execute("PRAGMA key = \"x'$hexKey'\"");
-    conn.select('SELECT count(*) FROM sqlite_master');
+    conn.select('SELECT count(*) FROM dia_caja');
+    conn.select('SELECT count(*) FROM gasto');
     return true;
   } on SqliteException {
     return false;
@@ -67,14 +102,19 @@ bool _opens(File db, String hexKey) {
   }
 }
 
-/// Undoes or completes a restore that was interrupted (app killed). Call it
-/// before opening the database.
+/// Undoes or completes a restore that was interrupted (app killed, or a
+/// rollback that could not finish). Call it only at app start, before the
+/// database is opened, and never from inside a restore.
 ///
-/// When `.bak` files exist the restore was interrupted after the current
-/// data was moved aside. They are put back when a `.restoring` leftover
-/// exists or the live database is missing or does not open with [hexKey];
-/// otherwise the restore had finished and the `.bak` files are deleted.
-/// `.restoring` leftovers are always deleted.
+/// - Marker present: the restore was not verified, so every `.bak` goes back
+///   in place (live files and journals are replaced), then the marker is
+///   deleted. If that fails the marker stays and the error is rethrown.
+/// - Marker absent: `.bak` files come from a verified restore whose cleanup
+///   failed and are deleted, except that a `.bak` is moved back when the live
+///   counterpart is missing (or, for the database, does not open with
+///   [hexKey] or lacks the app tables).
+///
+/// `.restoring` leftovers are deleted in both cases.
 Future<void> recoverInterruptedRestore({
   required File dbFile,
   required Directory filesRoot,
@@ -84,27 +124,25 @@ Future<void> recoverInterruptedRestore({
     throw ArgumentError('hexKey must be 64 hex characters');
   }
   final paths = RestorePaths(dbFile: dbFile, filesRoot: filesRoot);
-  final staging =
-      await paths.dbStaged.exists() || await paths.receiptsStaged.exists();
-  final dbBak = await paths.dbBak.exists();
-  final receiptsBak = await paths.receiptsBak.exists();
 
-  if (dbBak || receiptsBak) {
-    final rollBack =
-        staging ||
-        (dbBak && (!await dbFile.exists() || !_opens(dbFile, hexKey)));
-    if (rollBack) {
-      if (dbBak) {
+  if (await paths.marker.exists()) {
+    await putBackupsBack(paths);
+    await paths.marker.delete();
+  } else {
+    if (await paths.dbBak.exists()) {
+      if (await dbFile.exists() && _opens(dbFile, hexKey)) {
+        await deleteDbFiles(paths.dbBak);
+      } else {
         await deleteDbFiles(dbFile);
         await moveDbFiles(paths.dbBak, dbFile);
       }
-      if (receiptsBak) {
-        await deleteDirIfExists(paths.receipts);
+    }
+    if (await paths.receiptsBak.exists()) {
+      if (await paths.receipts.exists()) {
+        await paths.receiptsBak.delete(recursive: true);
+      } else {
         await paths.receiptsBak.rename(paths.receipts.path);
       }
-    } else {
-      await deleteDbFiles(paths.dbBak);
-      await deleteDirIfExists(paths.receiptsBak);
     }
   }
   await deleteDbFiles(paths.dbStaged);
