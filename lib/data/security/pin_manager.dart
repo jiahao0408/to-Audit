@@ -76,15 +76,15 @@ class PinManager {
   /// Lock doubling stops here (30 s × 2^20 ≈ 1 year) so it cannot overflow.
   static const _maxDoublings = 20;
 
-  static const _hashKey = 'pin_hash';
-  static const _saltKey = 'pin_salt';
-  static const _iterationsKey = 'pin_iterations';
+  /// One JSON value `{salt, iterations, hash}` (base64 salt and hash), so a
+  /// new PIN is written atomically.
+  static const _pinKey = 'pin_hash';
   static const _failuresKey = 'pin_failures';
   static const _lockedUntilKey = 'pin_locked_until';
 
   static final _sixDigits = RegExp(r'^[0-9]{6}$');
 
-  Future<bool> hasPin() async => await _store.read(_hashKey) != null;
+  Future<bool> hasPin() async => await _store.read(_pinKey) != null;
 
   /// Sets a new PIN (exactly 6 digits, else [ArgumentError]) and clears any
   /// failure count or lock.
@@ -95,44 +95,89 @@ class PinManager {
     final random = Random.secure();
     final salt = List<int>.generate(16, (_) => random.nextInt(256));
     final hash = await _hash(pin, salt, iterations);
-    await _store.write(_saltKey, base64.encode(salt));
-    await _store.write(_iterationsKey, '$iterations');
-    await _store.write(_hashKey, base64.encode(hash));
+    await _store.write(
+      _pinKey,
+      jsonEncode({
+        'salt': base64.encode(salt),
+        'iterations': iterations,
+        'hash': base64.encode(hash),
+      }),
+    );
     await _resetFailures();
   }
 
   /// Checks [pin]. While locked every call returns [PinLocked] without
-  /// checking or counting. Throws [StateError] when no PIN is set.
+  /// checking or counting. Throws [StateError] when no PIN is set or the
+  /// stored one is unreadable.
   Future<PinResult> verify(String pin) async {
     final now = _clock().toUtc();
-    final lockedUntil = await _store.read(_lockedUntilKey);
-    if (lockedUntil != null) {
-      final until = DateTime.parse(lockedUntil);
-      if (now.isBefore(until)) return PinLocked(until.difference(now));
-    }
+    final locked = await _lockRemaining(now);
+    if (locked != null) return PinLocked(locked);
 
-    final storedHash = await _store.read(_hashKey);
-    final storedSalt = await _store.read(_saltKey);
-    if (storedHash == null || storedSalt == null) {
-      throw StateError('No PIN has been set');
-    }
-    final rounds =
-        int.tryParse(await _store.read(_iterationsKey) ?? '') ?? iterations;
-    final hash = await _hash(pin, base64.decode(storedSalt), rounds);
+    final (salt, rounds, storedHash) = _decode(await _store.read(_pinKey));
+    final hash = await _hash(pin, salt, rounds);
 
-    if (_constantTimeEquals(hash, base64.decode(storedHash))) {
+    if (_constantTimeEquals(hash, storedHash)) {
       await _resetFailures();
       return const PinOk();
     }
 
-    final failures =
-        (int.tryParse(await _store.read(_failuresKey) ?? '') ?? 0) + 1;
+    final failures = await _failures() + 1;
     await _store.write(_failuresKey, '$failures');
     if (failures < maxAttempts) return PinWrong(maxAttempts - failures);
 
-    final lock = baseLock * (1 << min(failures - maxAttempts, _maxDoublings));
+    final lock = _lockFor(failures);
     await _store.write(_lockedUntilKey, now.add(lock).toIso8601String());
     return PinLocked(lock);
+  }
+
+  /// Time left of the current lock, or null when not locked. A corrupt
+  /// instant counts as no lock and is cleared. When the clock moved back the
+  /// remaining time is capped at the lock duration (and stored again).
+  Future<Duration?> _lockRemaining(DateTime now) async {
+    final raw = await _store.read(_lockedUntilKey);
+    if (raw == null) return null;
+    final until = DateTime.tryParse(raw);
+    if (until == null) {
+      await _store.delete(_lockedUntilKey);
+      return null;
+    }
+    if (!now.isBefore(until)) return null;
+    final remaining = until.difference(now);
+    final lock = _lockFor(max(await _failures(), maxAttempts));
+    if (remaining <= lock) return remaining;
+    await _store.write(_lockedUntilKey, now.add(lock).toIso8601String());
+    return lock;
+  }
+
+  Future<int> _failures() async =>
+      int.tryParse(await _store.read(_failuresKey) ?? '') ?? 0;
+
+  /// Lock after [failures] failures in a row (at least [maxAttempts]).
+  static Duration _lockFor(int failures) =>
+      baseLock * (1 << min(failures - maxAttempts, _maxDoublings));
+
+  static (List<int>, int, List<int>) _decode(String? raw) {
+    if (raw == null) throw StateError('No PIN has been set');
+    Object? json;
+    try {
+      json = jsonDecode(raw);
+    } on FormatException {
+      json = null;
+    }
+    if (json is Map<String, dynamic>) {
+      final salt = json['salt'];
+      final rounds = json['iterations'];
+      final hash = json['hash'];
+      if (salt is String && rounds is int && rounds > 0 && hash is String) {
+        try {
+          return (base64.decode(salt), rounds, base64.decode(hash));
+        } on FormatException {
+          // Falls through to the error below.
+        }
+      }
+    }
+    throw StateError('The stored PIN is unreadable');
   }
 
   Future<void> _resetFailures() async {

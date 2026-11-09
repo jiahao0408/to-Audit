@@ -9,9 +9,12 @@ class BiometricAuth {
 
   final LocalAuthentication _auth;
 
+  /// True when the device supports it and has a biometric enrolled, since
+  /// [authenticate] accepts biometrics only.
   Future<bool> isAvailable() async {
     try {
-      return await _auth.canCheckBiometrics || await _auth.isDeviceSupported();
+      return await _auth.isDeviceSupported() &&
+          (await _auth.getAvailableBiometrics()).isNotEmpty;
     } on LocalAuthException {
       return false;
     } on PlatformException {
