@@ -49,6 +49,10 @@
 			</array>
 		</dict>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>to Audit usa la cámara para fotografiar facturas y tickets como justificantes de gasto.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>to Audit accede a tus fotos para adjuntar facturas y tickets como justificantes de gasto.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

@@ -294,5 +294,65 @@
   "fieldVat": "IVA",
   "fieldInvoiceOptional": "Nº factura (opcional)",
   "noSupplier": "Sin proveedor",
-  "amountMustBePositive": "El importe debe ser mayor que cero"
+  "amountMustBePositive": "El importe debe ser mayor que cero",
+  "expTabPending": "Pendientes",
+  "expTabAll": "Todos",
+  "expIncomplete": "Incompleto",
+  "expVoidedChip": "Anulado",
+  "expEmpty": "No hay gastos",
+  "expDueOn": "Vence {date}",
+  "@expDueOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "expTotalsTitle": "Totales por proveedor y categoría",
+  "expTotalsBySupplier": "Por proveedor",
+  "expTotalsByCategory": "Por categoría",
+  "expFieldDate": "Fecha",
+  "expFieldSupplier": "Proveedor",
+  "expSupplierPick": "Elegir proveedor",
+  "expSupplierSearch": "Buscar proveedor",
+  "expSupplierNew": "Nuevo proveedor",
+  "expSupplierClear": "Quitar proveedor",
+  "expFieldBase": "Base imponible (€)",
+  "expFieldTotal": "Total (€)",
+  "expFieldPayment": "Forma de pago",
+  "expFieldDue": "Vencimiento",
+  "expDueNone": "Sin vencimiento",
+  "expStatusPaid": "Pagado",
+  "expStatusPending": "Pendiente",
+  "expSummaryBase": "Base",
+  "expSummaryVat": "IVA",
+  "expSummaryTotal": "Total",
+  "expReceipts": "Justificantes",
+  "expReceiptCamera": "Cámara",
+  "expReceiptGallery": "Galería",
+  "expReceiptPdf": "PDF",
+  "expReceiptNone": "Sin justificantes",
+  "expReceiptError": "No se pudo añadir el justificante",
+  "expVoidButton": "Anular gasto",
+  "expVoidReasonTitle": "Motivo de la anulación",
+  "expLockedBanner": "Este gasto está en un período cerrado y no se puede modificar",
+  "expVoidedBanner": "Gasto anulado: {reason}",
+  "@expVoidedBanner": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "expErrSave": "No se pudo guardar el gasto",
+  "expErrLocked": "El período está cerrado. Reábrelo para hacer cambios",
+  "expNotFound": "No se encontró el gasto",
+  "suppFieldName": "Nombre",
+  "suppFieldNif": "NIF",
+  "suppFieldPhone": "Teléfono",
+  "suppFieldCategory": "Categoría por defecto",
+  "suppNone": "Aún no hay proveedores",
+  "suppNewTitle": "Nuevo proveedor",
+  "suppEditTitle": "Editar proveedor",
+  "suppErrSave": "No se pudo guardar el proveedor"
 }

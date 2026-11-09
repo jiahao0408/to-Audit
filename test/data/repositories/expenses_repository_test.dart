@@ -429,4 +429,14 @@ void main() {
       expect(s.voided, isFalse);
     });
   });
+
+  test('byId returns the expense with its receipt count, or null', () async {
+    final id = await repo.create(input());
+    expect((await repo.byId(id))!.receiptCount, 0);
+    await repo.attachReceipt(id, pdf(), ReceiptKind.pdf);
+    final found = (await repo.byId(id))!;
+    expect(found.receiptCount, 1);
+    expect(found.total, const Money(1100));
+    expect(await repo.byId('missing'), isNull);
+  });
 }

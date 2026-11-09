@@ -745,4 +745,148 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get amountMustBePositive => 'El importe debe ser mayor que cero';
+
+  @override
+  String get expTabPending => 'Pendientes';
+
+  @override
+  String get expTabAll => 'Todos';
+
+  @override
+  String get expIncomplete => 'Incompleto';
+
+  @override
+  String get expVoidedChip => 'Anulado';
+
+  @override
+  String get expEmpty => 'No hay gastos';
+
+  @override
+  String expDueOn(String date) {
+    return 'Vence $date';
+  }
+
+  @override
+  String get expTotalsTitle => 'Totales por proveedor y categoría';
+
+  @override
+  String get expTotalsBySupplier => 'Por proveedor';
+
+  @override
+  String get expTotalsByCategory => 'Por categoría';
+
+  @override
+  String get expFieldDate => 'Fecha';
+
+  @override
+  String get expFieldSupplier => 'Proveedor';
+
+  @override
+  String get expSupplierPick => 'Elegir proveedor';
+
+  @override
+  String get expSupplierSearch => 'Buscar proveedor';
+
+  @override
+  String get expSupplierNew => 'Nuevo proveedor';
+
+  @override
+  String get expSupplierClear => 'Quitar proveedor';
+
+  @override
+  String get expFieldBase => 'Base imponible (€)';
+
+  @override
+  String get expFieldTotal => 'Total (€)';
+
+  @override
+  String get expFieldPayment => 'Forma de pago';
+
+  @override
+  String get expFieldDue => 'Vencimiento';
+
+  @override
+  String get expDueNone => 'Sin vencimiento';
+
+  @override
+  String get expStatusPaid => 'Pagado';
+
+  @override
+  String get expStatusPending => 'Pendiente';
+
+  @override
+  String get expSummaryBase => 'Base';
+
+  @override
+  String get expSummaryVat => 'IVA';
+
+  @override
+  String get expSummaryTotal => 'Total';
+
+  @override
+  String get expReceipts => 'Justificantes';
+
+  @override
+  String get expReceiptCamera => 'Cámara';
+
+  @override
+  String get expReceiptGallery => 'Galería';
+
+  @override
+  String get expReceiptPdf => 'PDF';
+
+  @override
+  String get expReceiptNone => 'Sin justificantes';
+
+  @override
+  String get expReceiptError => 'No se pudo añadir el justificante';
+
+  @override
+  String get expVoidButton => 'Anular gasto';
+
+  @override
+  String get expVoidReasonTitle => 'Motivo de la anulación';
+
+  @override
+  String get expLockedBanner =>
+      'Este gasto está en un período cerrado y no se puede modificar';
+
+  @override
+  String expVoidedBanner(String reason) {
+    return 'Gasto anulado: $reason';
+  }
+
+  @override
+  String get expErrSave => 'No se pudo guardar el gasto';
+
+  @override
+  String get expErrLocked =>
+      'El período está cerrado. Reábrelo para hacer cambios';
+
+  @override
+  String get expNotFound => 'No se encontró el gasto';
+
+  @override
+  String get suppFieldName => 'Nombre';
+
+  @override
+  String get suppFieldNif => 'NIF';
+
+  @override
+  String get suppFieldPhone => 'Teléfono';
+
+  @override
+  String get suppFieldCategory => 'Categoría por defecto';
+
+  @override
+  String get suppNone => 'Aún no hay proveedores';
+
+  @override
+  String get suppNewTitle => 'Nuevo proveedor';
+
+  @override
+  String get suppEditTitle => 'Editar proveedor';
+
+  @override
+  String get suppErrSave => 'No se pudo guardar el proveedor';
 }

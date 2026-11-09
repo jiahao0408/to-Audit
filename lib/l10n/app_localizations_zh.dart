@@ -734,4 +734,146 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get amountMustBePositive => '金额必须大于零';
+
+  @override
+  String get expTabPending => '待付款';
+
+  @override
+  String get expTabAll => '全部';
+
+  @override
+  String get expIncomplete => '缺凭证';
+
+  @override
+  String get expVoidedChip => '已作废';
+
+  @override
+  String get expEmpty => '暂无费用';
+
+  @override
+  String expDueOn(String date) {
+    return '到期日 $date';
+  }
+
+  @override
+  String get expTotalsTitle => '按供应商和类别汇总';
+
+  @override
+  String get expTotalsBySupplier => '按供应商';
+
+  @override
+  String get expTotalsByCategory => '按类别';
+
+  @override
+  String get expFieldDate => '日期';
+
+  @override
+  String get expFieldSupplier => '供应商';
+
+  @override
+  String get expSupplierPick => '选择供应商';
+
+  @override
+  String get expSupplierSearch => '搜索供应商';
+
+  @override
+  String get expSupplierNew => '新建供应商';
+
+  @override
+  String get expSupplierClear => '移除供应商';
+
+  @override
+  String get expFieldBase => '税前金额（€）';
+
+  @override
+  String get expFieldTotal => '合计（€）';
+
+  @override
+  String get expFieldPayment => '付款方式';
+
+  @override
+  String get expFieldDue => '到期日';
+
+  @override
+  String get expDueNone => '无到期日';
+
+  @override
+  String get expStatusPaid => '已付';
+
+  @override
+  String get expStatusPending => '未付';
+
+  @override
+  String get expSummaryBase => '税前';
+
+  @override
+  String get expSummaryVat => '增值税';
+
+  @override
+  String get expSummaryTotal => '合计';
+
+  @override
+  String get expReceipts => '凭证';
+
+  @override
+  String get expReceiptCamera => '拍照';
+
+  @override
+  String get expReceiptGallery => '相册';
+
+  @override
+  String get expReceiptPdf => 'PDF';
+
+  @override
+  String get expReceiptNone => '暂无凭证';
+
+  @override
+  String get expReceiptError => '无法添加凭证';
+
+  @override
+  String get expVoidButton => '作废费用';
+
+  @override
+  String get expVoidReasonTitle => '作废原因';
+
+  @override
+  String get expLockedBanner => '该费用属于已结账的期间，无法修改';
+
+  @override
+  String expVoidedBanner(String reason) {
+    return '费用已作废：$reason';
+  }
+
+  @override
+  String get expErrSave => '无法保存费用';
+
+  @override
+  String get expErrLocked => '该期间已结账，请先重新打开';
+
+  @override
+  String get expNotFound => '未找到该费用';
+
+  @override
+  String get suppFieldName => '名称';
+
+  @override
+  String get suppFieldNif => '税号';
+
+  @override
+  String get suppFieldPhone => '电话';
+
+  @override
+  String get suppFieldCategory => '默认类别';
+
+  @override
+  String get suppNone => '暂无供应商';
+
+  @override
+  String get suppNewTitle => '新建供应商';
+
+  @override
+  String get suppEditTitle => '编辑供应商';
+
+  @override
+  String get suppErrSave => '无法保存供应商';
 }

@@ -131,6 +131,12 @@ class ExpensesRepository {
     ],
   );
 
+  /// One expense with its receipt count, or null when there is none.
+  Future<ExpenseRecord?> byId(String id) async {
+    final rows = await _query(where: _db.expenses.id.equals(id)).get();
+    return rows.isEmpty ? null : _rows(rows).single;
+  }
+
   /// Unpaid, non-voided expenses by due date; those without one come last.
   Stream<List<ExpenseRecord>> watchPending() => _watch(
     where:

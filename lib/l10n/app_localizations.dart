@@ -1495,6 +1495,282 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'El importe debe ser mayor que cero'**
   String get amountMustBePositive;
+
+  /// No description provided for @expTabPending.
+  ///
+  /// In es, this message translates to:
+  /// **'Pendientes'**
+  String get expTabPending;
+
+  /// No description provided for @expTabAll.
+  ///
+  /// In es, this message translates to:
+  /// **'Todos'**
+  String get expTabAll;
+
+  /// No description provided for @expIncomplete.
+  ///
+  /// In es, this message translates to:
+  /// **'Incompleto'**
+  String get expIncomplete;
+
+  /// No description provided for @expVoidedChip.
+  ///
+  /// In es, this message translates to:
+  /// **'Anulado'**
+  String get expVoidedChip;
+
+  /// No description provided for @expEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay gastos'**
+  String get expEmpty;
+
+  /// No description provided for @expDueOn.
+  ///
+  /// In es, this message translates to:
+  /// **'Vence {date}'**
+  String expDueOn(String date);
+
+  /// No description provided for @expTotalsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Totales por proveedor y categoría'**
+  String get expTotalsTitle;
+
+  /// No description provided for @expTotalsBySupplier.
+  ///
+  /// In es, this message translates to:
+  /// **'Por proveedor'**
+  String get expTotalsBySupplier;
+
+  /// No description provided for @expTotalsByCategory.
+  ///
+  /// In es, this message translates to:
+  /// **'Por categoría'**
+  String get expTotalsByCategory;
+
+  /// No description provided for @expFieldDate.
+  ///
+  /// In es, this message translates to:
+  /// **'Fecha'**
+  String get expFieldDate;
+
+  /// No description provided for @expFieldSupplier.
+  ///
+  /// In es, this message translates to:
+  /// **'Proveedor'**
+  String get expFieldSupplier;
+
+  /// No description provided for @expSupplierPick.
+  ///
+  /// In es, this message translates to:
+  /// **'Elegir proveedor'**
+  String get expSupplierPick;
+
+  /// No description provided for @expSupplierSearch.
+  ///
+  /// In es, this message translates to:
+  /// **'Buscar proveedor'**
+  String get expSupplierSearch;
+
+  /// No description provided for @expSupplierNew.
+  ///
+  /// In es, this message translates to:
+  /// **'Nuevo proveedor'**
+  String get expSupplierNew;
+
+  /// No description provided for @expSupplierClear.
+  ///
+  /// In es, this message translates to:
+  /// **'Quitar proveedor'**
+  String get expSupplierClear;
+
+  /// No description provided for @expFieldBase.
+  ///
+  /// In es, this message translates to:
+  /// **'Base imponible (€)'**
+  String get expFieldBase;
+
+  /// No description provided for @expFieldTotal.
+  ///
+  /// In es, this message translates to:
+  /// **'Total (€)'**
+  String get expFieldTotal;
+
+  /// No description provided for @expFieldPayment.
+  ///
+  /// In es, this message translates to:
+  /// **'Forma de pago'**
+  String get expFieldPayment;
+
+  /// No description provided for @expFieldDue.
+  ///
+  /// In es, this message translates to:
+  /// **'Vencimiento'**
+  String get expFieldDue;
+
+  /// No description provided for @expDueNone.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin vencimiento'**
+  String get expDueNone;
+
+  /// No description provided for @expStatusPaid.
+  ///
+  /// In es, this message translates to:
+  /// **'Pagado'**
+  String get expStatusPaid;
+
+  /// No description provided for @expStatusPending.
+  ///
+  /// In es, this message translates to:
+  /// **'Pendiente'**
+  String get expStatusPending;
+
+  /// No description provided for @expSummaryBase.
+  ///
+  /// In es, this message translates to:
+  /// **'Base'**
+  String get expSummaryBase;
+
+  /// No description provided for @expSummaryVat.
+  ///
+  /// In es, this message translates to:
+  /// **'IVA'**
+  String get expSummaryVat;
+
+  /// No description provided for @expSummaryTotal.
+  ///
+  /// In es, this message translates to:
+  /// **'Total'**
+  String get expSummaryTotal;
+
+  /// No description provided for @expReceipts.
+  ///
+  /// In es, this message translates to:
+  /// **'Justificantes'**
+  String get expReceipts;
+
+  /// No description provided for @expReceiptCamera.
+  ///
+  /// In es, this message translates to:
+  /// **'Cámara'**
+  String get expReceiptCamera;
+
+  /// No description provided for @expReceiptGallery.
+  ///
+  /// In es, this message translates to:
+  /// **'Galería'**
+  String get expReceiptGallery;
+
+  /// No description provided for @expReceiptPdf.
+  ///
+  /// In es, this message translates to:
+  /// **'PDF'**
+  String get expReceiptPdf;
+
+  /// No description provided for @expReceiptNone.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin justificantes'**
+  String get expReceiptNone;
+
+  /// No description provided for @expReceiptError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo añadir el justificante'**
+  String get expReceiptError;
+
+  /// No description provided for @expVoidButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Anular gasto'**
+  String get expVoidButton;
+
+  /// No description provided for @expVoidReasonTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Motivo de la anulación'**
+  String get expVoidReasonTitle;
+
+  /// No description provided for @expLockedBanner.
+  ///
+  /// In es, this message translates to:
+  /// **'Este gasto está en un período cerrado y no se puede modificar'**
+  String get expLockedBanner;
+
+  /// No description provided for @expVoidedBanner.
+  ///
+  /// In es, this message translates to:
+  /// **'Gasto anulado: {reason}'**
+  String expVoidedBanner(String reason);
+
+  /// No description provided for @expErrSave.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo guardar el gasto'**
+  String get expErrSave;
+
+  /// No description provided for @expErrLocked.
+  ///
+  /// In es, this message translates to:
+  /// **'El período está cerrado. Reábrelo para hacer cambios'**
+  String get expErrLocked;
+
+  /// No description provided for @expNotFound.
+  ///
+  /// In es, this message translates to:
+  /// **'No se encontró el gasto'**
+  String get expNotFound;
+
+  /// No description provided for @suppFieldName.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre'**
+  String get suppFieldName;
+
+  /// No description provided for @suppFieldNif.
+  ///
+  /// In es, this message translates to:
+  /// **'NIF'**
+  String get suppFieldNif;
+
+  /// No description provided for @suppFieldPhone.
+  ///
+  /// In es, this message translates to:
+  /// **'Teléfono'**
+  String get suppFieldPhone;
+
+  /// No description provided for @suppFieldCategory.
+  ///
+  /// In es, this message translates to:
+  /// **'Categoría por defecto'**
+  String get suppFieldCategory;
+
+  /// No description provided for @suppNone.
+  ///
+  /// In es, this message translates to:
+  /// **'Aún no hay proveedores'**
+  String get suppNone;
+
+  /// No description provided for @suppNewTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Nuevo proveedor'**
+  String get suppNewTitle;
+
+  /// No description provided for @suppEditTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar proveedor'**
+  String get suppEditTitle;
+
+  /// No description provided for @suppErrSave.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo guardar el proveedor'**
+  String get suppErrSave;
 }
 
 class _AppLocalizationsDelegate
