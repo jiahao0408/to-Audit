@@ -153,8 +153,14 @@ class ReportService {
     var vatPaid = Money.zero;
     final expensesByDate = <String, Money>{};
     for (final e in expenses) {
-      expensesByDate[ymd(e.date)] =
-          (expensesByDate[ymd(e.date)] ?? Money.zero) + e.total;
+      final planned =
+          e.origin == ExpenseOrigin.fixed &&
+          e.fixedStatus != FixedStatus.confirmed;
+      if (!planned) {
+        // Same classification as the summary: planned fixed costs don't count.
+        expensesByDate[ymd(e.date)] =
+            (expensesByDate[ymd(e.date)] ?? Money.zero) + e.total;
+      }
       if (e.origin == ExpenseOrigin.fixed) {
         if (e.fixedStatus == FixedStatus.confirmed) {
           fixed += e.total;

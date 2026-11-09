@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:archive/archive.dart';
+import 'package:archive/archive_io.dart';
 
 import '../../domain/dates.dart';
 import '../../domain/enums.dart';
@@ -31,18 +31,28 @@ String receiptFileName({
 String? _slug(String? raw) {
   if (raw == null) return null;
   final clean = raw
-      .replaceAll(RegExp(r'[\s\/:*?"<>|]'), '-')
+      .replaceAll(RegExp(r'[\s\\/:*?"<>|]'), '-')
       .replaceAll(RegExp(r'-{2,}'), '-')
       .replaceAll(RegExp(r'^-+|-+$'), '');
   return clean.isEmpty ? null : clean;
 }
 
+/// Result of [buildGestorZip]: the ZIP and how many receipts were left out
+/// because their file is missing on disk.
+class GestorZipResult {
+  const GestorZipResult({required this.zip, required this.missingReceipts});
+
+  final File zip;
+  final int missingReceipts;
+}
+
 /// Writes `<out>/gestor-<YYYY-MM-DD>.zip` (the date is [generatedAt]) with
 /// `gastos.csv` and `justificantes/<receiptFileName>` for every receipt.
 ///
-/// [receipts] maps an expense id to its receipts. A receipt whose file is
-/// missing on disk is left out of the ZIP and of the CSV.
-Future<File> buildGestorZip({
+/// The ZIP is streamed to disk: receipts are stored (not recompressed) and
+/// never held in memory together. A receipt whose file is missing is left out
+/// of the ZIP and the CSV and counted in [GestorZipResult.missingReceipts].
+Future<GestorZipResult> buildGestorZip({
   required List<ExpenseRecord> expenses,
   required Map<String, List<ReceiptData>> receipts,
   required ReceiptStore store,
@@ -52,46 +62,51 @@ Future<File> buildGestorZip({
   required DateTime generatedAt,
   String Function(String categoryId)? categoryName,
 }) async {
-  final archive = Archive();
-  final used = <String>{};
-  final fileNames = <String, List<String>>{};
-
-  for (final e in expenses) {
-    final supplier = e.supplierId == null ? null : supplierName(e.supplierId);
-    var index = 1;
-    for (final r in receipts[e.id] ?? const <ReceiptData>[]) {
-      final file = store.fileFor(r.relativePath);
-      if (!await file.exists()) continue;
-      final ext = r.kind == ReceiptKind.pdf ? 'pdf' : 'jpg';
-      String name;
-      // Two expenses can share date, supplier and invoice: keep names unique.
-      do {
-        name = receiptFileName(
-          date: e.date,
-          supplier: supplier,
-          invoice: e.invoiceNumber,
-          index: index++,
-          ext: ext,
-        );
-      } while (!used.add(name));
-      final bytes = await file.readAsBytes();
-      archive.addFile(ArchiveFile('justificantes/$name', bytes.length, bytes));
-      (fileNames[e.id] ??= []).add(name);
-    }
-  }
-
-  final table = expenseTable(
-    'gastos',
-    expenses,
-    labels,
-    ExportNames(supplier: supplierName, category: categoryName ?? (id) => id),
-    receiptNames: fileNames,
-  );
-  final csv = encodeCsv(table, labels.locale);
-  archive.addFile(ArchiveFile('gastos.csv', csv.length, csv));
-
   await out.create(recursive: true);
   final target = File('${out.path}/gestor-${ymd(generatedAt)}.zip');
-  await target.writeAsBytes(ZipEncoder().encode(archive)!, flush: true);
-  return target;
+  final encoder = ZipFileEncoder()..create(target.path);
+  final used = <String>{};
+  final fileNames = <String, List<String>>{};
+  var missing = 0;
+
+  try {
+    for (final e in expenses) {
+      final supplier = e.supplierId == null ? null : supplierName(e.supplierId);
+      var index = 1;
+      for (final r in receipts[e.id] ?? const <ReceiptData>[]) {
+        final file = store.fileFor(r.relativePath);
+        if (!await file.exists()) {
+          missing++;
+          continue;
+        }
+        final ext = r.kind == ReceiptKind.pdf ? 'pdf' : 'jpg';
+        String name;
+        // Two expenses can share date, supplier and invoice: keep names unique.
+        do {
+          name = receiptFileName(
+            date: e.date,
+            supplier: supplier,
+            invoice: e.invoiceNumber,
+            index: index++,
+            ext: ext,
+          );
+        } while (!used.add(name));
+        await encoder.addFile(file, 'justificantes/$name', ArchiveFile.STORE);
+        (fileNames[e.id] ??= []).add(name);
+      }
+    }
+
+    final table = expenseTable(
+      'gastos',
+      expenses,
+      labels,
+      ExportNames(supplier: supplierName, category: categoryName ?? (id) => id),
+      receiptNames: fileNames,
+    );
+    final csv = encodeCsv(table, labels.locale);
+    encoder.addArchiveFile(ArchiveFile('gastos.csv', csv.length, csv));
+  } finally {
+    await encoder.close();
+  }
+  return GestorZipResult(zip: target, missingReceipts: missing);
 }

@@ -44,6 +44,19 @@ void main() {
       );
     });
 
+    test('replaces backslashes', () {
+      expect(
+        receiptFileName(
+          date: DateTime.utc(2026, 11, 3),
+          supplier: r'A\B',
+          invoice: r'F\1',
+          index: 1,
+          ext: 'jpg',
+        ),
+        '2026-11-03_A-B_F-1_1.jpg',
+      );
+    });
+
     test('falls back when supplier or invoice are missing or blank', () {
       expect(
         receiptFileName(
@@ -146,7 +159,7 @@ void main() {
       for (final e in expenses) e.id: await s.expenses.receipts(e.id),
     };
     final out = Directory('${s.tmp.path}/out');
-    final file = await buildGestorZip(
+    final result = await buildGestorZip(
       expenses: expenses,
       receipts: receipts,
       store: s.store,
@@ -155,17 +168,51 @@ void main() {
       supplierName: (id) => id == s.supplierId ? '蔬菜店 / Hnos. García' : '',
       generatedAt: DateTime(2026, 11, 8),
     );
-    expect(file.path.endsWith('gestor-2026-11-08.zip'), isTrue);
-    final names = ZipDecoder()
-        .decodeBytes(await file.readAsBytes())
-        .files
-        .map((f) => f.name)
-        .toList();
+    expect(result.missingReceipts, 0);
+    expect(result.zip.path.endsWith('gestor-2026-11-08.zip'), isTrue);
+    final archive = ZipDecoder().decodeBytes(await result.zip.readAsBytes());
+    final names = archive.files.map((f) => f.name).toList();
     expect(names, contains('gastos.csv'));
     expect(names.where((n) => n.startsWith('justificantes/')).toList(), [
       'justificantes/2026-11-03_蔬菜店-Hnos.-García_sin-numero_1.jpg',
       'justificantes/2026-11-03_蔬菜店-Hnos.-García_sin-numero_2.pdf',
     ]);
+    final bytes =
+        archive.files.firstWhere((f) => f.name == 'gastos.csv').content
+            as List<int>;
+    expect(bytes.take(3), [0xEF, 0xBB, 0xBF]);
+    final text = utf8.decode(bytes.skip(3).toList());
+    expect(text, contains('蔬菜店 / Hnos. García'));
+    expect(text, contains('2026-11-03_蔬菜店-Hnos.-García_sin-numero_1.jpg'));
+    final jpg = archive.files.firstWhere((f) => f.name.endsWith('_1.jpg'));
+    // The scenario's fake compressor writes a single byte.
+    expect(jpg.content as List<int>, [1]);
+  });
+
+  test('reports receipts whose file is missing', () async {
+    final photo = File('${s.tmp.path}/in.jpg')..writeAsBytesSync([1]);
+    await s.expenses.attachReceipt(s.meatExpenseId, photo, ReceiptKind.photo);
+    final receipts = {
+      for (final e in data.expenses) e.id: await s.expenses.receipts(e.id),
+    };
+    for (final r in receipts.values.expand((l) => l)) {
+      await s.store.fileFor(r.relativePath).delete();
+    }
+    final result = await buildGestorZip(
+      expenses: data.expenses,
+      receipts: receipts,
+      store: s.store,
+      out: Directory('${s.tmp.path}/out2'),
+      labels: es,
+      supplierName: (id) => '',
+      generatedAt: DateTime(2026, 11, 8),
+    );
+    expect(result.missingReceipts, 1);
+    final names = ZipDecoder()
+        .decodeBytes(await result.zip.readAsBytes())
+        .files
+        .map((f) => f.name);
+    expect(names, ['gastos.csv']);
   });
 }
 

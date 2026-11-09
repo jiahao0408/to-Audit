@@ -59,6 +59,21 @@ void main() {
     expect(r.days[2].expenses, Money.zero);
   });
 
+  test('DayRow.expenses excludes planned fixed costs', () async {
+    // Open Nov 1 (rent, confirmed) and Nov 2 (light, planned) so they have rows.
+    await s.days.openDay(ReportScenario.d(1));
+    await s.days.openDay(ReportScenario.d(2));
+    final r = await s.reports.build(rangeMonth('2026-11'));
+    Money on(int day) =>
+        r.days.firstWhere((d) => d.date == ReportScenario.d(day)).expenses;
+    expect(on(1), const Money(100000));
+    expect(on(2), Money.zero);
+    expect(r.pnl.pendingFixed, const Money(20000));
+    // Every expense falls on a day with a row now except Nov 6-less ones.
+    final sum = r.days.fold(Money.zero, (a, d) => a + d.expenses);
+    expect(sum, r.pnl.purchases + r.pnl.fixedCosts + r.pnl.otherExpenses);
+  });
+
   test('home summary for the current month', () async {
     final h = await s.reports.home(ReportScenario.d(8));
     expect(h.monthSales, const Money(270000));

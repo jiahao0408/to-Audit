@@ -64,6 +64,6 @@ String moneyText(Money m, bool es) {
 String _text(String s) => s.isNotEmpty && '=+-@\t\r'.contains(s[0]) ? "'$s" : s;
 
 String _fileSafe(String name) {
-  final clean = name.replaceAll(RegExp(r'[\/:*?"<>|]'), '-').trim();
+  final clean = name.replaceAll(RegExp(r'[\\/:*?"<>|]'), '-').trim();
   return clean.isEmpty ? 'sheet' : clean;
 }
