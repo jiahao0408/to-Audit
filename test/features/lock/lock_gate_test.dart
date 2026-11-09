@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:to_audit/data/db/app_database.dart';
@@ -9,7 +10,9 @@ import 'package:to_audit/data/security/key_store.dart';
 import 'package:to_audit/features/common/auth_gate.dart';
 import 'package:to_audit/features/lock/app_lock_controller.dart';
 import 'package:to_audit/features/lock/app_lock_gate.dart';
+import 'package:to_audit/data/security/pin_manager.dart';
 import 'package:to_audit/features/lock/lock_screen.dart' show hasPinProvider;
+import 'package:to_audit/features/lock/pin_entry.dart';
 import 'package:to_audit/l10n/app_localizations.dart';
 
 import '../../support/app_harness.dart';
@@ -124,6 +127,42 @@ void main() {
     expect(key.onPressed, isNull);
     // Leave no countdown timer running.
     await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('a verify that throws does not kill the pad', (tester) async {
+    var calls = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('es'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: PinEntry(
+            verify: (pin) async {
+              calls++;
+              if (calls == 1) throw PlatformException(code: 'keystore');
+              return const PinOk();
+            },
+            onSuccess: () {},
+          ),
+        ),
+      ),
+    );
+    Future<void> type() async {
+      for (final d in '123456'.split('')) {
+        await tester.tap(find.byKey(ValueKey('pin-key-$d')));
+        await tester.pump();
+      }
+      await tester.pump();
+    }
+
+    await type();
+    expect(find.text('No se pudo comprobar el PIN'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+
+    await type();
+    expect(calls, 2);
+    expect(find.text('No se pudo comprobar el PIN'), findsNothing);
   });
 
   testWidgets('the app locks after 5 minutes in the background', (

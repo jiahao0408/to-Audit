@@ -17,8 +17,13 @@ Future<void> main() async {
   final documents = await getApplicationDocumentsDirectory();
   final keyStore = SecureKeyStore();
   try {
-    // Work files of an export or restore that was cut short.
-    await BackupService.cleanTemp(defaultTempRoot());
+    // Work files of an export or restore that was cut short. A failing
+    // cleanup must not look like a broken database.
+    try {
+      await BackupService.cleanTemp(defaultTempRoot());
+    } catch (e) {
+      debugPrint('Temp cleanup failed: ${e.runtimeType}');
+    }
     final db = await openAppDatabase(
       file: File(p.join(documents.path, databaseFileName)),
       keys: DbKeyManager(keyStore),
@@ -36,7 +41,9 @@ Future<void> main() async {
     );
   } on DatabaseKeyMissingException {
     runApp(const StartupErrorApp(keyMissing: true));
-  } catch (_) {
+  } catch (e) {
+    // Type only: the message of a storage error may carry paths.
+    debugPrint('Startup failed: ${e.runtimeType}');
     runApp(const StartupErrorApp(keyMissing: false));
   }
 }

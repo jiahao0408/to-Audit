@@ -93,7 +93,9 @@ class _PinEntryState extends State<PinEntry> {
     PinResult? result;
     try {
       result = await widget.verify(pin);
-    } on StateError {
+    } catch (_) {
+      // Unreadable PIN, secure-storage failure...: a failed attempt, and the
+      // pad must keep working.
       result = null;
     }
     if (!mounted) return;

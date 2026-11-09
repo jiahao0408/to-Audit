@@ -8,6 +8,8 @@ import '../../data/reports/report_service.dart';
 import '../../domain/alerts_calc.dart';
 import '../../domain/dates.dart';
 import '../../l10n/app_localizations.dart';
+import '../lock/app_lock_controller.dart';
+import '../lock/lock_screen.dart' show hasPinProvider;
 
 /// Month sales and profit for the home screen, for the clock day [today].
 final homeSummaryProvider = FutureProvider.family<HomeSummary, DateTime>(
@@ -58,15 +60,37 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _warnAboutBackup());
   }
 
+  bool _warningPending = false;
+
+  /// Decides whether the "backup pending" dialog applies, then shows it as
+  /// soon as the app is unlocked. It counts as handled for this run once it
+  /// is shown, or once it is known that it does not apply.
   Future<void> _warnAboutBackup() async {
-    if (!mounted || ref.read(backupWarningShownProvider)) return;
-    ref.read(backupWarningShownProvider.notifier).mark();
+    if (!mounted || _warningPending || ref.read(backupWarningShownProvider)) {
+      return;
+    }
     final last = (await ref.read(settingsRepositoryProvider).lastBackupAt())
         ?.toLocal();
     final now = ref.read(clockProvider)();
-    if (!backupWarningOnOpen(lastBackup: last, now: now)) return;
-    if (!await ref.read(daysRepositoryProvider).hasAnyDay()) return;
+    final applies =
+        backupWarningOnOpen(lastBackup: last, now: now) &&
+        await ref.read(daysRepositoryProvider).hasAnyDay();
     if (!mounted) return;
+    if (!applies) {
+      ref.read(backupWarningShownProvider.notifier).mark();
+      return;
+    }
+    _warningPending = true;
+    await _showWarningIfUnlocked();
+  }
+
+  Future<void> _showWarningIfUnlocked() async {
+    if (!_warningPending || !mounted) return;
+    final hasPin = await ref.read(hasPinProvider.future);
+    if (!mounted || !_warningPending) return;
+    if (hasPin && ref.read(appLockProvider)) return;
+    _warningPending = false;
+    ref.read(backupWarningShownProvider.notifier).mark();
     final l = AppLocalizations.of(context)!;
     final backupNow = await showDialog<bool>(
       context: context,
@@ -99,6 +123,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(appLockProvider, (_, locked) {
+      if (!locked) _showWarningIfUnlocked();
+    });
     final l = AppLocalizations.of(context)!;
     final locale = ref.watch(localeProvider).value ?? 'es';
     final now = ref.watch(clockProvider)();

@@ -11,10 +11,12 @@ import 'package:to_audit/data/repositories/settings_repository.dart';
 import 'package:to_audit/data/reports/alerts_service.dart';
 import 'package:to_audit/data/reports/report_service.dart';
 import 'package:to_audit/data/security/key_store.dart';
+import 'package:to_audit/data/security/pin_manager.dart';
 import 'package:to_audit/domain/alerts_calc.dart';
 import 'package:to_audit/domain/enums.dart';
 import 'package:to_audit/domain/money.dart';
 import 'package:to_audit/features/home/home_screen.dart';
+import 'package:to_audit/features/lock/app_lock_controller.dart';
 import 'package:to_audit/l10n/app_localizations.dart';
 
 import '../../support/app_harness.dart';
@@ -85,6 +87,7 @@ void main() {
   Future<ProviderContainer> pumpHome(
     WidgetTester tester, {
     String locale = 'es',
+    MemoryKeyStore? keyStore,
   }) async {
     final router = GoRouter(
       routes: [
@@ -104,7 +107,7 @@ void main() {
         overrides: [
           ...appOverrides(
             db: db,
-            keyStore: MemoryKeyStore(),
+            keyStore: keyStore ?? MemoryKeyStore(),
             biometrics: FakeBiometricAuth(),
             clock: () => now,
             documents: Directory.systemTemp,
@@ -293,6 +296,34 @@ void main() {
       container.invalidate(homeSummaryProvider);
       await settle(tester);
       expect(find.byType(AlertDialog), findsNothing);
+      await disposeApp(tester);
+    });
+
+    testWidgets('while locked there is no dialog; unlocking shows it', (
+      tester,
+    ) async {
+      await db
+          .into(db.days)
+          .insert(
+            DaysCompanion.insert(
+              id: 'd1',
+              createdAt: nowIso(),
+              updatedAt: nowIso(),
+              date: '2026-11-01',
+              status: DayStatus.open,
+              openingFloatCents: 0,
+            ),
+          );
+      final store = MemoryKeyStore();
+      await tester.runAsync(
+        () => PinManager(store, iterations: 1000).setPin('123456'),
+      );
+      final container = await pumpHome(tester, keyStore: store);
+      expect(find.byType(AlertDialog), findsNothing);
+
+      container.read(appLockProvider.notifier).unlock();
+      await settle(tester);
+      expect(find.text('Copia de seguridad pendiente'), findsOneWidget);
       await disposeApp(tester);
     });
 
