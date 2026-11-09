@@ -876,4 +876,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get suppErrSave => '无法保存供应商';
+
+  @override
+  String get expLoadError => '无法加载该费用';
 }

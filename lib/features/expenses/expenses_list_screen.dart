@@ -35,7 +35,7 @@ class ExpensesListScreen extends ConsumerWidget {
     final l = AppLocalizations.of(context)!;
     return DefaultTabController(
       length: 2,
-      initialIndex: 1,
+      initialIndex: 0,
       child: Scaffold(
         appBar: AppBar(
           title: Text(l.screenExpenses),
@@ -206,19 +206,19 @@ class _Totals extends StatelessWidget {
     final bySupplier = <String, Money>{};
     final byCategory = <String, Money>{};
     for (final e in expenses.where((e) => !e.voided)) {
-      final supplier = names.supplier(e.supplierId);
+      final supplier = e.supplierId ?? '';
       bySupplier[supplier] = (bySupplier[supplier] ?? Money.zero) + e.total;
-      final category = names.category(e.categoryId);
-      byCategory[category] = (byCategory[category] ?? Money.zero) + e.total;
+      byCategory[e.categoryId] =
+          (byCategory[e.categoryId] ?? Money.zero) + e.total;
     }
-    List<Widget> rows(Map<String, Money> totals) {
+    List<Widget> rows(Map<String, Money> totals, String Function(String) name) {
       final sorted = totals.entries.toList()
         ..sort((a, b) => b.value.compareTo(a.value));
       return [
         for (final e in sorted)
           ListTile(
             dense: true,
-            title: Text(e.key),
+            title: Text(name(e.key)),
             trailing: Text(e.value.format(locale)),
           ),
       ];
@@ -235,7 +235,7 @@ class _Totals extends StatelessWidget {
             style: Theme.of(context).textTheme.labelLarge,
           ),
         ),
-        ...rows(bySupplier),
+        ...rows(bySupplier, (id) => names.supplier(id.isEmpty ? null : id)),
         ListTile(
           dense: true,
           title: Text(
@@ -243,7 +243,7 @@ class _Totals extends StatelessWidget {
             style: Theme.of(context).textTheme.labelLarge,
           ),
         ),
-        ...rows(byCategory),
+        ...rows(byCategory, names.category),
       ],
     );
   }

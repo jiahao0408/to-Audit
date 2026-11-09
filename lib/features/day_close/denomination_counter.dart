@@ -59,10 +59,7 @@ class _DenominationCounterState extends State<DenominationCounter> {
                       LengthLimitingTextInputFormatter(5),
                     ],
                     textAlign: TextAlign.end,
-                    decoration: const InputDecoration(
-                      isDense: true,
-                      hintText: '0',
-                    ),
+                    decoration: const InputDecoration(hintText: '0'),
                     onChanged: (text) => _set(denomination, text),
                   ),
                 ),

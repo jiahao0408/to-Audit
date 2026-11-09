@@ -50,6 +50,11 @@ class _ExpenseFormScreenState extends ConsumerState<ExpenseFormScreen> {
   String? _paymentMethodId;
   int _vatPct = 21;
   _Edited _lastEdited = _Edited.base;
+
+  /// An existing expense keeps its stored amounts until the user edits an
+  /// amount or the VAT rate (no silent cent drift on an audited record).
+  bool _amountsEdited = false;
+  bool _loadFailed = false;
   bool _paid = true;
   DateTime? _dueDate;
   bool _busy = false;
@@ -76,6 +81,19 @@ class _ExpenseFormScreenState extends ConsumerState<ExpenseFormScreen> {
   }
 
   Future<void> _load() async {
+    try {
+      await _loadExisting();
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _loading = false;
+          _loadFailed = true;
+        });
+      }
+    }
+  }
+
+  Future<void> _loadExisting() async {
     final id = widget.id;
     if (id == null) {
       setState(() => _loading = false);
@@ -134,6 +152,10 @@ class _ExpenseFormScreenState extends ConsumerState<ExpenseFormScreen> {
 
   /// Base, VAT and total from whichever of base / total was edited last.
   ({Money base, Money vat, Money total})? _amounts() {
+    final stored = _existing;
+    if (stored != null && !_amountsEdited) {
+      return (base: stored.base, vat: stored.vat, total: stored.total);
+    }
     if (_lastEdited == _Edited.base) {
       final base = _tryParse(_base.text);
       if (base == null) return null;
@@ -161,11 +183,13 @@ class _ExpenseFormScreenState extends ConsumerState<ExpenseFormScreen> {
 
   void _onBase(Money? _) {
     _lastEdited = _Edited.base;
+    _amountsEdited = true;
     _recalc();
   }
 
   void _onTotal(Money? _) {
     _lastEdited = _Edited.total;
+    _amountsEdited = true;
     _recalc();
   }
 
@@ -324,13 +348,13 @@ class _ExpenseFormScreenState extends ConsumerState<ExpenseFormScreen> {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final title = _isNew ? l.screenExpenseNew : l.screenExpenseDetail;
-    if (_loading || _notFound) {
+    if (_loading || _notFound || _loadFailed) {
       return Scaffold(
         appBar: AppBar(title: Text(title)),
         body: Center(
           child: _loading
               ? const CircularProgressIndicator()
-              : Text(l.expNotFound),
+              : Text(_loadFailed ? l.expLoadError : l.expNotFound),
         ),
       );
     }
@@ -518,6 +542,7 @@ class _ExpenseFormScreenState extends ConsumerState<ExpenseFormScreen> {
           showSelectedIcon: false,
           onSelectionChanged: (v) {
             _vatPct = v.first;
+            _amountsEdited = true;
             _recalc();
           },
         ),
@@ -612,11 +637,15 @@ class _ExpenseFormScreenState extends ConsumerState<ExpenseFormScreen> {
             ReceiptThumb(file: p.file, kind: p.kind),
             if (!_readOnly)
               Positioned(
-                top: -8,
-                right: -8,
+                top: 0,
+                right: 0,
                 child: IconButton(
                   tooltip: l.actionCancel,
-                  iconSize: 18,
+                  iconSize: 20,
+                  constraints: const BoxConstraints(
+                    minWidth: 48,
+                    minHeight: 48,
+                  ),
                   icon: const Icon(Icons.cancel),
                   onPressed: () => setState(() => _pending.removeAt(i)),
                 ),

@@ -1771,6 +1771,12 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'No se pudo guardar el proveedor'**
   String get suppErrSave;
+
+  /// No description provided for @expLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo cargar el gasto'**
+  String get expLoadError;
 }
 
 class _AppLocalizationsDelegate

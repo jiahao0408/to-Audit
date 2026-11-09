@@ -354,5 +354,6 @@
   "suppNone": "Aún no hay proveedores",
   "suppNewTitle": "Nuevo proveedor",
   "suppEditTitle": "Editar proveedor",
-  "suppErrSave": "No se pudo guardar el proveedor"
+  "suppErrSave": "No se pudo guardar el proveedor",
+  "expLoadError": "No se pudo cargar el gasto"
 }

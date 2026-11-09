@@ -889,4 +889,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get suppErrSave => 'No se pudo guardar el proveedor';
+
+  @override
+  String get expLoadError => 'No se pudo cargar el gasto';
 }

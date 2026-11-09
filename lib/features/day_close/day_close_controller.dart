@@ -168,7 +168,7 @@ class DayCloseController extends AsyncNotifier<DayCloseState> {
 
   static const debounce = Duration(milliseconds: 300);
 
-  late final DaysRepository _days;
+  DaysRepository get _days => ref.read(daysRepositoryProvider);
   Timer? _timer;
   bool _dirty = false;
   bool _disposed = false;
@@ -177,7 +177,15 @@ class DayCloseController extends AsyncNotifier<DayCloseState> {
 
   @override
   Future<DayCloseState> build() async {
-    _days = ref.watch(daysRepositoryProvider);
+    // Watched so a replaced database rebuilds this notifier; build() may run
+    // again on the same instance, so every field is reset here.
+    final days = ref.watch(daysRepositoryProvider);
+    _disposed = false;
+    _timer?.cancel();
+    _timer = null;
+    _dirty = false;
+    _latest = null;
+    _queue = Future.value();
     ref.onDispose(() {
       _disposed = true;
       _timer?.cancel();
@@ -185,7 +193,9 @@ class DayCloseController extends AsyncNotifier<DayCloseState> {
       final pending = _latest;
       if (_dirty && pending != null) {
         _dirty = false;
-        _queue = _queue.then((_) => _writeOnly(pending)).catchError((_) {});
+        _queue = _queue
+            .then((_) => days.saveDraft(pending.dayId, pending.toDraft()))
+            .catchError((_) {});
       }
     });
     final record = await _days.openDay(date);
@@ -298,6 +308,8 @@ class DayCloseController extends AsyncNotifier<DayCloseState> {
     } catch (_) {
       error = DayCloseError.saveFailed;
     }
+    // A failed write stays pending so the next flush retries it.
+    if (error != null) _dirty = true;
     if (_disposed) return;
     try {
       final summary = await _days.summary(snapshot.dayId);
@@ -339,6 +351,11 @@ class DayCloseController extends AsyncNotifier<DayCloseState> {
     await flush();
     final s = _latest;
     if (s == null || !s.isOpen) return null;
+    // Never close on a stale stored draft.
+    if (_dirty || s.error != null) {
+      _fail(s.error ?? DayCloseError.saveFailed);
+      return null;
+    }
     if (s.toDraft().countedCash == null) {
       _fail(DayCloseError.countedMissing);
       return null;

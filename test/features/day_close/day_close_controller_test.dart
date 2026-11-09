@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:drift/drift.dart' show driftRuntimeOptions;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:to_audit/data/db/app_database.dart';
@@ -20,10 +21,15 @@ class CountingDays extends DaysRepository {
   });
 
   int saves = 0;
+  int failNext = 0;
 
   @override
   Future<void> saveDraft(String dayId, DayDraft draft) {
     saves++;
+    if (failNext > 0) {
+      failNext--;
+      return Future.error(StateError('disk'));
+    }
     return super.saveDraft(dayId, draft);
   }
 }
@@ -181,5 +187,42 @@ void main() {
         documentsDirProvider.overrideWithValue(Directory.systemTemp),
       ],
     );
+  });
+
+  test('a failed save is retried and close never uses a stale draft', () async {
+    final c = await load();
+    final days = container.read(daysRepositoryProvider) as CountingDays;
+    c.setOpeningFloat(Money.zero);
+    c.setCountedTotal(Money.zero);
+    c.setTerminalTotal(Money.zero);
+    days.failNext = 1;
+
+    expect(await c.close(), isNull);
+    expect(current().error, DayCloseError.saveFailed);
+    expect(current().status, DayStatus.open);
+
+    // The change stayed pending: the next close flushes it and succeeds.
+    expect(await c.close(), isNotNull);
+    expect(current().status, DayStatus.closed);
+  });
+
+  test('keeps working after the database provider is replaced', () async {
+    final c = await load();
+    // Two databases at once is the point of this test.
+    driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
+    final other = AppDatabase.memory();
+    addTearDown(other.close);
+    final cash = (await (other.select(
+      other.paymentMethods,
+    )..where((m) => m.code.equals('cash'))).getSingle()).id;
+
+    container.read(databaseProvider.notifier).replace(other);
+    await container.read(dayCloseControllerProvider(date).future);
+    c.setSale(cash, Shift.lunch, const Money(500));
+    await pause();
+
+    final stored = await container.read(daysRepositoryProvider).getDay(date);
+    expect(stored!.draft.sales.single.amount, const Money(500));
+    expect(current().summary.cashSales, const Money(500));
   });
 }

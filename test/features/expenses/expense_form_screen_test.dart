@@ -148,6 +148,11 @@ void main() {
     await settle(tester);
   }
 
+  Future<void> openAllTab(WidgetTester tester) async {
+    await tester.tap(find.text('Todos'));
+    await settle(tester);
+  }
+
   Future<void> disposeApp(WidgetTester tester) async {
     await tester.pumpWidget(const SizedBox());
     await tester.pump(const Duration(milliseconds: 50));
@@ -231,6 +236,7 @@ void main() {
     'saving without a receipt works and the list marks it Incompleto',
     (tester) async {
       await pumpApp(tester, initial: '/expenses');
+      await openAllTab(tester);
 
       await tester.tap(find.byKey(const ValueKey('add-expense')));
       await settle(tester);
@@ -255,6 +261,7 @@ void main() {
     final pdf = File('${docs.path}/in.pdf')..writeAsBytesSync([1, 2, 3]);
     final picker = FakePicker(PickedReceipt(pdf, ReceiptKind.pdf));
     await pumpApp(tester, initial: '/expenses', picker: picker);
+    await openAllTab(tester);
 
     await tester.tap(find.byKey(const ValueKey('add-expense')));
     await settle(tester);
@@ -329,6 +336,7 @@ void main() {
       () => createExpense(DateTime.utc(2026, 11, 3)),
     );
     await pumpApp(tester, initial: '/expenses');
+    await openAllTab(tester);
     await tester.tap(find.byKey(ValueKey('expense-$id')));
     await settle(tester);
 
@@ -396,6 +404,7 @@ void main() {
       }
     });
     await pumpApp(tester, initial: '/expenses');
+    await openAllTab(tester);
 
     await tester.tap(find.text('Totales por proveedor y categoría'));
     await settle(tester);
@@ -405,6 +414,42 @@ void main() {
     await tester.tap(find.byTooltip('Mes anterior'));
     await settle(tester);
     expect(find.text('No hay gastos'), findsOneWidget);
+    await disposeApp(tester);
+  });
+
+  testWidgets('editing only the invoice number keeps the stored amounts', (
+    tester,
+  ) async {
+    // Stored base 10,00 + VAT 0,99 = 10,99 at 10 %: fromTotal(10,99) would
+    // give base 9,99 / VAT 1,00, so a recompute would drift by a cent.
+    late String id;
+    await tester.runAsync(() async {
+      id = await expenses.create(
+        ExpenseInput(
+          date: DateTime.utc(2026, 11, 3),
+          categoryId: await category('drinks'),
+          base: const Money(1000),
+          vatPct: 10,
+          vat: const Money(99),
+          total: const Money(1099),
+          paymentMethodId: await cardMethod(),
+          paymentStatus: PaymentStatus.paid,
+        ),
+      );
+    });
+    await pumpApp(tester, initial: '/expenses/$id');
+    await tester.enterText(
+      find.byKey(const ValueKey('expense-invoice')),
+      'F-9',
+    );
+    await tester.tap(find.byKey(const ValueKey('expense-save')));
+    await settle(tester);
+
+    final row = await tester.runAsync(() => db.select(db.expenses).getSingle());
+    expect(row!.invoiceNumber, 'F-9');
+    expect(row.baseCents, 1000);
+    expect(row.vatCents, 99);
+    expect(row.totalCents, 1099);
     await disposeApp(tester);
   });
 }
