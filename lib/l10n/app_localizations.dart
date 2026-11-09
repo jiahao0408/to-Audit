@@ -1105,6 +1105,396 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Pendiente'**
   String get export_paymentPending;
+
+  /// No description provided for @actionSave.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar'**
+  String get actionSave;
+
+  /// No description provided for @dayClosedBanner.
+  ///
+  /// In es, this message translates to:
+  /// **'Día cerrado'**
+  String get dayClosedBanner;
+
+  /// No description provided for @dayNoActivityBanner.
+  ///
+  /// In es, this message translates to:
+  /// **'Día marcado sin actividad'**
+  String get dayNoActivityBanner;
+
+  /// No description provided for @dayReopen.
+  ///
+  /// In es, this message translates to:
+  /// **'Reabrir'**
+  String get dayReopen;
+
+  /// No description provided for @dayReopenAuthReason.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirma para reabrir el día'**
+  String get dayReopenAuthReason;
+
+  /// No description provided for @dayReopenReasonTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Motivo para reabrir el día'**
+  String get dayReopenReasonTitle;
+
+  /// No description provided for @dayReopened.
+  ///
+  /// In es, this message translates to:
+  /// **'Día reabierto'**
+  String get dayReopened;
+
+  /// No description provided for @daySectionSales.
+  ///
+  /// In es, this message translates to:
+  /// **'Ventas'**
+  String get daySectionSales;
+
+  /// No description provided for @dayShiftLunch.
+  ///
+  /// In es, this message translates to:
+  /// **'Comida'**
+  String get dayShiftLunch;
+
+  /// No description provided for @dayShiftDinner.
+  ///
+  /// In es, this message translates to:
+  /// **'Cena'**
+  String get dayShiftDinner;
+
+  /// No description provided for @dayCoversLunch.
+  ///
+  /// In es, this message translates to:
+  /// **'Comensales comida'**
+  String get dayCoversLunch;
+
+  /// No description provided for @dayCoversDinner.
+  ///
+  /// In es, this message translates to:
+  /// **'Comensales cena'**
+  String get dayCoversDinner;
+
+  /// No description provided for @dayTotalSales.
+  ///
+  /// In es, this message translates to:
+  /// **'Ventas totales'**
+  String get dayTotalSales;
+
+  /// No description provided for @daySectionTips.
+  ///
+  /// In es, this message translates to:
+  /// **'Propinas'**
+  String get daySectionTips;
+
+  /// No description provided for @dayTipsCash.
+  ///
+  /// In es, this message translates to:
+  /// **'Propinas en efectivo (€)'**
+  String get dayTipsCash;
+
+  /// No description provided for @dayTipsCard.
+  ///
+  /// In es, this message translates to:
+  /// **'Propinas con tarjeta (€)'**
+  String get dayTipsCard;
+
+  /// No description provided for @daySectionCashOut.
+  ///
+  /// In es, this message translates to:
+  /// **'Efectivo que sale'**
+  String get daySectionCashOut;
+
+  /// No description provided for @dayWithdrawals.
+  ///
+  /// In es, this message translates to:
+  /// **'Retiradas'**
+  String get dayWithdrawals;
+
+  /// No description provided for @dayCashExpenses.
+  ///
+  /// In es, this message translates to:
+  /// **'Gastos en efectivo'**
+  String get dayCashExpenses;
+
+  /// No description provided for @dayAddWithdrawal.
+  ///
+  /// In es, this message translates to:
+  /// **'Añadir retirada'**
+  String get dayAddWithdrawal;
+
+  /// No description provided for @dayAddCashExpense.
+  ///
+  /// In es, this message translates to:
+  /// **'Añadir gasto en efectivo'**
+  String get dayAddCashExpense;
+
+  /// No description provided for @dayNoneYet.
+  ///
+  /// In es, this message translates to:
+  /// **'Ninguno'**
+  String get dayNoneYet;
+
+  /// No description provided for @dayVoid.
+  ///
+  /// In es, this message translates to:
+  /// **'Anular'**
+  String get dayVoid;
+
+  /// No description provided for @dayVoidReasonTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Motivo de la anulación'**
+  String get dayVoidReasonTitle;
+
+  /// No description provided for @dayVoided.
+  ///
+  /// In es, this message translates to:
+  /// **'Anulado'**
+  String get dayVoided;
+
+  /// No description provided for @daySectionCount.
+  ///
+  /// In es, this message translates to:
+  /// **'Recuento'**
+  String get daySectionCount;
+
+  /// No description provided for @dayOpeningFloat.
+  ///
+  /// In es, this message translates to:
+  /// **'Fondo inicial (€)'**
+  String get dayOpeningFloat;
+
+  /// No description provided for @dayOpeningFloatHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Viene del cierre del día anterior. Cámbialo solo si es necesario.'**
+  String get dayOpeningFloatHint;
+
+  /// No description provided for @dayCountTotal.
+  ///
+  /// In es, this message translates to:
+  /// **'Total'**
+  String get dayCountTotal;
+
+  /// No description provided for @dayCountDenominations.
+  ///
+  /// In es, this message translates to:
+  /// **'Billetes y monedas'**
+  String get dayCountDenominations;
+
+  /// No description provided for @dayCountedCash.
+  ///
+  /// In es, this message translates to:
+  /// **'Efectivo contado (€)'**
+  String get dayCountedCash;
+
+  /// No description provided for @dayCountedCashValue.
+  ///
+  /// In es, this message translates to:
+  /// **'Efectivo contado'**
+  String get dayCountedCashValue;
+
+  /// No description provided for @dayTerminalTotal.
+  ///
+  /// In es, this message translates to:
+  /// **'Total del datáfono (€)'**
+  String get dayTerminalTotal;
+
+  /// No description provided for @daySectionResult.
+  ///
+  /// In es, this message translates to:
+  /// **'Resultado'**
+  String get daySectionResult;
+
+  /// No description provided for @dayExpected.
+  ///
+  /// In es, this message translates to:
+  /// **'Efectivo esperado'**
+  String get dayExpected;
+
+  /// No description provided for @dayCashDiff.
+  ///
+  /// In es, this message translates to:
+  /// **'Descuadre de efectivo'**
+  String get dayCashDiff;
+
+  /// No description provided for @dayCardDiff.
+  ///
+  /// In es, this message translates to:
+  /// **'Descuadre de tarjeta'**
+  String get dayCardDiff;
+
+  /// No description provided for @dayOver.
+  ///
+  /// In es, this message translates to:
+  /// **'Sobra'**
+  String get dayOver;
+
+  /// No description provided for @dayShort.
+  ///
+  /// In es, this message translates to:
+  /// **'Falta'**
+  String get dayShort;
+
+  /// No description provided for @dayDiffPending.
+  ///
+  /// In es, this message translates to:
+  /// **'Pendiente de datos'**
+  String get dayDiffPending;
+
+  /// No description provided for @dayComment.
+  ///
+  /// In es, this message translates to:
+  /// **'Comentario'**
+  String get dayComment;
+
+  /// No description provided for @dayCommentRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'Comentario (obligatorio por el descuadre)'**
+  String get dayCommentRequired;
+
+  /// No description provided for @dayCloseButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Cerrar día'**
+  String get dayCloseButton;
+
+  /// No description provided for @dayClosedNoPending.
+  ///
+  /// In es, this message translates to:
+  /// **'Día cerrado. No quedan días pendientes'**
+  String get dayClosedNoPending;
+
+  /// No description provided for @dayFormInvalid.
+  ///
+  /// In es, this message translates to:
+  /// **'Revisa los importes marcados'**
+  String get dayFormInvalid;
+
+  /// No description provided for @dayErrCommentRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'Escribe un comentario para cerrar un día con descuadre'**
+  String get dayErrCommentRequired;
+
+  /// No description provided for @dayErrCountedMissing.
+  ///
+  /// In es, this message translates to:
+  /// **'Indica el efectivo contado'**
+  String get dayErrCountedMissing;
+
+  /// No description provided for @dayErrTerminalMissing.
+  ///
+  /// In es, this message translates to:
+  /// **'Indica el total del datáfono'**
+  String get dayErrTerminalMissing;
+
+  /// No description provided for @dayErrLocked.
+  ///
+  /// In es, this message translates to:
+  /// **'Este día o su mes están cerrados. Reábrelos para hacer cambios'**
+  String get dayErrLocked;
+
+  /// No description provided for @dayErrNotOpen.
+  ///
+  /// In es, this message translates to:
+  /// **'El día no está abierto'**
+  String get dayErrNotOpen;
+
+  /// No description provided for @dayErrSave.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo guardar. Inténtalo de nuevo.'**
+  String get dayErrSave;
+
+  /// No description provided for @dayLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo abrir el día'**
+  String get dayLoadError;
+
+  /// No description provided for @dayInvalidDate.
+  ///
+  /// In es, this message translates to:
+  /// **'Fecha no válida'**
+  String get dayInvalidDate;
+
+  /// No description provided for @sheetWithdrawalTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Nueva retirada'**
+  String get sheetWithdrawalTitle;
+
+  /// No description provided for @sheetCashExpenseTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Nuevo gasto en efectivo'**
+  String get sheetCashExpenseTitle;
+
+  /// No description provided for @fieldAmount.
+  ///
+  /// In es, this message translates to:
+  /// **'Importe (€)'**
+  String get fieldAmount;
+
+  /// No description provided for @fieldTotalAmount.
+  ///
+  /// In es, this message translates to:
+  /// **'Importe total (€)'**
+  String get fieldTotalAmount;
+
+  /// No description provided for @fieldType.
+  ///
+  /// In es, this message translates to:
+  /// **'Tipo'**
+  String get fieldType;
+
+  /// No description provided for @fieldNote.
+  ///
+  /// In es, this message translates to:
+  /// **'Nota (opcional)'**
+  String get fieldNote;
+
+  /// No description provided for @fieldCategory.
+  ///
+  /// In es, this message translates to:
+  /// **'Categoría'**
+  String get fieldCategory;
+
+  /// No description provided for @fieldSupplierOptional.
+  ///
+  /// In es, this message translates to:
+  /// **'Proveedor (opcional)'**
+  String get fieldSupplierOptional;
+
+  /// No description provided for @fieldVat.
+  ///
+  /// In es, this message translates to:
+  /// **'IVA'**
+  String get fieldVat;
+
+  /// No description provided for @fieldInvoiceOptional.
+  ///
+  /// In es, this message translates to:
+  /// **'Nº factura (opcional)'**
+  String get fieldInvoiceOptional;
+
+  /// No description provided for @noSupplier.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin proveedor'**
+  String get noSupplier;
+
+  /// No description provided for @amountMustBePositive.
+  ///
+  /// In es, this message translates to:
+  /// **'El importe debe ser mayor que cero'**
+  String get amountMustBePositive;
 }
 
 class _AppLocalizationsDelegate

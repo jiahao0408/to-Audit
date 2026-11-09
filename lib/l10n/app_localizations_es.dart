@@ -547,4 +547,202 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get export_paymentPending => 'Pendiente';
+
+  @override
+  String get actionSave => 'Guardar';
+
+  @override
+  String get dayClosedBanner => 'Día cerrado';
+
+  @override
+  String get dayNoActivityBanner => 'Día marcado sin actividad';
+
+  @override
+  String get dayReopen => 'Reabrir';
+
+  @override
+  String get dayReopenAuthReason => 'Confirma para reabrir el día';
+
+  @override
+  String get dayReopenReasonTitle => 'Motivo para reabrir el día';
+
+  @override
+  String get dayReopened => 'Día reabierto';
+
+  @override
+  String get daySectionSales => 'Ventas';
+
+  @override
+  String get dayShiftLunch => 'Comida';
+
+  @override
+  String get dayShiftDinner => 'Cena';
+
+  @override
+  String get dayCoversLunch => 'Comensales comida';
+
+  @override
+  String get dayCoversDinner => 'Comensales cena';
+
+  @override
+  String get dayTotalSales => 'Ventas totales';
+
+  @override
+  String get daySectionTips => 'Propinas';
+
+  @override
+  String get dayTipsCash => 'Propinas en efectivo (€)';
+
+  @override
+  String get dayTipsCard => 'Propinas con tarjeta (€)';
+
+  @override
+  String get daySectionCashOut => 'Efectivo que sale';
+
+  @override
+  String get dayWithdrawals => 'Retiradas';
+
+  @override
+  String get dayCashExpenses => 'Gastos en efectivo';
+
+  @override
+  String get dayAddWithdrawal => 'Añadir retirada';
+
+  @override
+  String get dayAddCashExpense => 'Añadir gasto en efectivo';
+
+  @override
+  String get dayNoneYet => 'Ninguno';
+
+  @override
+  String get dayVoid => 'Anular';
+
+  @override
+  String get dayVoidReasonTitle => 'Motivo de la anulación';
+
+  @override
+  String get dayVoided => 'Anulado';
+
+  @override
+  String get daySectionCount => 'Recuento';
+
+  @override
+  String get dayOpeningFloat => 'Fondo inicial (€)';
+
+  @override
+  String get dayOpeningFloatHint =>
+      'Viene del cierre del día anterior. Cámbialo solo si es necesario.';
+
+  @override
+  String get dayCountTotal => 'Total';
+
+  @override
+  String get dayCountDenominations => 'Billetes y monedas';
+
+  @override
+  String get dayCountedCash => 'Efectivo contado (€)';
+
+  @override
+  String get dayCountedCashValue => 'Efectivo contado';
+
+  @override
+  String get dayTerminalTotal => 'Total del datáfono (€)';
+
+  @override
+  String get daySectionResult => 'Resultado';
+
+  @override
+  String get dayExpected => 'Efectivo esperado';
+
+  @override
+  String get dayCashDiff => 'Descuadre de efectivo';
+
+  @override
+  String get dayCardDiff => 'Descuadre de tarjeta';
+
+  @override
+  String get dayOver => 'Sobra';
+
+  @override
+  String get dayShort => 'Falta';
+
+  @override
+  String get dayDiffPending => 'Pendiente de datos';
+
+  @override
+  String get dayComment => 'Comentario';
+
+  @override
+  String get dayCommentRequired => 'Comentario (obligatorio por el descuadre)';
+
+  @override
+  String get dayCloseButton => 'Cerrar día';
+
+  @override
+  String get dayClosedNoPending => 'Día cerrado. No quedan días pendientes';
+
+  @override
+  String get dayFormInvalid => 'Revisa los importes marcados';
+
+  @override
+  String get dayErrCommentRequired =>
+      'Escribe un comentario para cerrar un día con descuadre';
+
+  @override
+  String get dayErrCountedMissing => 'Indica el efectivo contado';
+
+  @override
+  String get dayErrTerminalMissing => 'Indica el total del datáfono';
+
+  @override
+  String get dayErrLocked =>
+      'Este día o su mes están cerrados. Reábrelos para hacer cambios';
+
+  @override
+  String get dayErrNotOpen => 'El día no está abierto';
+
+  @override
+  String get dayErrSave => 'No se pudo guardar. Inténtalo de nuevo.';
+
+  @override
+  String get dayLoadError => 'No se pudo abrir el día';
+
+  @override
+  String get dayInvalidDate => 'Fecha no válida';
+
+  @override
+  String get sheetWithdrawalTitle => 'Nueva retirada';
+
+  @override
+  String get sheetCashExpenseTitle => 'Nuevo gasto en efectivo';
+
+  @override
+  String get fieldAmount => 'Importe (€)';
+
+  @override
+  String get fieldTotalAmount => 'Importe total (€)';
+
+  @override
+  String get fieldType => 'Tipo';
+
+  @override
+  String get fieldNote => 'Nota (opcional)';
+
+  @override
+  String get fieldCategory => 'Categoría';
+
+  @override
+  String get fieldSupplierOptional => 'Proveedor (opcional)';
+
+  @override
+  String get fieldVat => 'IVA';
+
+  @override
+  String get fieldInvoiceOptional => 'Nº factura (opcional)';
+
+  @override
+  String get noSupplier => 'Sin proveedor';
+
+  @override
+  String get amountMustBePositive => 'El importe debe ser mayor que cero';
 }

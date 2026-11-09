@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart' show ValueKey;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -5,7 +6,7 @@ import 'data/providers.dart';
 import 'features/alerts/alerts_screen.dart';
 import 'features/backup/backup_screen.dart';
 import 'features/calendar/calendar_screen.dart';
-import 'features/day/day_screen.dart';
+import 'features/day_close/day_close_screen.dart';
 import 'features/expenses/expense_detail_screen.dart';
 import 'features/expenses/expense_form_screen.dart';
 import 'features/expenses/expenses_screen.dart';
@@ -45,7 +46,11 @@ GoRouter buildRouter(Ref ref, {String initialLocation = '/'}) => GoRouter(
     ),
     GoRoute(
       path: '/day/:ymd',
-      builder: (context, state) => DayScreen(ymd: state.pathParameters['ymd']!),
+      builder: (context, state) {
+        final ymd = state.pathParameters['ymd']!;
+        // Keyed by date so going to the next day starts from a fresh form.
+        return DayCloseScreen(key: ValueKey(ymd), ymd: ymd);
+      },
     ),
     GoRoute(
       path: '/expenses',

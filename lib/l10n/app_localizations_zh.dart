@@ -539,4 +539,199 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get export_paymentPending => '未付';
+
+  @override
+  String get actionSave => '保存';
+
+  @override
+  String get dayClosedBanner => '当日已结账';
+
+  @override
+  String get dayNoActivityBanner => '当日已标记为无营业';
+
+  @override
+  String get dayReopen => '重新打开';
+
+  @override
+  String get dayReopenAuthReason => '确认以重新打开当日账目';
+
+  @override
+  String get dayReopenReasonTitle => '重新打开的原因';
+
+  @override
+  String get dayReopened => '当日账目已重新打开';
+
+  @override
+  String get daySectionSales => '销售额';
+
+  @override
+  String get dayShiftLunch => '午市';
+
+  @override
+  String get dayShiftDinner => '晚市';
+
+  @override
+  String get dayCoversLunch => '午市客数';
+
+  @override
+  String get dayCoversDinner => '晚市客数';
+
+  @override
+  String get dayTotalSales => '销售总额';
+
+  @override
+  String get daySectionTips => '小费';
+
+  @override
+  String get dayTipsCash => '现金小费（€）';
+
+  @override
+  String get dayTipsCard => '刷卡小费（€）';
+
+  @override
+  String get daySectionCashOut => '现金支出';
+
+  @override
+  String get dayWithdrawals => '取款';
+
+  @override
+  String get dayCashExpenses => '现金支出费用';
+
+  @override
+  String get dayAddWithdrawal => '添加取款';
+
+  @override
+  String get dayAddCashExpense => '添加现金费用';
+
+  @override
+  String get dayNoneYet => '暂无';
+
+  @override
+  String get dayVoid => '作废';
+
+  @override
+  String get dayVoidReasonTitle => '作废原因';
+
+  @override
+  String get dayVoided => '已作废';
+
+  @override
+  String get daySectionCount => '盘点';
+
+  @override
+  String get dayOpeningFloat => '期初备用金（€）';
+
+  @override
+  String get dayOpeningFloatHint => '来自前一天的结账金额，仅在必要时修改。';
+
+  @override
+  String get dayCountTotal => '总额';
+
+  @override
+  String get dayCountDenominations => '纸币和硬币';
+
+  @override
+  String get dayCountedCash => '清点现金（€）';
+
+  @override
+  String get dayCountedCashValue => '清点现金';
+
+  @override
+  String get dayTerminalTotal => '刷卡机合计（€）';
+
+  @override
+  String get daySectionResult => '结果';
+
+  @override
+  String get dayExpected => '应有现金';
+
+  @override
+  String get dayCashDiff => '现金差额';
+
+  @override
+  String get dayCardDiff => '刷卡差额';
+
+  @override
+  String get dayOver => '多出';
+
+  @override
+  String get dayShort => '短少';
+
+  @override
+  String get dayDiffPending => '待填写数据';
+
+  @override
+  String get dayComment => '备注';
+
+  @override
+  String get dayCommentRequired => '备注（有差额时必填）';
+
+  @override
+  String get dayCloseButton => '结账';
+
+  @override
+  String get dayClosedNoPending => '已结账，没有待处理的日期';
+
+  @override
+  String get dayFormInvalid => '请检查标记的金额';
+
+  @override
+  String get dayErrCommentRequired => '有差额时请填写备注后再结账';
+
+  @override
+  String get dayErrCountedMissing => '请填写清点现金';
+
+  @override
+  String get dayErrTerminalMissing => '请填写刷卡机合计';
+
+  @override
+  String get dayErrLocked => '该日或其所在月份已结账，请先重新打开';
+
+  @override
+  String get dayErrNotOpen => '当日账目未处于打开状态';
+
+  @override
+  String get dayErrSave => '无法保存，请重试。';
+
+  @override
+  String get dayLoadError => '无法打开当日账目';
+
+  @override
+  String get dayInvalidDate => '日期无效';
+
+  @override
+  String get sheetWithdrawalTitle => '新建取款';
+
+  @override
+  String get sheetCashExpenseTitle => '新建现金费用';
+
+  @override
+  String get fieldAmount => '金额（€）';
+
+  @override
+  String get fieldTotalAmount => '总金额（€）';
+
+  @override
+  String get fieldType => '类型';
+
+  @override
+  String get fieldNote => '备注（可选）';
+
+  @override
+  String get fieldCategory => '类别';
+
+  @override
+  String get fieldSupplierOptional => '供应商（可选）';
+
+  @override
+  String get fieldVat => '增值税';
+
+  @override
+  String get fieldInvoiceOptional => '发票号（可选）';
+
+  @override
+  String get noSupplier => '无供应商';
+
+  @override
+  String get amountMustBePositive => '金额必须大于零';
 }
