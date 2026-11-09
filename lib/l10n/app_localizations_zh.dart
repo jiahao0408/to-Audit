@@ -25,6 +25,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get actionBack => '返回';
 
   @override
+  String get actionRetry => '重试';
+
+  @override
   String get screenHome => '首页';
 
   @override

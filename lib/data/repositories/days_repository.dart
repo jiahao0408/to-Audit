@@ -756,6 +756,10 @@ class DaysRepository {
 
   // -------------------------------------------------------------- queries
 
+  /// Whether at least one day row exists, whatever its status.
+  Future<bool> hasAnyDay() async =>
+      (await (_db.select(_db.days)..limit(1)).get()).isNotEmpty;
+
   /// First date in `(after, today]` with no row or with an open day.
   Future<DateTime?> nextPendingDate({
     required DateTime after,

@@ -5,6 +5,7 @@
   "actionAccept": "确定",
   "actionContinue": "继续",
   "actionBack": "返回",
+  "actionRetry": "重试",
   "screenHome": "首页",
   "screenCalendar": "日历",
   "screenDay": "日结",

@@ -128,6 +128,12 @@ abstract class AppLocalizations {
   /// **'Atrás'**
   String get actionBack;
 
+  /// No description provided for @actionRetry.
+  ///
+  /// In es, this message translates to:
+  /// **'Reintentar'**
+  String get actionRetry;
+
   /// No description provided for @screenHome.
   ///
   /// In es, this message translates to:

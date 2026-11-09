@@ -454,4 +454,10 @@ void main() {
     final days = await repo.watchRange(DateRange(d(10, 1), d(10, 31))).first;
     expect(days.map((x) => x.date), [d(10, 1), d(10, 3)]);
   });
+
+  test('hasAnyDay is false on a fresh database and true after a day', () async {
+    expect(await repo.hasAnyDay(), isFalse);
+    await repo.openDay(d(11, 9));
+    expect(await repo.hasAnyDay(), isTrue);
+  });
 }

@@ -25,6 +25,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get actionBack => 'Atrás';
 
   @override
+  String get actionRetry => 'Reintentar';
+
+  @override
   String get screenHome => 'Inicio';
 
   @override
