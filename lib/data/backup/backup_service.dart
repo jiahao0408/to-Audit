@@ -4,11 +4,13 @@ import 'dart:io';
 import 'package:archive/archive_io.dart';
 import 'package:crypto/crypto.dart';
 import 'package:path/path.dart' as p;
+import 'package:sqlite3/sqlite3.dart' show OpenMode, sqlite3;
 
 import '../../domain/dates.dart';
 import '../db/app_database.dart';
 import '../repositories/settings_repository.dart';
 import 'db_snapshotter.dart';
+import 'restore_recovery.dart';
 import 'toaudit_format.dart';
 
 /// A decrypted and verified backup, ready for [BackupService.restore].
@@ -36,11 +38,22 @@ class BackupTooNewException implements Exception {
   String toString() => 'BackupTooNewException';
 }
 
+/// The restored database does not hold what the manifest announced.
+class BackupVerifyException implements Exception {
+  const BackupVerifyException(this.message);
+
+  final String message;
+
+  @override
+  String toString() => 'BackupVerifyException: $message';
+}
+
 /// Exports and restores `.toaudit` backups: a ZIP with `db.sqlite`,
 /// `receipts/...` and `manifest.json`, encrypted with [ToauditFormat].
 ///
-/// After [restore] the database has been reopened through `reopenDb`, so the
-/// `db` given here is closed: build a new service for further work.
+/// `reopenDb` must open the database file and return it (a broken file must
+/// make it or the first query fail). After [restore] the `db` given here is
+/// closed: build a new service for further work.
 class BackupService {
   BackupService({
     required this._db,
@@ -61,7 +74,7 @@ class BackupService {
   final Directory _tempRoot;
   final SettingsRepository _settings;
   final Future<void> Function() _closeDb;
-  final Future<void> Function() _reopenDb;
+  final Future<AppDatabase> Function() _reopenDb;
   final File _dbFile;
   final Future<String> Function() _hexKey;
   final int _iterations;
@@ -86,6 +99,7 @@ class BackupService {
     try {
       final dbCopy = File(p.join(work.path, _dbEntry));
       await _snapshotter.exportPlain(dbCopy);
+      final (days, expenses) = _snapshotCounts(dbCopy);
       final receipts = await _receiptFiles();
       final hashes = <String, String>{_dbEntry: await _sha256(dbCopy)};
       for (final e in receipts.entries) {
@@ -95,8 +109,8 @@ class BackupService {
         jsonEncode({
           'schemaVersion': _db.schemaVersion,
           'createdAt': now.toUtc().toIso8601String(),
-          'days': await _count('dia_caja'),
-          'expenses': await _count('gasto'),
+          'days': days,
+          'expenses': expenses,
           'files': hashes,
         }),
       );
@@ -107,7 +121,7 @@ class BackupService {
         await encoder.addFile(dbCopy, _dbEntry);
         for (final e in receipts.entries) {
           // Photos and PDFs are already compressed.
-          await encoder.addFile(e.value, e.key, ArchiveFile.STORE);
+          await encoder.addFile(e.value, e.key, ZipFileEncoder.STORE);
         }
         encoder.addArchiveFile(
           ArchiveFile(_manifestEntry, manifest.length, manifest),
@@ -166,78 +180,139 @@ class BackupService {
     }
   }
 
-  /// Replaces the database and receipts with those of [preview]. On any
-  /// failure the previous files are put back, the database is reopened and
-  /// the error is rethrown.
+  /// Replaces the database and receipts with those of [preview].
+  ///
+  /// The new data is first staged in `.restoring` files while the current
+  /// database stays open. Then the database is closed, the current files are
+  /// renamed to `.bak` and the staged ones into place, so only renames run
+  /// while there is no database. The reopened database must hold
+  /// [BackupPreview.days] days and [BackupPreview.expenses] expenses, else
+  /// [BackupVerifyException]. On any failure the previous files are put back,
+  /// the database is reopened (when it was closed) and the error is rethrown.
+  /// A kill at any point is undone or completed by [recoverInterruptedRestore]
+  /// at the next start.
   Future<void> restore(BackupPreview preview) async {
     final source = preview.decryptedDir;
-    final dbBak = File('${_dbFile.path}.bak');
-    final receipts = Directory(p.join(_filesRoot.path, _receiptsDir));
-    final receiptsBak = Directory('${receipts.path}.bak');
-    try {
-      // Left by an interrupted restore: may hold the only good copy.
-      if (await dbBak.exists() || await receiptsBak.exists()) {
-        throw StateError('A previous restore left .bak files behind');
-      }
-      final key = await _hexKey();
+    final paths = RestorePaths(dbFile: _dbFile, filesRoot: _filesRoot);
 
-      var dbMoved = false, dbReplaced = false;
-      var receiptsMoved = false, receiptsReplaced = false;
+    // Best effort, step by step: a failing step must not stop the rest.
+    Future<void> step(Future<void> Function() action) async {
       try {
-        await _closeDb();
-        if (await _dbFile.exists()) {
-          await _dbFile.rename(dbBak.path);
-          dbMoved = true;
-        }
-        if (await receipts.exists()) {
-          await receipts.rename(receiptsBak.path);
-          receiptsMoved = true;
-        }
-        dbReplaced = true;
+        await action();
+      } catch (_) {}
+    }
+
+    Future<void> dropStaging() async {
+      await step(() => deleteDbFiles(paths.dbStaged));
+      await step(() => deleteDirIfExists(paths.receiptsStaged));
+    }
+
+    try {
+      final key = await _hexKey();
+      // While the app runs, `.bak` files can only be left by a verified
+      // restore whose cleanup failed (an interrupted one is handled at start).
+      await deleteDbFiles(paths.dbBak);
+      await deleteDirIfExists(paths.receiptsBak);
+      await deleteDbFiles(paths.dbStaged);
+      await deleteDirIfExists(paths.receiptsStaged);
+
+      try {
         await _snapshotter.importPlain(
           File(p.join(source.path, _dbEntry)),
-          _dbFile,
+          paths.dbStaged,
           key,
         );
-        receiptsReplaced = true;
-        await _copyDir(Directory(p.join(source.path, _receiptsDir)), receipts);
-        await _reopenDb();
-      } catch (e, st) {
-        // Best effort, step by step: a failing step must not stop the rest.
-        Future<void> step(Future<void> Function() action) async {
-          try {
-            await action();
-          } catch (_) {}
-        }
+        await _copyDir(
+          Directory(p.join(source.path, _receiptsDir)),
+          paths.receiptsStaged,
+        );
+      } catch (_) {
+        await dropStaging();
+        rethrow;
+      }
 
-        if (dbReplaced) {
-          await step(() async {
-            if (await _dbFile.exists()) await _dbFile.delete();
-          });
+      var closed = false, dbMoved = false, receiptsMoved = false;
+      var dbSwapped = false, receiptsSwapped = false;
+      AppDatabase? reopened;
+      try {
+        await _closeDb();
+        closed = true;
+        if (await paths.dbFile.exists()) {
+          await moveDbFiles(paths.dbFile, paths.dbBak);
+          dbMoved = true;
         }
-        if (dbMoved) await step(() => dbBak.rename(_dbFile.path));
-        if (receiptsReplaced) {
-          await step(() async {
-            if (await receipts.exists()) await receipts.delete(recursive: true);
-          });
+        if (await paths.receipts.exists()) {
+          await paths.receipts.rename(paths.receiptsBak.path);
+          receiptsMoved = true;
         }
-        if (receiptsMoved) await step(() => receiptsBak.rename(receipts.path));
-        await step(_reopenDb);
+        dbSwapped = true;
+        await moveDbFiles(paths.dbStaged, paths.dbFile);
+        receiptsSwapped = true;
+        await paths.receiptsStaged.rename(paths.receipts.path);
+
+        reopened = await _reopenDb();
+        final days = await _countIn(reopened, 'dia_caja');
+        final expenses = await _countIn(reopened, 'gasto');
+        if (days != preview.days || expenses != preview.expenses) {
+          throw BackupVerifyException(
+            'Restored $days days and $expenses expenses, '
+            'expected ${preview.days} and ${preview.expenses}',
+          );
+        }
+      } catch (e, st) {
+        final db = reopened;
+        if (db != null) await step(db.close);
+        if (dbSwapped) await step(() => deleteDbFiles(paths.dbFile));
+        if (dbMoved) await step(() => moveDbFiles(paths.dbBak, paths.dbFile));
+        if (receiptsSwapped) {
+          await step(() => deleteDirIfExists(paths.receipts));
+        }
+        if (receiptsMoved) {
+          await step(() => paths.receiptsBak.rename(paths.receipts.path));
+        }
+        await dropStaging();
+        if (closed) await step(_reopenDb);
         Error.throwWithStackTrace(e, st);
       }
 
-      if (dbMoved) await dbBak.delete();
-      if (receiptsMoved) await receiptsBak.delete(recursive: true);
+      // The restore is verified: a failed cleanup is not a failure, the next
+      // start removes what is left.
+      await step(() => deleteDbFiles(paths.dbBak));
+      await step(() => deleteDirIfExists(paths.receiptsBak));
     } finally {
-      if (await source.exists()) await source.delete(recursive: true);
+      await step(() => deleteDirIfExists(source));
     }
   }
 
-  Future<int> _count(String table) async {
-    final row = await _db
+  /// Deletes work folders left in [tempRoot] by an export or inspect that
+  /// was interrupted, and decrypted previews that were never restored.
+  /// Finished `.toaudit` files are kept. Call it at app start.
+  static Future<void> cleanTemp(Directory tempRoot) async {
+    if (!await tempRoot.exists()) return;
+    await for (final e in tempRoot.list(followLinks: false)) {
+      final name = p.basename(e.path);
+      if (!name.startsWith('export_') && !name.startsWith('restore_')) continue;
+      await e.delete(recursive: true);
+    }
+  }
+
+  static Future<int> _countIn(AppDatabase db, String table) async {
+    final row = await db
         .customSelect('SELECT COUNT(*) AS c FROM $table')
         .getSingle();
     return row.read<int>('c');
+  }
+
+  /// Row counts of the plain snapshot [db], so the manifest matches it.
+  static (int, int) _snapshotCounts(File db) {
+    final conn = sqlite3.open(db.path, mode: OpenMode.readOnly);
+    try {
+      int count(String table) =>
+          conn.select('SELECT COUNT(*) AS c FROM $table').first['c'] as int;
+      return (count('dia_caja'), count('gasto'));
+    } finally {
+      conn.close();
+    }
   }
 
   /// Files under `<filesRoot>/receipts`, keyed by their `/`-separated path

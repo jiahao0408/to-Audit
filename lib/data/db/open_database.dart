@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:drift/native.dart';
 
+import '../backup/restore_recovery.dart';
 import '../security/db_key_manager.dart';
 import 'app_database.dart';
 
@@ -40,13 +41,23 @@ Future<AppDatabase> openEncryptedDatabase({
 }
 
 /// Opens the app database with the key from [keys], creating the key on
-/// first run. Throws [DatabaseKeyMissingException] when [file] exists but no
-/// key is stored.
+/// first run. First undoes or completes an interrupted restore (see
+/// [recoverInterruptedRestore]; receipts live under [filesRoot]), so a kill
+/// in the middle of a restore never leads to a new empty database. Throws
+/// [DatabaseKeyMissingException] when [file] exists but no key is stored.
 Future<AppDatabase> openAppDatabase({
   required File file,
   required DbKeyManager keys,
+  required Directory filesRoot,
 }) async {
-  if (await file.exists() && await keys.existingKey() == null) {
+  final existing = await keys.existingKey();
+  if (existing != null) {
+    await recoverInterruptedRestore(
+      dbFile: file,
+      filesRoot: filesRoot,
+      hexKey: existing,
+    );
+  } else if (await file.exists()) {
     throw DatabaseKeyMissingException(file.path);
   }
   return openEncryptedDatabase(file: file, hexKey: await keys.getOrCreateKey());

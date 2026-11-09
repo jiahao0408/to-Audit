@@ -15,6 +15,8 @@ import 'package:to_audit/data/db/open_database.dart';
 import 'package:to_audit/data/repositories/settings_repository.dart';
 import 'package:to_audit/domain/enums.dart';
 
+import '../../support/sqlcipher.dart';
+
 const _iterations = 1000;
 const _password = 'secret-pass';
 const keyA = '00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff';
@@ -44,11 +46,12 @@ class Phone {
   }
 
   /// Opens the database and runs a query, so a broken file fails here.
-  Future<void> reopen() async {
+  Future<AppDatabase> reopen() async {
     db = hexKey == null
         ? AppDatabase(NativeDatabase(dbFile))
         : await openEncryptedDatabase(file: dbFile, hexKey: hexKey!);
     await count('dia_caja');
+    return db;
   }
 
   Future<int> count(String table) async {
@@ -123,9 +126,30 @@ class Phone {
 Uint8List receiptBytes(int seed) =>
     Uint8List.fromList(List.generate(70000, (i) => (i * seed + seed) % 256));
 
-/// Snapshotter whose import writes half a file and fails.
+/// Snapshotter whose import first runs [whileStaging], then writes half a
+/// file and its journal, and fails.
 class FailingImport implements DbSnapshotter {
-  FailingImport(this.inner);
+  FailingImport(this.inner, this.whileStaging);
+
+  final DbSnapshotter inner;
+  final Future<void> Function() whileStaging;
+
+  @override
+  Future<void> exportPlain(File dest) => inner.exportPlain(dest);
+
+  @override
+  Future<void> importPlain(File src, File destEncrypted, String hexKey) async {
+    await whileStaging();
+    await destEncrypted.writeAsString('partial');
+    await File('${destEncrypted.path}-journal').writeAsString('partial');
+    throw const FileSystemException('disk full');
+  }
+}
+
+/// Snapshotter whose import also leaves a (non-hot, zeroed) journal next to
+/// the imported file, which then follows it into place.
+class JournalImport implements DbSnapshotter {
+  JournalImport(this.inner);
 
   final DbSnapshotter inner;
 
@@ -134,8 +158,8 @@ class FailingImport implements DbSnapshotter {
 
   @override
   Future<void> importPlain(File src, File destEncrypted, String hexKey) async {
-    await destEncrypted.writeAsString('partial');
-    throw const FileSystemException('disk full');
+    await inner.importPlain(src, destEncrypted, hexKey);
+    await File('${destEncrypted.path}-journal').writeAsBytes(Uint8List(512));
   }
 }
 
@@ -173,6 +197,7 @@ Future<File> repack(
 void main() {
   // Two "phones" in one test: two databases on different files.
   driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
+  setUpAll(quietSqlCipherLog);
 
   final now = DateTime.utc(2026, 11, 9, 18, 30);
   final phones = <Phone>[];
@@ -193,6 +218,14 @@ void main() {
   Future<List<String>> tempLeftovers(Phone p) async => [
     for (final e in await p.tempRoot.list().toList())
       if (!e.path.endsWith('.toaudit')) e.path,
+  ];
+
+  /// `.bak`, `.restoring` and journal files left next to the db or receipts.
+  Future<List<String>> restoreLeftovers(Phone p) async => [
+    for (final d in [p.dir, p.filesRoot])
+      for (final e in await d.list().toList())
+        if (RegExp(r'\.(bak|restoring)|-(journal|wal|shm)$').hasMatch(e.path))
+          e.path,
   ];
 
   test('export then restore into an empty database', () async {
@@ -231,8 +264,7 @@ void main() {
       await File('${target.receipts.path}/r2.pdf').readAsBytes(),
       receiptBytes(2),
     );
-    expect(await File('${target.dbFile.path}.bak').exists(), isFalse);
-    expect(await Directory('${target.receipts.path}.bak').exists(), isFalse);
+    expect(await restoreLeftovers(target), isEmpty);
     expect(await preview.decryptedDir.exists(), isFalse);
     expect(await tempLeftovers(target), isEmpty);
   });
@@ -275,8 +307,13 @@ void main() {
     final target = await phone('backup_dst');
     await target.seed();
     await target.db.customStatement("DELETE FROM gasto WHERE id = 'e3'");
+    var stagedWhileOpen = false;
     final service = target.service(
-      snapshotter: FailingImport(PlainSnapshotter(target.db)),
+      snapshotter: FailingImport(PlainSnapshotter(target.db), () async {
+        // Staging runs while the current database is still open.
+        expect(await target.count('dia_caja'), 2);
+        stagedWhileOpen = true;
+      }),
     );
     final preview = await service.inspect(backup, _password);
 
@@ -284,6 +321,7 @@ void main() {
       service.restore(preview),
       throwsA(isA<FileSystemException>()),
     );
+    expect(stagedWhileOpen, isTrue);
     // The original database opens again with its own data.
     expect(await target.count('dia_caja'), 2);
     expect(await target.count('gasto'), 2);
@@ -291,9 +329,76 @@ void main() {
       await File('${target.receipts.path}/r1.jpg').readAsBytes(),
       receiptBytes(1),
     );
-    expect(await File('${target.dbFile.path}.bak').exists(), isFalse);
-    expect(await Directory('${target.receipts.path}.bak').exists(), isFalse);
+    expect(await restoreLeftovers(target), isEmpty);
     expect(await tempLeftovers(target), isEmpty);
+  });
+
+  test('a count mismatch after reopening rolls back, journals too', () async {
+    final source = await phone('backup_src');
+    await source.seed();
+    final backup = await source.service().export(_password, now: now);
+
+    final target = await phone('backup_dst');
+    await target.seed();
+    await target.db.customStatement("DELETE FROM gasto WHERE id = 'e3'");
+    final service = target.service(
+      snapshotter: JournalImport(PlainSnapshotter(target.db)),
+    );
+    final real = await service.inspect(backup, _password);
+    final wrong = BackupPreview(
+      decryptedDir: real.decryptedDir,
+      createdAt: real.createdAt,
+      schemaVersion: real.schemaVersion,
+      days: real.days + 1,
+      expenses: real.expenses,
+    );
+
+    await expectLater(
+      service.restore(wrong),
+      throwsA(isA<BackupVerifyException>()),
+    );
+    expect(await target.count('dia_caja'), 2);
+    expect(await target.count('gasto'), 2);
+    expect(
+      await File('${target.receipts.path}/r1.jpg').readAsBytes(),
+      receiptBytes(1),
+    );
+    // The journal that came with the new file left with it.
+    expect(await File('${target.dbFile.path}-journal').exists(), isFalse);
+    expect(await restoreLeftovers(target), isEmpty);
+    expect(await tempLeftovers(target), isEmpty);
+  });
+
+  test('stale .bak and .restoring files do not block a restore', () async {
+    final source = await phone('backup_src');
+    await source.seed();
+    final backup = await source.service().export(_password, now: now);
+
+    final target = await phone('backup_dst');
+    await File('${target.dbFile.path}.bak').writeAsString('old');
+    await File('${target.dbFile.path}.restoring-journal').writeAsString('x');
+    await Directory('${target.receipts.path}.bak').create(recursive: true);
+    final service = target.service();
+    await service.restore(await service.inspect(backup, _password));
+    expect(await target.count('dia_caja'), 2);
+    expect(await restoreLeftovers(target), isEmpty);
+  });
+
+  test('cleanTemp removes work folders and keeps .toaudit files', () async {
+    final p = await phone('backup_clean');
+    await Directory('${p.tempRoot.path}/export_123/x').create(recursive: true);
+    await Directory('${p.tempRoot.path}/restore_456').create();
+    await File('${p.tempRoot.path}/restore_456.zip').writeAsString('zip');
+    await File('${p.tempRoot.path}/to-audit-2026-11-09.toaudit')
+        .writeAsString('backup');
+
+    await BackupService.cleanTemp(p.tempRoot);
+    final names = await p.tempRoot
+        .list()
+        .map((e) => e.uri.pathSegments.last)
+        .toList();
+    expect(names, ['to-audit-2026-11-09.toaudit']);
+    await BackupService.cleanTemp(Directory('${p.dir.path}/missing'));
   });
 
   test('schemaVersion 99 in the manifest is BackupTooNewException', () async {

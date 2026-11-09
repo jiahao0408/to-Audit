@@ -9,12 +9,16 @@ import 'package:to_audit/data/security/db_key_manager.dart';
 import 'package:to_audit/data/security/key_store.dart';
 import 'package:to_audit/domain/enums.dart';
 
+import '../../support/sqlcipher.dart';
+
 const keyA = '00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff';
 const keyB = 'ffeeddccbbaa99887766554433221100ffeeddccbbaa99887766554433221100';
 
 void main() {
   late Directory dir;
   late File file;
+
+  setUpAll(quietSqlCipherLog);
 
   setUp(() async {
     dir = await Directory.systemTemp.createTemp('to_audit_db_');
@@ -74,12 +78,20 @@ void main() {
 
   test('openAppDatabase creates a key on first run and reuses it', () async {
     final store = MemoryKeyStore();
-    final first = await openAppDatabase(file: file, keys: DbKeyManager(store));
+    final first = await openAppDatabase(
+      file: file,
+      keys: DbKeyManager(store),
+      filesRoot: dir,
+    );
     await insertDay(first);
     await first.close();
     expect(store.values['db_key'], isNotNull);
 
-    final again = await openAppDatabase(file: file, keys: DbKeyManager(store));
+    final again = await openAppDatabase(
+      file: file,
+      keys: DbKeyManager(store),
+      filesRoot: dir,
+    );
     expect(await again.select(again.days).get(), hasLength(1));
     await again.close();
   });
@@ -92,10 +104,35 @@ void main() {
 
     final store = MemoryKeyStore();
     await expectLater(
-      openAppDatabase(file: file, keys: DbKeyManager(store)),
+      openAppDatabase(file: file, keys: DbKeyManager(store), filesRoot: dir),
       throwsA(isA<DatabaseKeyMissingException>()),
     );
     expect(store.values, isEmpty);
     expect(await file.readAsBytes(), before);
+  });
+
+  test('openAppDatabase recovers a restore killed after db → .bak', () async {
+    final store = MemoryKeyStore();
+    final keys = DbKeyManager(store);
+    final created = await openAppDatabase(
+      file: file,
+      keys: keys,
+      filesRoot: dir,
+    );
+    await insertDay(created);
+    await created.close();
+    // Killed between "rename db to .bak" and "rename .restoring into place".
+    await file.rename('${file.path}.bak');
+    await File('${file.path}.restoring').writeAsString('staged');
+
+    final reopened = await openAppDatabase(
+      file: file,
+      keys: keys,
+      filesRoot: dir,
+    );
+    expect(await reopened.select(reopened.days).get(), hasLength(1));
+    await reopened.close();
+    expect(await File('${file.path}.bak').exists(), isFalse);
+    expect(await File('${file.path}.restoring').exists(), isFalse);
   });
 }
