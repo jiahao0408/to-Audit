@@ -372,6 +372,66 @@ class ExpensesRepository {
   Future<String> create(ExpenseInput input) =>
       _db.transaction(() => _insert(input, origin: ExpenseOrigin.manual));
 
+  /// A planned expense generated from a fixed cost (origin `fixed`).
+  Future<String> createFromFixed(
+    ExpenseInput input, {
+    required String fixedCostId,
+  }) => _db.transaction(
+    () => _insert(
+      input,
+      origin: ExpenseOrigin.fixed,
+      fixedCostId: fixedCostId,
+      fixedStatus: FixedStatus.planned,
+    ),
+  );
+
+  /// Confirms a planned fixed expense with the amount actually charged: the
+  /// base and VAT are recomputed from [actualTotal] at the row's VAT rate.
+  Future<void> confirmFixed(String expenseId, Money actualTotal) =>
+      _db.transaction(() async {
+        final row = await _row(expenseId);
+        if (row.origin != ExpenseOrigin.fixed) {
+          throw StateError('Expense $expenseId is not a fixed expense');
+        }
+        if (row.voided) throw StateError('Expense $expenseId is voided');
+        if (actualTotal.cents <= 0) {
+          throw ArgumentError.value(
+            actualTotal,
+            'actualTotal',
+            'must be greater than zero',
+          );
+        }
+        await _ensureOpen(parseYmd(row.date), row.paidInCashDayId);
+        final split = VatCalc.fromTotal(actualTotal, row.vatPct);
+        await (_db.update(
+          _db.expenses,
+        )..where((e) => e.id.equals(expenseId))).write(
+          ExpensesCompanion(
+            baseCents: Value(split.base.cents),
+            vatCents: Value(split.vat.cents),
+            totalCents: Value(actualTotal.cents),
+            fixedStatus: const Value(FixedStatus.confirmed),
+            updatedAt: Value(nowIso()),
+          ),
+        );
+        await _audit.updated(
+          _entity,
+          expenseId,
+          {
+            'baseCents': row.baseCents,
+            'vatCents': row.vatCents,
+            'totalCents': row.totalCents,
+            'fixedStatus': row.fixedStatus,
+          },
+          {
+            'baseCents': split.base.cents,
+            'vatCents': split.vat.cents,
+            'totalCents': actualTotal.cents,
+            'fixedStatus': FixedStatus.confirmed,
+          },
+        );
+      });
+
   /// Validates, checks the locks, inserts and audits one expense. Must run
   /// inside a transaction; shared by every creation path.
   Future<String> _insert(
