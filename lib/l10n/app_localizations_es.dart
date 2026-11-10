@@ -892,4 +892,382 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get expLoadError => 'No se pudo cargar el gasto';
+
+  // ---- Fixed costs ----
+  @override
+  String get fixedCostNewTitle => 'Nuevo gasto fijo';
+
+  @override
+  String get fixedCostEditTitle => 'Editar gasto fijo';
+
+  @override
+  String get fixedCostFieldConcept => 'Concepto';
+
+  @override
+  String get fixedCostFieldPeriodicity => 'Periodicidad';
+
+  @override
+  String get fixedCostFieldChargeDay => 'Día de cargo (1–31)';
+
+  @override
+  String get fixedCostFieldStartMonth => 'Mes de inicio (AAAA-MM)';
+
+  @override
+  String get fixedCostFieldPlanned => 'Importe previsto (€)';
+
+  @override
+  String get fixedCostSectionDefs => 'Definiciones';
+
+  @override
+  String get fixedCostSectionPending => 'Por confirmar';
+
+  @override
+  String get fixedCostNone => 'No hay gastos fijos definidos';
+
+  @override
+  String get fixedCostNonePending => 'Ninguno pendiente de confirmar';
+
+  @override
+  String get fixedCostConfirmTitle => 'Confirmar importe real';
+
+  @override
+  String get fixedCostActive => 'Activo';
+
+  @override
+  String get fixedCostDeactivate => 'Desactivar';
+
+  @override
+  String get fixedCostActivate => 'Activar';
+
+  @override
+  String get fixedCostErrSave => 'No se pudo guardar el gasto fijo';
+
+  @override
+  String get periodicityMonthly => 'Mensual';
+
+  @override
+  String get periodicityBimonthly => 'Bimestral';
+
+  @override
+  String get periodicityQuarterly => 'Trimestral';
+
+  @override
+  String get periodicityAnnual => 'Anual';
+
+  // ---- Payroll ----
+  @override
+  String get payrollNoEmployees => 'No hay empleados activos este mes';
+
+  @override
+  String get payrollErrSave => 'No se pudo guardar la nómina';
+
+  @override
+  String get payrollTotalCost => 'Coste total del mes';
+
+  @override
+  String get payrollPercentOfSales => '% sobre ventas';
+
+  @override
+  String get payrollPaymentSave => 'Registrar nómina';
+
+  @override
+  String get payrollPaymentVoid => 'Anular nómina';
+
+  @override
+  String get payrollVoidReasonTitle => 'Motivo de anulación de nómina';
+
+  @override
+  String get payrollFieldGross => 'Bruto (€)';
+
+  @override
+  String get payrollFieldNet => 'Neto (€)';
+
+  @override
+  String get payrollFieldEmployerSs => 'SS empresa (€)';
+
+  @override
+  String get payrollEmployeeNewTitle => 'Nuevo empleado';
+
+  @override
+  String get payrollEmployeeEditTitle => 'Editar empleado';
+
+  @override
+  String get payrollFieldHiredOn => 'Fecha de alta';
+
+  @override
+  String get payrollFieldLeftOn => 'Fecha de baja (opcional)';
+
+  @override
+  String get payrollNoPayment => 'Sin nómina registrada';
+
+  @override
+  String get payrollErrEmployee => 'No se pudo guardar el empleado';
+
+  // ---- Withdrawals ----
+  @override
+  String get withdrawalsPeriodMonth => 'Este mes';
+
+  @override
+  String get withdrawalsPeriodWeek => 'Esta semana';
+
+  @override
+  String get withdrawalsTotalsTitle => 'Totales por tipo';
+
+  @override
+  String get withdrawalsEmpty => 'No hay retiradas en este período';
+
+  @override
+  String get withdrawalsErrLoad => 'No se pudieron cargar las retiradas';
+
+  // ---- Reports ----
+  @override
+  String get reportPeriodLastMonth => 'Mes anterior';
+
+  @override
+  String get reportErrLoad => 'No se pudo cargar el informe';
+
+  @override
+  String get reportExportPdf => 'PDF';
+
+  @override
+  String get reportExportXlsx => 'Excel';
+
+  @override
+  String get reportExportCsv => 'CSV';
+
+  @override
+  String get reportExportGestor => 'Gestor ZIP';
+
+  @override
+  String reportGestorMissing(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count justificantes no encontrados',
+      one: '1 justificante no encontrado',
+    );
+    return 'Advertencia: $_temp0';
+  }
+
+  @override
+  String get reportExportErr => 'No se pudo exportar';
+
+  @override
+  String get reportNoData => 'Sin datos para este período';
+
+  // ---- Alerts ----
+  @override
+  String get alertEmpty => 'No hay alertas pendientes';
+
+  @override
+  String alertDiscrepancy(String date) => 'Descuadre el $date';
+
+  @override
+  String alertDayOpen(String date) => 'El día $date sigue abierto';
+
+  @override
+  String alertDayUnregistered(String date) => 'El día $date no está registrado';
+
+  @override
+  String get alertMissingReceipt => 'Gasto sin justificante';
+
+  @override
+  String get alertInvoiceOverdue => 'Factura vencida';
+
+  @override
+  String alertFloatMismatch(String date) => 'Fondo inicial incorrecto el $date';
+
+  @override
+  String get alertBackupOld => 'No has hecho una copia en más de 14 días';
+
+  @override
+  String get alertGoDay => 'Ver día';
+
+  @override
+  String get alertGoExpense => 'Ver gasto';
+
+  @override
+  String get alertGoBackup => 'Hacer copia';
+
+  // ---- Settings ----
+  @override
+  String get settingsRestaurant => 'Datos del restaurante';
+
+  @override
+  String get settingsLanguage => 'Idioma';
+
+  @override
+  String get settingsThreshold => 'Umbral de descuadre (€)';
+
+  @override
+  String get settingsBackupEvery => 'Recordar copia cada (días)';
+
+  @override
+  String get settingsChangePin => 'Cambiar PIN';
+
+  @override
+  String get settingsBiometrics => 'Biometría';
+
+  @override
+  String get settingsCatalogPayments => 'Formas de pago';
+
+  @override
+  String get settingsCatalogCategories => 'Categorías de gasto';
+
+  @override
+  String get settingsCatalogWithdrawals => 'Tipos de retirada';
+
+  @override
+  String get settingsMonths => 'Cierre de períodos';
+
+  @override
+  String get settingsSaved => 'Guardado';
+
+  @override
+  String get settingsErrSave => 'No se pudo guardar';
+
+  @override
+  String get settingsPinChanged => 'PIN cambiado correctamente';
+
+  @override
+  String get settingsErrPin => 'No se pudo cambiar el PIN';
+
+  @override
+  String get settingsBiometricsNotAvailable =>
+      'La biometría no está disponible en este dispositivo';
+
+  // ---- Catalog ----
+  @override
+  String get catalogNew => 'Nuevo';
+
+  @override
+  String get catalogFieldName => 'Nombre';
+
+  @override
+  String get catalogActive => 'Activo';
+
+  @override
+  String get catalogInactive => 'Inactivo';
+
+  @override
+  String get catalogErrSave => 'No se pudo guardar';
+
+  @override
+  String get catalogEmpty => 'Sin elementos';
+
+  // ---- History ----
+  @override
+  String get historyEmpty => 'No hay cambios registrados';
+
+  @override
+  String get historyErrLoad => 'No se pudo cargar el historial';
+
+  @override
+  String get historyField => 'Campo';
+
+  @override
+  String get historyOldValue => 'Antes';
+
+  @override
+  String get historyNewValue => 'Después';
+
+  // ---- Backup ----
+  @override
+  String get backupSectionCreate => 'Nueva copia';
+
+  @override
+  String get backupSectionRestore => 'Restaurar copia';
+
+  @override
+  String get backupPasswordLabel => 'Contraseña (mín. 8 caracteres)';
+
+  @override
+  String get backupPasswordConfirm => 'Repite la contraseña';
+
+  @override
+  String get backupPasswordMismatch => 'Las contraseñas no coinciden';
+
+  @override
+  String get backupPasswordTooShort => 'Mínimo 8 caracteres';
+
+  @override
+  String get backupCreateButton => 'Crear y exportar';
+
+  @override
+  String get backupPickFile => 'Elegir archivo .toaudit';
+
+  @override
+  String get backupInspecting => 'Verificando copia…';
+
+  @override
+  String get backupPreviewTitle => 'Vista previa de la copia';
+
+  @override
+  String get backupPreviewDate => 'Fecha de la copia';
+
+  @override
+  String get backupPreviewDays => 'Días';
+
+  @override
+  String get backupPreviewExpenses => 'Gastos';
+
+  @override
+  String get backupRestoreButton => 'Restaurar ahora';
+
+  @override
+  String get backupRestoring => 'Restaurando…';
+
+  @override
+  String get backupRestoredTitle => 'Copia restaurada';
+
+  @override
+  String get backupRestoredBody =>
+      'Los datos se han restaurado correctamente. Cierra y vuelve a abrir la app para aplicar los cambios.';
+
+  @override
+  String get backupErrDecrypt => 'Contraseña incorrecta o archivo dañado';
+
+  @override
+  String get backupErrTooNew =>
+      'Esta copia fue creada con una versión más reciente de la app';
+
+  @override
+  String get backupErrRestore => 'No se pudo restaurar la copia';
+
+  @override
+  String get backupErrCreate => 'No se pudo crear la copia';
+
+  @override
+  String get backupCancelDelete => 'Cancelar y limpiar';
+
+  @override
+  String get backupLastCopy => 'Última copia';
+
+  // ---- Months ----
+  @override
+  String get monthsClose => 'Cerrar mes';
+
+  @override
+  String get monthsReopen => 'Reabrir mes';
+
+  @override
+  String get monthsStatusOpen => 'Abierto';
+
+  @override
+  String get monthsStatusClosed => 'Cerrado';
+
+  @override
+  String monthsErrNotReady(String dates) => 'Días pendientes: $dates';
+
+  @override
+  String get monthsErrSave => 'No se pudo cambiar el estado del mes';
+
+  @override
+  String get monthsReopenReasonTitle => 'Motivo para reabrir el mes';
+
+  @override
+  String get monthsErrAlreadyClosed => 'El mes ya está cerrado';
+
+  @override
+  String get monthsEmpty => 'Aún no hay meses con actividad';
 }

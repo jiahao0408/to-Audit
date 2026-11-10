@@ -879,4 +879,379 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get expLoadError => '无法加载该费用';
+
+  // ---- Fixed costs ----
+  @override
+  String get fixedCostNewTitle => '新增固定成本';
+
+  @override
+  String get fixedCostEditTitle => '编辑固定成本';
+
+  @override
+  String get fixedCostFieldConcept => '名称';
+
+  @override
+  String get fixedCostFieldPeriodicity => '周期';
+
+  @override
+  String get fixedCostFieldChargeDay => '收费日 (1–31)';
+
+  @override
+  String get fixedCostFieldStartMonth => '起始月份 (YYYY-MM)';
+
+  @override
+  String get fixedCostFieldPlanned => '计划金额 (€)';
+
+  @override
+  String get fixedCostSectionDefs => '定义';
+
+  @override
+  String get fixedCostSectionPending => '待确认';
+
+  @override
+  String get fixedCostNone => '暂无固定成本';
+
+  @override
+  String get fixedCostNonePending => '暂无待确认项目';
+
+  @override
+  String get fixedCostConfirmTitle => '确认实际金额';
+
+  @override
+  String get fixedCostActive => '有效';
+
+  @override
+  String get fixedCostDeactivate => '停用';
+
+  @override
+  String get fixedCostActivate => '启用';
+
+  @override
+  String get fixedCostErrSave => '无法保存固定成本';
+
+  @override
+  String get periodicityMonthly => '每月';
+
+  @override
+  String get periodicityBimonthly => '每两月';
+
+  @override
+  String get periodicityQuarterly => '每季度';
+
+  @override
+  String get periodicityAnnual => '每年';
+
+  // ---- Payroll ----
+  @override
+  String get payrollNoEmployees => '本月无在职员工';
+
+  @override
+  String get payrollErrSave => '无法保存工资';
+
+  @override
+  String get payrollTotalCost => '本月总成本';
+
+  @override
+  String get payrollPercentOfSales => '占营业额比例';
+
+  @override
+  String get payrollPaymentSave => '登记工资';
+
+  @override
+  String get payrollPaymentVoid => '作废工资';
+
+  @override
+  String get payrollVoidReasonTitle => '作废工资原因';
+
+  @override
+  String get payrollFieldGross => '税前 (€)';
+
+  @override
+  String get payrollFieldNet => '税后 (€)';
+
+  @override
+  String get payrollFieldEmployerSs => '社保 (€)';
+
+  @override
+  String get payrollEmployeeNewTitle => '新增员工';
+
+  @override
+  String get payrollEmployeeEditTitle => '编辑员工';
+
+  @override
+  String get payrollFieldHiredOn => '入职日期';
+
+  @override
+  String get payrollFieldLeftOn => '离职日期 (可选)';
+
+  @override
+  String get payrollNoPayment => '未登记工资';
+
+  @override
+  String get payrollErrEmployee => '无法保存员工';
+
+  // ---- Withdrawals ----
+  @override
+  String get withdrawalsPeriodMonth => '本月';
+
+  @override
+  String get withdrawalsPeriodWeek => '本周';
+
+  @override
+  String get withdrawalsTotalsTitle => '按类型汇总';
+
+  @override
+  String get withdrawalsEmpty => '此期间无取款';
+
+  @override
+  String get withdrawalsErrLoad => '无法加载取款记录';
+
+  // ---- Reports ----
+  @override
+  String get reportPeriodLastMonth => '上个月';
+
+  @override
+  String get reportErrLoad => '无法加载报告';
+
+  @override
+  String get reportExportPdf => 'PDF';
+
+  @override
+  String get reportExportXlsx => 'Excel';
+
+  @override
+  String get reportExportCsv => 'CSV';
+
+  @override
+  String get reportExportGestor => 'Gestor ZIP';
+
+  @override
+  String reportGestorMissing(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '缺少 $count 份凭证',
+      one: '缺少 1 份凭证',
+    );
+    return '警告：$_temp0';
+  }
+
+  @override
+  String get reportExportErr => '无法导出';
+
+  @override
+  String get reportNoData => '此期间无数据';
+
+  // ---- Alerts ----
+  @override
+  String get alertEmpty => '暂无提醒';
+
+  @override
+  String alertDiscrepancy(String date) => '$date 存在差异';
+
+  @override
+  String alertDayOpen(String date) => '$date 仍处于开放状态';
+
+  @override
+  String alertDayUnregistered(String date) => '$date 未登记';
+
+  @override
+  String get alertMissingReceipt => '支出缺少凭证';
+
+  @override
+  String get alertInvoiceOverdue => '发票已逾期';
+
+  @override
+  String alertFloatMismatch(String date) => '$date 备用金不符';
+
+  @override
+  String get alertBackupOld => '已超过 14 天未备份';
+
+  @override
+  String get alertGoDay => '查看该日';
+
+  @override
+  String get alertGoExpense => '查看支出';
+
+  @override
+  String get alertGoBackup => '立即备份';
+
+  // ---- Settings ----
+  @override
+  String get settingsRestaurant => '餐厅信息';
+
+  @override
+  String get settingsLanguage => '语言';
+
+  @override
+  String get settingsThreshold => '差异阈值 (€)';
+
+  @override
+  String get settingsBackupEvery => '备份提醒间隔 (天)';
+
+  @override
+  String get settingsChangePin => '修改 PIN';
+
+  @override
+  String get settingsBiometrics => '生物识别';
+
+  @override
+  String get settingsCatalogPayments => '支付方式';
+
+  @override
+  String get settingsCatalogCategories => '支出分类';
+
+  @override
+  String get settingsCatalogWithdrawals => '取款类型';
+
+  @override
+  String get settingsMonths => '账期管理';
+
+  @override
+  String get settingsSaved => '已保存';
+
+  @override
+  String get settingsErrSave => '无法保存';
+
+  @override
+  String get settingsPinChanged => 'PIN 已修改';
+
+  @override
+  String get settingsErrPin => '无法修改 PIN';
+
+  @override
+  String get settingsBiometricsNotAvailable => '此设备不支持生物识别';
+
+  // ---- Catalog ----
+  @override
+  String get catalogNew => '新增';
+
+  @override
+  String get catalogFieldName => '名称';
+
+  @override
+  String get catalogActive => '有效';
+
+  @override
+  String get catalogInactive => '已停用';
+
+  @override
+  String get catalogErrSave => '无法保存';
+
+  @override
+  String get catalogEmpty => '暂无数据';
+
+  // ---- History ----
+  @override
+  String get historyEmpty => '暂无变更记录';
+
+  @override
+  String get historyErrLoad => '无法加载历史记录';
+
+  @override
+  String get historyField => '字段';
+
+  @override
+  String get historyOldValue => '原值';
+
+  @override
+  String get historyNewValue => '新值';
+
+  // ---- Backup ----
+  @override
+  String get backupSectionCreate => '创建备份';
+
+  @override
+  String get backupSectionRestore => '恢复备份';
+
+  @override
+  String get backupPasswordLabel => '密码 (最少 8 位)';
+
+  @override
+  String get backupPasswordConfirm => '确认密码';
+
+  @override
+  String get backupPasswordMismatch => '两次密码不一致';
+
+  @override
+  String get backupPasswordTooShort => '至少 8 个字符';
+
+  @override
+  String get backupCreateButton => '创建并导出';
+
+  @override
+  String get backupPickFile => '选择 .toaudit 文件';
+
+  @override
+  String get backupInspecting => '验证中…';
+
+  @override
+  String get backupPreviewTitle => '备份预览';
+
+  @override
+  String get backupPreviewDate => '备份日期';
+
+  @override
+  String get backupPreviewDays => '天数';
+
+  @override
+  String get backupPreviewExpenses => '支出数';
+
+  @override
+  String get backupRestoreButton => '立即恢复';
+
+  @override
+  String get backupRestoring => '恢复中…';
+
+  @override
+  String get backupRestoredTitle => '恢复完成';
+
+  @override
+  String get backupRestoredBody => '数据已成功恢复，请关闭并重新打开应用以应用更改。';
+
+  @override
+  String get backupErrDecrypt => '密码错误或文件损坏';
+
+  @override
+  String get backupErrTooNew => '此备份由更新版本的应用创建';
+
+  @override
+  String get backupErrRestore => '无法恢复备份';
+
+  @override
+  String get backupErrCreate => '无法创建备份';
+
+  @override
+  String get backupCancelDelete => '取消并清理';
+
+  @override
+  String get backupLastCopy => '上次备份';
+
+  // ---- Months ----
+  @override
+  String get monthsClose => '关闭月份';
+
+  @override
+  String get monthsReopen => '重开月份';
+
+  @override
+  String get monthsStatusOpen => '开放';
+
+  @override
+  String get monthsStatusClosed => '已关闭';
+
+  @override
+  String monthsErrNotReady(String dates) => '以下日期尚未完成：$dates';
+
+  @override
+  String get monthsErrSave => '无法更改月份状态';
+
+  @override
+  String get monthsReopenReasonTitle => '重开月份的原因';
+
+  @override
+  String get monthsErrAlreadyClosed => '月份已关闭';
+
+  @override
+  String get monthsEmpty => '暂无月份数据';
 }

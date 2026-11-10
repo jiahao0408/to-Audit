@@ -1777,6 +1777,145 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'No se pudo cargar el gasto'**
   String get expLoadError;
+
+  // ---- Fixed costs ----
+  String get fixedCostNewTitle;
+  String get fixedCostEditTitle;
+  String get fixedCostFieldConcept;
+  String get fixedCostFieldPeriodicity;
+  String get fixedCostFieldChargeDay;
+  String get fixedCostFieldStartMonth;
+  String get fixedCostFieldPlanned;
+  String get fixedCostSectionDefs;
+  String get fixedCostSectionPending;
+  String get fixedCostNone;
+  String get fixedCostNonePending;
+  String get fixedCostConfirmTitle;
+  String get fixedCostActive;
+  String get fixedCostDeactivate;
+  String get fixedCostActivate;
+  String get fixedCostErrSave;
+  String get periodicityMonthly;
+  String get periodicityBimonthly;
+  String get periodicityQuarterly;
+  String get periodicityAnnual;
+
+  // ---- Payroll ----
+  String get payrollNoEmployees;
+  String get payrollErrSave;
+  String get payrollTotalCost;
+  String get payrollPercentOfSales;
+  String get payrollPaymentSave;
+  String get payrollPaymentVoid;
+  String get payrollVoidReasonTitle;
+  String get payrollFieldGross;
+  String get payrollFieldNet;
+  String get payrollFieldEmployerSs;
+  String get payrollEmployeeNewTitle;
+  String get payrollEmployeeEditTitle;
+  String get payrollFieldHiredOn;
+  String get payrollFieldLeftOn;
+  String get payrollNoPayment;
+  String get payrollErrEmployee;
+
+  // ---- Withdrawals ----
+  String get withdrawalsPeriodMonth;
+  String get withdrawalsPeriodWeek;
+  String get withdrawalsTotalsTitle;
+  String get withdrawalsEmpty;
+  String get withdrawalsErrLoad;
+
+  // ---- Reports ----
+  String get reportPeriodLastMonth;
+  String get reportErrLoad;
+  String get reportExportPdf;
+  String get reportExportXlsx;
+  String get reportExportCsv;
+  String get reportExportGestor;
+  String reportGestorMissing(int count);
+  String get reportExportErr;
+  String get reportNoData;
+
+  // ---- Alerts ----
+  String get alertEmpty;
+  String alertDiscrepancy(String date);
+  String alertDayOpen(String date);
+  String alertDayUnregistered(String date);
+  String get alertMissingReceipt;
+  String get alertInvoiceOverdue;
+  String alertFloatMismatch(String date);
+  String get alertBackupOld;
+  String get alertGoDay;
+  String get alertGoExpense;
+  String get alertGoBackup;
+
+  // ---- Settings ----
+  String get settingsRestaurant;
+  String get settingsLanguage;
+  String get settingsThreshold;
+  String get settingsBackupEvery;
+  String get settingsChangePin;
+  String get settingsBiometrics;
+  String get settingsCatalogPayments;
+  String get settingsCatalogCategories;
+  String get settingsCatalogWithdrawals;
+  String get settingsMonths;
+  String get settingsSaved;
+  String get settingsErrSave;
+  String get settingsPinChanged;
+  String get settingsErrPin;
+  String get settingsBiometricsNotAvailable;
+
+  // ---- Catalog ----
+  String get catalogNew;
+  String get catalogFieldName;
+  String get catalogActive;
+  String get catalogInactive;
+  String get catalogErrSave;
+  String get catalogEmpty;
+
+  // ---- History ----
+  String get historyEmpty;
+  String get historyErrLoad;
+  String get historyField;
+  String get historyOldValue;
+  String get historyNewValue;
+
+  // ---- Backup ----
+  String get backupSectionCreate;
+  String get backupSectionRestore;
+  String get backupPasswordLabel;
+  String get backupPasswordConfirm;
+  String get backupPasswordMismatch;
+  String get backupPasswordTooShort;
+  String get backupCreateButton;
+  String get backupPickFile;
+  String get backupInspecting;
+  String get backupPreviewTitle;
+  String get backupPreviewDate;
+  String get backupPreviewDays;
+  String get backupPreviewExpenses;
+  String get backupRestoreButton;
+  String get backupRestoring;
+  String get backupRestoredTitle;
+  String get backupRestoredBody;
+  String get backupErrDecrypt;
+  String get backupErrTooNew;
+  String get backupErrRestore;
+  String get backupErrCreate;
+  String get backupCancelDelete;
+  String get backupLastCopy;
+
+  // ---- Months ----
+  String get monthsClose;
+  String get monthsReopen;
+  String get monthsStatusOpen;
+  String get monthsStatusClosed;
+  String monthsErrNotReady(String dates);
+  String get monthsErrSave;
+  String get monthsReopenReasonTitle;
+  String get monthsErrAlreadyClosed;
+  String get monthsEmpty;
 }
 
 class _AppLocalizationsDelegate

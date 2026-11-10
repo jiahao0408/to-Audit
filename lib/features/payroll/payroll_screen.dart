@@ -1,19 +1,9 @@
-import 'package:flutter/material.dart';
+// Re-export for backward compatibility with the router.
+export 'payroll_month_screen.dart' show PayrollMonthScreen;
 
-import '../../l10n/app_localizations.dart';
+import 'payroll_month_screen.dart';
 
-/// Placeholder: a later task replaces it with the real screen.
-class PayrollScreen extends StatelessWidget {
-  const PayrollScreen({super.key, required this.month});
-
-  final String month;
-
-  @override
-  Widget build(BuildContext context) {
-    final title = AppLocalizations.of(context)!.screenPayroll;
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: Center(child: Text(title)),
-    );
-  }
+/// Alias kept so the existing router import still compiles.
+class PayrollScreen extends PayrollMonthScreen {
+  const PayrollScreen({super.key, required super.month});
 }
