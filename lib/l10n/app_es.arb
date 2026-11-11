@@ -468,6 +468,9 @@
   "monthsErrSave": "No se pudo cambiar el estado del mes",
   "monthsReopenReasonTitle": "Motivo para reabrir el mes",
   "monthsErrAlreadyClosed": "Este mes ya está cerrado",
+  "monthsCloseConfirmTitle": "¿Cerrar este mes?",
+  "monthsCloseConfirmBody": "Un mes cerrado bloquea cualquier cambio en sus días, gastos y nóminas. Solo se puede reabrir con tu PIN y un motivo.",
+  "monthsCloseConfirmCurrent": "Es el mes en curso: todavía puede haber ventas y gastos por registrar. Ciérralo solo si ya no habrá más movimientos.",
   "monthsEmpty": "Aún no hay meses con actividad",
   "reportGestorMissing": "Advertencia: {count, plural, one{1 justificante no encontrado} other{{count} justificantes no encontrados}}",
   "@reportGestorMissing": {

@@ -2450,6 +2450,24 @@ abstract class AppLocalizations {
   /// **'Este mes ya está cerrado'**
   String get monthsErrAlreadyClosed;
 
+  /// No description provided for @monthsCloseConfirmTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Cerrar este mes?'**
+  String get monthsCloseConfirmTitle;
+
+  /// No description provided for @monthsCloseConfirmBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Un mes cerrado bloquea cualquier cambio en sus días, gastos y nóminas. Solo se puede reabrir con tu PIN y un motivo.'**
+  String get monthsCloseConfirmBody;
+
+  /// No description provided for @monthsCloseConfirmCurrent.
+  ///
+  /// In es, this message translates to:
+  /// **'Es el mes en curso: todavía puede haber ventas y gastos por registrar. Ciérralo solo si ya no habrá más movimientos.'**
+  String get monthsCloseConfirmCurrent;
+
   /// No description provided for @monthsEmpty.
   ///
   /// In es, this message translates to:

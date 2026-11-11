@@ -1233,6 +1233,17 @@ class AppLocalizationsEs extends AppLocalizations {
   String get monthsErrAlreadyClosed => 'Este mes ya está cerrado';
 
   @override
+  String get monthsCloseConfirmTitle => '¿Cerrar este mes?';
+
+  @override
+  String get monthsCloseConfirmBody =>
+      'Un mes cerrado bloquea cualquier cambio en sus días, gastos y nóminas. Solo se puede reabrir con tu PIN y un motivo.';
+
+  @override
+  String get monthsCloseConfirmCurrent =>
+      'Es el mes en curso: todavía puede haber ventas y gastos por registrar. Ciérralo solo si ya no habrá más movimientos.';
+
+  @override
   String get monthsEmpty => 'Aún no hay meses con actividad';
 
   @override

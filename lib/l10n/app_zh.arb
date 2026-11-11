@@ -392,6 +392,9 @@
   "monthsErrSave": "无法更改月份状态",
   "monthsReopenReasonTitle": "重开月份的原因",
   "monthsErrAlreadyClosed": "该月份已关闭",
+  "monthsCloseConfirmTitle": "关闭该月份？",
+  "monthsCloseConfirmBody": "关闭后，该月份的营业日、支出和工资都将无法修改。只有输入 PIN 并填写原因才能重开。",
+  "monthsCloseConfirmCurrent": "这是当前月份：可能还有营业额和支出未登记。仅在确定不会再有记录时才关闭。",
   "monthsEmpty": "暂无月份数据",
   "@reportGestorMissing": {
     "placeholders": {

@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../data/db/app_database.dart';
 import '../../data/providers.dart';
 import '../../data/repositories/periods_repository.dart';
+import '../../domain/dates.dart';
 import '../../domain/enums.dart';
 import '../../l10n/app_localizations.dart';
 import '../common/auth_gate.dart';
@@ -127,6 +128,28 @@ class _MonthTile extends ConsumerWidget {
   Future<void> _close(BuildContext context, WidgetRef ref) async {
     final l = AppLocalizations.of(context)!;
     final today = ref.read(clockProvider)();
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l.monthsCloseConfirmTitle),
+        content: Text(
+          entry.key == monthKey(today)
+              ? '${l.monthsCloseConfirmBody}\n\n${l.monthsCloseConfirmCurrent}'
+              : l.monthsCloseConfirmBody,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l.actionCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l.monthsClose),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !context.mounted) return;
     try {
       await ref
           .read(periodsRepositoryProvider)

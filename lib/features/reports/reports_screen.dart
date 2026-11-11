@@ -296,7 +296,7 @@ class _Summary extends StatelessWidget {
               value: pnl.personnelPct == null
                   ? pnl.personnel.format(locale)
                   : '${pnl.personnel.format(locale)} '
-                        '(${NumberFormat('0.0', locale).format(pnl.personnelPct)} %)',
+                        '(${NumberFormat.decimalPercentPattern(locale: locale, decimalDigits: 1).format(pnl.personnelPct)})',
             ),
             const Divider(),
             _Row(

@@ -188,6 +188,23 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   });
 
+  for (final (locale, pct) in [('es', '33,3 %'), ('zh', '33.3%')]) {
+    testWidgets('personnel share is shown as a percentage ($locale)', (
+      tester,
+    ) async {
+      await pumpReports(tester, locale: locale);
+      final text = tester
+          .widgetList<Text>(find.byType(Text))
+          .map((w) => (w.data ?? '').replaceAll(' ', ' '))
+          .firstWhere(
+            (t) => t.contains('(') && t.contains('%'),
+            orElse: () => '',
+          );
+      expect(text, endsWith('($pct)'));
+      await tester.pumpWidget(const SizedBox());
+    });
+  }
+
   testWidgets('period selector defaults to "Este mes" and switches', (
     tester,
   ) async {

@@ -1217,6 +1217,17 @@ class AppLocalizationsZh extends AppLocalizations {
   String get monthsErrAlreadyClosed => '该月份已关闭';
 
   @override
+  String get monthsCloseConfirmTitle => '关闭该月份？';
+
+  @override
+  String get monthsCloseConfirmBody =>
+      '关闭后，该月份的营业日、支出和工资都将无法修改。只有输入 PIN 并填写原因才能重开。';
+
+  @override
+  String get monthsCloseConfirmCurrent =>
+      '这是当前月份：可能还有营业额和支出未登记。仅在确定不会再有记录时才关闭。';
+
+  @override
   String get monthsEmpty => '暂无月份数据';
 
   @override
