@@ -1,0 +1,12 @@
+# Launcher icon for to Audit (variant A: navy + gold magnifier over a ticket).
+# Regenerate with: dart run flutter_launcher_icons
+# Source images are drawn by tool/make_icon.py.
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/icon.png"
+  remove_alpha_ios: true
+  min_sdk_android: 28
+  adaptive_icon_background: "#1F3A5F"
+  adaptive_icon_foreground: "assets/icon/icon_foreground.png"
+  adaptive_icon_foreground_inset: 0

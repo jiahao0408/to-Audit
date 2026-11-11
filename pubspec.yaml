@@ -73,6 +73,7 @@ dev_dependencies:
   mocktail: ^1.0.5
   integration_test:
     sdk: flutter
+  flutter_launcher_icons: ^0.14.4
 
 # SQLCipher build of the bundled SQLite (package:sqlite3 build hook).
 hooks:
