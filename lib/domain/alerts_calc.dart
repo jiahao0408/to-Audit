@@ -77,10 +77,15 @@ class ExpenseSnapshot {
     required this.receiptCount,
     required this.paymentStatus,
     required this.dueDate,
+    this.planned = false,
   });
 
   final String id;
   final bool voided;
+
+  /// A fixed cost generated but not yet confirmed with its real invoice: no
+  /// receipt or overdue alert until it is confirmed.
+  final bool planned;
   final int receiptCount;
   final PaymentStatus paymentStatus;
   final DateTime? dueDate;
@@ -136,7 +141,7 @@ List<Alert> computeAlerts(AlertInputs i) {
   }
 
   for (final e in i.expenses) {
-    if (e.voided) continue;
+    if (e.voided || e.planned) continue;
     if (e.receiptCount == 0) {
       alerts.add(Alert(type: AlertType.missingReceipt, recordId: e.id));
     }
@@ -163,7 +168,9 @@ List<Alert> computeAlerts(AlertInputs i) {
   }
 
   final last = i.lastBackup;
-  if (last != null && _daysBetween(last, today) > _backupOldDays) {
+  // Never backed up counts as old as soon as there is data to lose.
+  if ((last == null && days.isNotEmpty) ||
+      (last != null && _daysBetween(last, today) > _backupOldDays)) {
     alerts.add(const Alert(type: AlertType.backupOld));
   }
 

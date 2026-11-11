@@ -99,6 +99,24 @@ void main() {
     expect(rows.first.paymentMethodId, card.id);
   });
 
+  test('changing the charge day never plans a second expense for a '
+      'generated month', () async {
+    final id = await repo.create(input(chargeDay: 1, startMonth: '2026-10'));
+    expect(await repo.generateDue(d(2026, 11, 20)), 2);
+    await repo.update(id, input(chargeDay: 5, startMonth: '2026-10'));
+    expect(await repo.generateDue(d(2026, 11, 20)), 0);
+    expect((await expenseRows()).map((e) => e.date), [
+      '2026-10-01',
+      '2026-11-01',
+    ]);
+    // A voided one still counts as generated.
+    await expenses.voidRecord((await expenseRows()).first.id, 'test');
+    expect(await repo.generateDue(d(2026, 11, 20)), 0);
+    // The next month, with the new day.
+    expect(await repo.generateDue(d(2026, 12, 20)), 1);
+    expect((await expenseRows()).last.date, '2026-12-05');
+  });
+
   test('running generateDue twice does not duplicate', () async {
     await repo.create(input(startMonth: '2026-10'));
     expect(await repo.generateDue(d(2026, 11, 20)), 2);
@@ -213,4 +231,16 @@ void main() {
     expect(all.single.active, isTrue);
     await expectLater(repo.update('nope', input()), throwsArgumentError);
   });
+
+  test(
+    'snapshots flag planned fixed expenses until they are confirmed',
+    () async {
+      await repo.create(input(startMonth: '2026-11'));
+      await repo.generateDue(d(2026, 11, 20));
+      final id = (await expenseRows()).single.id;
+      expect((await expenses.snapshots()).single.planned, isTrue);
+      await repo.confirm(id, const Money(12100));
+      expect((await expenses.snapshots()).single.planned, isFalse);
+    },
+  );
 }

@@ -29,13 +29,19 @@ ExpenseSnapshot exp(
   int receipts = 1,
   PaymentStatus status = PaymentStatus.paid,
   DateTime? due,
+  bool planned = false,
 }) => ExpenseSnapshot(
   id: id,
   voided: voided,
   receiptCount: receipts,
   paymentStatus: status,
   dueDate: due,
+  planned: planned,
 );
+
+/// A recent backup, so tests of other rules don't also see backupOld; pass
+/// `lastBackup: null` for "never backed up".
+final _recentBackup = DateTime(2026, 11, 4);
 
 AlertInputs inputs({
   DateTime? today,
@@ -43,12 +49,13 @@ AlertInputs inputs({
   List<ExpenseSnapshot> expenses = const [],
   Set<String> closedMonths = const {},
   DateTime? lastBackup,
+  bool noBackup = false,
 }) => AlertInputs(
   today: today ?? d(2026, 11, 5),
   days: days,
   expenses: expenses,
   closedMonths: closedMonths,
-  lastBackup: lastBackup,
+  lastBackup: noBackup ? null : (lastBackup ?? _recentBackup),
 );
 
 List<AlertType> types(List<Alert> a) => a.map((e) => e.type).toList();
@@ -296,7 +303,7 @@ void main() {
   });
 
   group('backupOld', () {
-    test('15 days ago alerts, 14 does not, null does not', () {
+    test('15 days ago alerts, 14 does not, null without days does not', () {
       expect(computeAlerts(inputs(lastBackup: DateTime(2026, 10, 21, 9))), [
         const Alert(type: AlertType.backupOld),
       ]);
@@ -304,7 +311,44 @@ void main() {
         computeAlerts(inputs(lastBackup: DateTime(2026, 10, 22, 23))),
         isEmpty,
       );
-      expect(computeAlerts(inputs()), isEmpty);
+      expect(computeAlerts(inputs(noBackup: true)), isEmpty);
+    });
+    test('never backed up alerts once a day exists', () {
+      final a = computeAlerts(
+        inputs(
+          noBackup: true,
+          days: [day('a', d(2026, 11, 5), status: DayStatus.open)],
+        ),
+      );
+      expect(a, [const Alert(type: AlertType.backupOld)]);
+    });
+  });
+
+  group('planned fixed costs', () {
+    test('raise neither missingReceipt nor invoiceOverdue', () {
+      final a = computeAlerts(
+        inputs(
+          expenses: [
+            exp(
+              'p',
+              receipts: 0,
+              planned: true,
+              status: PaymentStatus.pending,
+              due: d(2026, 11, 1),
+            ),
+            exp(
+              'c',
+              receipts: 0,
+              status: PaymentStatus.pending,
+              due: d(2026, 11, 1),
+            ),
+          ],
+        ),
+      );
+      expect(a, [
+        const Alert(type: AlertType.missingReceipt, recordId: 'c'),
+        const Alert(type: AlertType.invoiceOverdue, recordId: 'c'),
+      ]);
     });
   });
 

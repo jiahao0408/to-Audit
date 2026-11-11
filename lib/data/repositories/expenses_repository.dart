@@ -242,6 +242,9 @@ class ExpensesRepository {
             receiptCount: r.read(_receiptCount)!,
             paymentStatus: e.paymentStatus,
             dueDate: e.dueDate == null ? null : parseYmd(e.dueDate!),
+            planned:
+                e.origin == ExpenseOrigin.fixed &&
+                e.fixedStatus != FixedStatus.confirmed,
           );
         }(),
     ];

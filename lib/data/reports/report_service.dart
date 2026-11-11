@@ -254,7 +254,14 @@ class ReportService {
       withdrawalsByType: withdrawalsByType,
       cashDiscrepancyTotal: cashDisc,
       cardDiscrepancyTotal: cardDisc,
-      expenses: expenses,
+      // Exports list real expenses only: planned fixed costs are reported
+      // as pendingFixed in the summary until they are confirmed.
+      expenses: [
+        for (final e in expenses)
+          if (!(e.origin == ExpenseOrigin.fixed &&
+              e.fixedStatus != FixedStatus.confirmed))
+            e,
+      ],
       payroll: payroll,
     );
   }

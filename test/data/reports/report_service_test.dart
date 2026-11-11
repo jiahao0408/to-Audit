@@ -47,7 +47,16 @@ void main() {
       expect(r.withdrawalsByType.values.single, const Money(1000));
       expect(r.cashDiscrepancyTotal, const Money(-200));
       expect(r.cardDiscrepancyTotal, Money.zero);
-      expect(r.expenses, hasLength(4));
+      // Exports list the 3 real expenses; the planned light bill is left out.
+      expect(r.expenses, hasLength(3));
+      expect(
+        r.expenses.where(
+          (e) =>
+              e.origin == ExpenseOrigin.fixed &&
+              e.fixedStatus != FixedStatus.confirmed,
+        ),
+        isEmpty,
+      );
       expect(r.payroll.single.payment!.gross, const Money(70000));
     },
   );

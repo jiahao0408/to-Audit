@@ -220,7 +220,7 @@ class FixedCostsRepository {
       int.parse(key.substring(0, 4)) * 12 + int.parse(key.substring(5, 7)) - 1;
 
   /// Creates the planned expenses that are due up to [today]'s month and
-  /// returns how many were created. A (fixed cost, date) that already has an
+  /// returns how many were created. A (fixed cost, month) that already has an
   /// expense, voided or not, is never generated again; closed months are
   /// skipped.
   Future<int> generateDue(DateTime today) => _db.transaction(() async {
@@ -252,10 +252,17 @@ class FixedCostsRepository {
           month,
           fc.chargeDay < lastDay ? fc.chargeDay : lastDay,
         );
+        // Per (fixed cost, month): editing the charge day, start month or
+        // periodicity must not plan a second expense for a month that
+        // already has one (voided or not).
+        final prefix = monthKey(date);
         final exists =
-            await (_db.select(_db.expenses)..where(
-                  (e) => e.fixedCostId.equals(fc.id) & e.date.equals(ymd(date)),
-                ))
+            await (_db.select(_db.expenses)
+                  ..where(
+                    (e) =>
+                        e.fixedCostId.equals(fc.id) & e.date.like('$prefix-%'),
+                  )
+                  ..limit(1))
                 .getSingleOrNull();
         if (exists != null) continue;
         await _expenses.createFromFixed(

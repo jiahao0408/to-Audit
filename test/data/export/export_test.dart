@@ -5,6 +5,7 @@ import 'package:archive/archive.dart';
 import 'package:excel/excel.dart';
 import 'package:flutter/services.dart' show ByteData;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:to_audit/data/db/app_database.dart' show ReceiptData;
 import 'package:to_audit/data/export/csv_zip_export.dart';
 import 'package:to_audit/data/export/export_keys.dart';
 import 'package:to_audit/data/export/gestor_zip_export.dart';
@@ -187,6 +188,48 @@ void main() {
     final jpg = archive.files.firstWhere((f) => f.name.endsWith('_1.jpg'));
     // The scenario's fake compressor writes a single byte.
     expect(jpg.content as List<int>, [1]);
+  });
+
+  test('planned fixed costs appear in no export', () async {
+    final planned = (await s.db.select(s.db.expenses).get())
+        .where((e) => e.fixedStatus == FixedStatus.planned)
+        .single;
+    // Present in the database, absent from the report data and every export.
+    expect(data.expenses.map((e) => e.id), isNot(contains(planned.id)));
+    expect(data.expenses, hasLength(3));
+
+    final book = Excel.decodeBytes(buildXlsx(data, es, names: _names(s)));
+    expect(book.tables['sheetExpenses']!.rows, hasLength(1 + 3));
+
+    final zip = ZipDecoder().decodeBytes(
+      buildCsvZip(data, es, names: _names(s)),
+    );
+    final csv = utf8.decode(
+      (zip.files.firstWhere((f) => f.name == 'sheetExpenses.csv').content
+              as List<int>)
+          .skip(3)
+          .toList(),
+    );
+    expect(const LineSplitter().convert(csv.trim()), hasLength(1 + 3));
+
+    final out = Directory('${s.tmp.path}/out_planned');
+    final result = await buildGestorZip(
+      expenses: data.expenses,
+      receipts: {for (final e in data.expenses) e.id: <ReceiptData>[]},
+      store: s.store,
+      out: out,
+      labels: es,
+      supplierName: (_) => '',
+      generatedAt: DateTime(2026, 11, 8),
+    );
+    final gestor = ZipDecoder().decodeBytes(await result.zip.readAsBytes());
+    final gastos = utf8.decode(
+      (gestor.files.firstWhere((f) => f.name == 'gastos.csv').content
+              as List<int>)
+          .skip(3)
+          .toList(),
+    );
+    expect(const LineSplitter().convert(gastos.trim()), hasLength(1 + 3));
   });
 
   test('reports receipts whose file is missing', () async {
