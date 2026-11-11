@@ -39,24 +39,33 @@ class SqlCipherSnapshotter implements DbSnapshotter {
   }
 
   @override
-  Future<void> importPlain(File src, File destEncrypted, String hexKey) async {
-    if (!_hexKey.hasMatch(hexKey)) {
-      throw ArgumentError('hexKey must be 64 hex characters');
-    }
-    final db = sqlite3.open(src.path);
+  Future<void> importPlain(File src, File destEncrypted, String hexKey) =>
+      importPlainToSqlCipher(src, destEncrypted, hexKey);
+}
+
+/// Creates [destEncrypted] from the plain database [src] with `sqlcipher_export`
+/// (no open [AppDatabase] needed).
+Future<void> importPlainToSqlCipher(
+  File src,
+  File destEncrypted,
+  String hexKey,
+) async {
+  if (!_hexKey.hasMatch(hexKey)) {
+    throw ArgumentError('hexKey must be 64 hex characters');
+  }
+  final db = sqlite3.open(src.path);
+  try {
+    db.execute(
+      'ATTACH DATABASE ${_quote(destEncrypted.path)} AS encrypted '
+      "KEY \"x'$hexKey'\"",
+    );
     try {
-      db.execute(
-        'ATTACH DATABASE ${_quote(destEncrypted.path)} AS encrypted '
-        "KEY \"x'$hexKey'\"",
-      );
-      try {
-        db.select("SELECT sqlcipher_export('encrypted')");
-      } finally {
-        db.execute('DETACH DATABASE encrypted');
-      }
+      db.select("SELECT sqlcipher_export('encrypted')");
     } finally {
-      db.close();
+      db.execute('DETACH DATABASE encrypted');
     }
+  } finally {
+    db.close();
   }
 }
 

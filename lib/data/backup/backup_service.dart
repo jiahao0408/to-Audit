@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:archive/archive_io.dart';
 import 'package:crypto/crypto.dart';
+import 'package:cryptography/cryptography.dart' show Pbkdf2, SecretKey;
 import 'package:path/path.dart' as p;
 import 'package:sqlite3/sqlite3.dart' show OpenMode, sqlite3;
 
@@ -69,6 +70,7 @@ class BackupService {
     required this._dbFile,
     required this._hexKey,
     this._iterations = 600000,
+    this._deriveKey = _defaultDeriver,
   });
 
   final AppDatabase _db;
@@ -81,6 +83,16 @@ class BackupService {
   final File _dbFile;
   final Future<String> Function() _hexKey;
   final int _iterations;
+
+  /// PBKDF2 runner; the app passes [isolateKeyDeriver] so the 600k
+  /// iterations do not block the UI isolate (the database stays on the main
+  /// isolate: only the key derivation moves).
+  final KeyDeriver _deriveKey;
+  static Future<SecretKey> _defaultDeriver(String p, List<int> s, int i) =>
+      Pbkdf2.hmacSha256(
+        iterations: i,
+        bits: 256,
+      ).deriveKeyFromPassword(password: p, nonce: s);
 
   static const minPasswordLength = 8;
   static const _dbEntry = 'db.sqlite';
@@ -141,6 +153,7 @@ class BackupService {
           sink,
           password,
           iterations: _iterations,
+          deriveKey: _deriveKey,
         );
       } finally {
         await sink.close();
@@ -158,15 +171,35 @@ class BackupService {
   /// Decrypts [backup] into a temp folder and verifies every SHA-256 of the
   /// manifest ([BackupDecryptException] otherwise). A backup with a higher
   /// schema version than this app is [BackupTooNewException].
-  Future<BackupPreview> inspect(File backup, String password) async {
-    await _tempRoot.create(recursive: true);
-    final dir = await _tempRoot.createTemp('restore_');
+  Future<BackupPreview> inspect(File backup, String password) => inspectFile(
+    backup,
+    password,
+    tempRoot: _tempRoot,
+    currentSchemaVersion: _db.schemaVersion,
+    deriveKey: _deriveKey,
+  );
+
+  /// [inspect] without a service (and so without an open database), for the
+  /// restore from the start-up error screen.
+  static Future<BackupPreview> inspectFile(
+    File backup,
+    String password, {
+    required Directory tempRoot,
+    required int currentSchemaVersion,
+    KeyDeriver deriveKey = _defaultDeriver,
+  }) async {
+    await tempRoot.create(recursive: true);
+    final dir = await tempRoot.createTemp('restore_');
     final zip = File('${dir.path}.zip');
     try {
       final sink = zip.openWrite();
       try {
         // Not addStream: after a stream error, close() would throw instead.
-        await for (final chunk in ToauditFormat.decrypt(backup, password)) {
+        await for (final chunk in ToauditFormat.decrypt(
+          backup,
+          password,
+          deriveKey: deriveKey,
+        )) {
           sink.add(chunk);
         }
       } finally {
@@ -174,7 +207,7 @@ class BackupService {
       }
       await _extract(zip, dir);
       await zip.delete();
-      return await _verify(dir);
+      return await _verify(dir, currentSchemaVersion);
     } catch (_) {
       await dir.delete(recursive: true);
       rethrow;
@@ -393,7 +426,10 @@ class BackupService {
 
   /// Reads the manifest of the extracted backup in [dir] and checks that the
   /// files on disk are exactly the listed ones, with matching hashes.
-  Future<BackupPreview> _verify(Directory dir) async {
+  static Future<BackupPreview> _verify(
+    Directory dir,
+    int currentSchemaVersion,
+  ) async {
     const damaged = BackupDecryptException('The backup is damaged');
     final manifestFile = File(p.join(dir.path, _manifestEntry));
     if (!await manifestFile.exists()) throw damaged;
@@ -416,7 +452,9 @@ class BackupService {
         files is! Map<String, dynamic>) {
       throw damaged;
     }
-    if (schemaVersion > _db.schemaVersion) throw const BackupTooNewException();
+    if (schemaVersion > currentSchemaVersion) {
+      throw const BackupTooNewException();
+    }
     final created = DateTime.tryParse(createdAt);
     if (created == null || !files.containsKey(_dbEntry)) throw damaged;
 

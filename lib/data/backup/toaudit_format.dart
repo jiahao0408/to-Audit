@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:isolate';
 import 'dart:math';
 import 'dart:typed_data';
 
@@ -14,6 +15,31 @@ class BackupDecryptException implements Exception {
 
   @override
   String toString() => 'BackupDecryptException: $message';
+}
+
+/// Derives the AES key from a password (PBKDF2). Replaceable so the slow
+/// derivation can run off the UI isolate.
+typedef KeyDeriver = Future<SecretKey> Function(
+  String password,
+  List<int> salt,
+  int iterations,
+);
+
+/// PBKDF2-HMAC-SHA256 run in a separate isolate with sendable arguments only.
+Future<SecretKey> isolateKeyDeriver(
+  String password,
+  List<int> salt,
+  int iterations,
+) async {
+  final saltBytes = Uint8List.fromList(salt);
+  final bytes = await Isolate.run(() async {
+    final key = await Pbkdf2.hmacSha256(
+      iterations: iterations,
+      bits: 256,
+    ).deriveKeyFromPassword(password: password, nonce: saltBytes);
+    return Uint8List.fromList(await key.extractBytes());
+  });
+  return SecretKey(bytes);
 }
 
 /// Password-encrypted, chunked AES-256-GCM container.
@@ -49,13 +75,14 @@ class ToauditFormat {
     IOSink out,
     String password, {
     int iterations = 600000,
+    KeyDeriver deriveKey = _deriveKey,
   }) async {
     final random = Random.secure();
     List<int> randomBytes(int n) =>
         List.generate(n, (_) => random.nextInt(256));
     final salt = randomBytes(_saltLength);
     final noncePrefix = randomBytes(_noncePrefixLength);
-    final key = await _deriveKey(password, salt, iterations);
+    final key = await deriveKey(password, salt, iterations);
 
     final header = ByteData(_headerLength);
     final headerBytes = header.buffer.asUint8List();
@@ -105,7 +132,11 @@ class ToauditFormat {
   /// Decrypts [input] block by block. The stream fails with
   /// [BackupDecryptException] on a wrong password or a damaged, truncated or
   /// extended file; blocks already emitted were authentic.
-  static Stream<List<int>> decrypt(File input, String password) async* {
+  static Stream<List<int>> decrypt(
+    File input,
+    String password, {
+    KeyDeriver deriveKey = _deriveKey,
+  }) async* {
     final RandomAccessFile file;
     try {
       file = await input.open();
@@ -127,7 +158,7 @@ class ToauditFormat {
       if (iterations < 1 || iterations > _maxIterations) {
         throw const BackupDecryptException('Invalid header');
       }
-      final key = await _deriveKey(password, salt, iterations);
+      final key = await deriveKey(password, salt, iterations);
 
       for (var index = 0; ; index++) {
         // Ending here, before a block with isLast = 1, is a truncation.

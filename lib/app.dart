@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'data/providers.dart';
+import 'data/security/key_store.dart';
 import 'features/backup/backup_screen.dart';
 import 'features/lock/app_lock_gate.dart';
 import 'l10n/app_localizations.dart';
@@ -69,7 +72,16 @@ class ToAuditApp extends ConsumerWidget {
 /// Shown instead of the app when the database cannot be opened. It offers to
 /// restore a backup; it never creates a new database.
 class StartupErrorApp extends StatelessWidget {
-  const StartupErrorApp({super.key, required this.keyMissing});
+  const StartupErrorApp({
+    super.key,
+    required this.keyMissing,
+    this.documents,
+    this.keyStore,
+  });
+
+  /// Where the database lives and the key store, for the restore.
+  final Directory? documents;
+  final KeyStore? keyStore;
 
   /// The database exists but its key is gone (spec section 10).
   final bool keyMissing;
@@ -111,11 +123,23 @@ class StartupErrorApp extends StatelessWidget {
                       ),
                       const SizedBox(height: 24),
                       FilledButton(
-                        onPressed: () => Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                            builder: (_) => const BackupScreen(),
-                          ),
-                        ),
+                        onPressed: documents == null
+                            ? null
+                            : () => Navigator.of(context).push(
+                                MaterialPageRoute<void>(
+                                  builder: (_) => ProviderScope(
+                                    overrides: [
+                                      documentsDirProvider.overrideWithValue(
+                                        documents!,
+                                      ),
+                                      keyStoreProvider.overrideWithValue(
+                                        keyStore ?? SecureKeyStore(),
+                                      ),
+                                    ],
+                                    child: const BackupScreen(standalone: true),
+                                  ),
+                                ),
+                              ),
                         child: Text(l.restoreBackupButton),
                       ),
                     ],

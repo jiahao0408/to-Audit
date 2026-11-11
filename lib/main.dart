@@ -40,10 +40,22 @@ Future<void> main() async {
       ),
     );
   } on DatabaseKeyMissingException {
-    runApp(const StartupErrorApp(keyMissing: true));
+    runApp(
+      StartupErrorApp(
+        keyMissing: true,
+        documents: documents,
+        keyStore: keyStore,
+      ),
+    );
   } catch (e) {
     // Type only: the message of a storage error may carry paths.
     debugPrint('Startup failed: ${e.runtimeType}');
-    runApp(const StartupErrorApp(keyMissing: false));
+    runApp(
+      StartupErrorApp(
+        keyMissing: false,
+        documents: documents,
+        keyStore: keyStore,
+      ),
+    );
   }
 }

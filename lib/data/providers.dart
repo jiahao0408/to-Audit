@@ -7,6 +7,7 @@ import 'audit/audit_writer.dart';
 import 'audit/period_guard.dart';
 import 'backup/backup_service.dart';
 import 'backup/db_snapshotter.dart';
+import 'backup/toaudit_format.dart';
 import 'db/app_database.dart';
 import 'db/open_database.dart';
 import 'files/receipt_store.dart';
@@ -192,6 +193,13 @@ final alertsServiceProvider = Provider<AlertsService>(
   ),
 );
 
+/// Key derivation for backups: PBKDF2 in a separate isolate. Tests may
+/// override it with a cheap one.
+final keyDeriverProvider = Provider<KeyDeriver>((ref) => isolateKeyDeriver);
+
+/// PBKDF2 iterations of new backups (tests lower it).
+final backupIterationsProvider = Provider<int>((ref) => 600000);
+
 /// Export and restore of `.toaudit` copies. Rebuilt on the new database after
 /// a restore, because the instance given to a restore is spent.
 final backupServiceProvider = Provider<BackupService>((ref) {
@@ -220,6 +228,8 @@ final backupServiceProvider = Provider<BackupService>((ref) {
     },
     dbFile: dbFile,
     hexKey: keys.getOrCreateKey,
+    deriveKey: ref.watch(keyDeriverProvider),
+    iterations: ref.watch(backupIterationsProvider),
   );
 });
 
