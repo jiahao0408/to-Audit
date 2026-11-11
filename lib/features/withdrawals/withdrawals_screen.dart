@@ -10,8 +10,7 @@ import '../../domain/money.dart';
 import '../../l10n/app_localizations.dart';
 import '../common/catalog_label.dart';
 import '../common/catalog_providers.dart';
-
-enum _Period { week, month }
+import '../common/period_picker.dart';
 
 /// Withdrawals screen: period selector + list + totals by type.
 class WithdrawalsScreen extends ConsumerStatefulWidget {
@@ -22,24 +21,15 @@ class WithdrawalsScreen extends ConsumerStatefulWidget {
 }
 
 class _WithdrawalsScreenState extends ConsumerState<WithdrawalsScreen> {
-  _Period _period = _Period.month;
-
-  DateRange _range() {
-    final now = ref.read(clockProvider)();
-    return switch (_period) {
-      _Period.week => rangeThisWeek(now),
-      _Period.month => rangeThisMonth(now),
-    };
-  }
+  PeriodSelection _period = const PeriodSelection(PeriodKind.month);
 
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final locale = Localizations.localeOf(context).languageCode;
-    final range = _range();
-    final withdrawals = ref.watch(
-      _withdrawalsRangeProvider(range),
-    );
+    final now = ref.watch(clockProvider)();
+    final range = _period.range(now);
+    final withdrawals = ref.watch(_withdrawalsRangeProvider(range));
     final totals = ref.watch(_totalsByTypeProvider(range));
     final types = ref.watch(withdrawalTypesProvider).value ?? const [];
     return Scaffold(
@@ -52,11 +42,10 @@ class _WithdrawalsScreenState extends ConsumerState<WithdrawalsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _PeriodSelector(
-                  period: _period,
+                PeriodPicker(
+                  selection: _period,
+                  now: now,
                   onChanged: (p) => setState(() => _period = p),
-                  locale: locale,
-                  range: range,
                 ),
                 const Divider(height: 1),
                 Expanded(
@@ -69,8 +58,7 @@ class _WithdrawalsScreenState extends ConsumerState<WithdrawalsScreen> {
                     ),
                     loading: () =>
                         const Center(child: CircularProgressIndicator()),
-                    error: (e, st) =>
-                        Center(child: Text(l.withdrawalsErrLoad)),
+                    error: (e, st) => Center(child: Text(l.withdrawalsErrLoad)),
                   ),
                 ),
               ],
@@ -84,71 +72,19 @@ class _WithdrawalsScreenState extends ConsumerState<WithdrawalsScreen> {
 
 // ----------------------------------------------------------- providers
 
-final _withdrawalsRangeProvider =
-    StreamProvider.autoDispose.family<List<WithdrawalRecord>, DateRange>(
+final _withdrawalsRangeProvider = StreamProvider.autoDispose
+    .family<List<WithdrawalRecord>, DateRange>(
       (ref, range) =>
           ref.watch(withdrawalsRepositoryProvider).watchRange(range),
     );
 
-final _totalsByTypeProvider =
-    FutureProvider.autoDispose.family<Map<String, Money>, DateRange>(
+final _totalsByTypeProvider = FutureProvider.autoDispose
+    .family<Map<String, Money>, DateRange>(
       (ref, range) =>
           ref.read(withdrawalsRepositoryProvider).totalsByType(range),
     );
 
 // ----------------------------------------------------------- widgets
-
-class _PeriodSelector extends StatelessWidget {
-  const _PeriodSelector({
-    required this.period,
-    required this.onChanged,
-    required this.locale,
-    required this.range,
-  });
-
-  final _Period period;
-  final ValueChanged<_Period> onChanged;
-  final String locale;
-  final DateRange range;
-
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
-    final dateLabel = range.start == range.end
-        ? DateFormat.yMMMMd(locale).format(range.start)
-        : '${DateFormat.yMd(locale).format(range.start)} – '
-            '${DateFormat.yMd(locale).format(range.end)}';
-    return Padding(
-      padding: const EdgeInsets.all(12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          SegmentedButton<_Period>(
-            segments: [
-              ButtonSegment(
-                value: _Period.week,
-                label: Text(l.withdrawalsPeriodWeek),
-              ),
-              ButtonSegment(
-                value: _Period.month,
-                label: Text(l.withdrawalsPeriodMonth),
-              ),
-            ],
-            selected: {period},
-            showSelectedIcon: false,
-            onSelectionChanged: (v) => onChanged(v.first),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            dateLabel,
-            style: Theme.of(context).textTheme.bodySmall,
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 class _WithdrawalsBody extends StatelessWidget {
   const _WithdrawalsBody({
@@ -201,9 +137,8 @@ class _WithdrawalsBody extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Text(
               l.withdrawalsTotalsTitle,
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(context).textTheme.titleSmall
+                  ?.copyWith(fontWeight: FontWeight.bold),
             ),
           ),
           for (final entry in totals!.entries)
@@ -211,9 +146,7 @@ class _WithdrawalsBody extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
               child: Row(
                 children: [
-                  Expanded(
-                    child: Text(_typeName(l, entry.key)),
-                  ),
+                  Expanded(child: Text(_typeName(l, entry.key))),
                   Text(
                     entry.value.format(locale),
                     style: const TextStyle(fontWeight: FontWeight.w600),

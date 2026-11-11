@@ -893,7 +893,6 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get expLoadError => 'No se pudo cargar el gasto';
 
-  // ---- Fixed costs ----
   @override
   String get fixedCostNewTitle => 'Nuevo gasto fijo';
 
@@ -954,7 +953,6 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get periodicityAnnual => 'Anual';
 
-  // ---- Payroll ----
   @override
   String get payrollNoEmployees => 'No hay empleados activos este mes';
 
@@ -1003,7 +1001,6 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get payrollErrEmployee => 'No se pudo guardar el empleado';
 
-  // ---- Withdrawals ----
   @override
   String get withdrawalsPeriodMonth => 'Este mes';
 
@@ -1019,7 +1016,6 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get withdrawalsErrLoad => 'No se pudieron cargar las retiradas';
 
-  // ---- Reports ----
   @override
   String get reportPeriodLastMonth => 'Mes anterior';
 
@@ -1039,43 +1035,19 @@ class AppLocalizationsEs extends AppLocalizations {
   String get reportExportGestor => 'Gestor ZIP';
 
   @override
-  String reportGestorMissing(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count justificantes no encontrados',
-      one: '1 justificante no encontrado',
-    );
-    return 'Advertencia: $_temp0';
-  }
-
-  @override
   String get reportExportErr => 'No se pudo exportar';
 
   @override
   String get reportNoData => 'Sin datos para este período';
 
-  // ---- Alerts ----
   @override
   String get alertEmpty => 'No hay alertas pendientes';
-
-  @override
-  String alertDiscrepancy(String date) => 'Descuadre el $date';
-
-  @override
-  String alertDayOpen(String date) => 'El día $date sigue abierto';
-
-  @override
-  String alertDayUnregistered(String date) => 'El día $date no está registrado';
 
   @override
   String get alertMissingReceipt => 'Gasto sin justificante';
 
   @override
   String get alertInvoiceOverdue => 'Factura vencida';
-
-  @override
-  String alertFloatMismatch(String date) => 'Fondo inicial incorrecto el $date';
 
   @override
   String get alertBackupOld => 'No has hecho una copia en más de 14 días';
@@ -1089,7 +1061,6 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get alertGoBackup => 'Hacer copia';
 
-  // ---- Settings ----
   @override
   String get settingsRestaurant => 'Datos del restaurante';
 
@@ -1136,7 +1107,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get settingsBiometricsNotAvailable =>
       'La biometría no está disponible en este dispositivo';
 
-  // ---- Catalog ----
   @override
   String get catalogNew => 'Nuevo';
 
@@ -1155,7 +1125,6 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get catalogEmpty => 'Sin elementos';
 
-  // ---- History ----
   @override
   String get historyEmpty => 'No hay cambios registrados';
 
@@ -1171,7 +1140,6 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get historyNewValue => 'Después';
 
-  // ---- Backup ----
   @override
   String get backupSectionCreate => 'Nueva copia';
 
@@ -1243,7 +1211,6 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get backupLastCopy => 'Última copia';
 
-  // ---- Months ----
   @override
   String get monthsClose => 'Cerrar mes';
 
@@ -1257,9 +1224,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get monthsStatusClosed => 'Cerrado';
 
   @override
-  String monthsErrNotReady(String dates) => 'Días pendientes: $dates';
-
-  @override
   String get monthsErrSave => 'No se pudo cambiar el estado del mes';
 
   @override
@@ -1270,4 +1234,81 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get monthsEmpty => 'Aún no hay meses con actividad';
+
+  @override
+  String reportGestorMissing(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count justificantes no encontrados',
+      one: '1 justificante no encontrado',
+    );
+    return 'Advertencia: $_temp0';
+  }
+
+  @override
+  String alertDiscrepancy(String date) {
+    return 'Descuadre el $date';
+  }
+
+  @override
+  String alertDayOpen(String date) {
+    return 'El día $date sigue abierto';
+  }
+
+  @override
+  String alertDayUnregistered(String date) {
+    return 'El día $date no está registrado';
+  }
+
+  @override
+  String alertFloatMismatch(String date) {
+    return 'Fondo inicial incorrecto el $date';
+  }
+
+  @override
+  String monthsErrNotReady(String dates) {
+    return 'Días pendientes: $dates';
+  }
+
+  @override
+  String get periodToday => 'Hoy';
+
+  @override
+  String get periodCustom => 'Desde–hasta';
+
+  @override
+  String get reportSavePdf => 'Guardar PDF';
+
+  @override
+  String get backupPasswordWarning =>
+      'Guarda esta contraseña en un lugar seguro: sin ella no se puede restaurar la copia y no hay forma de recuperarla.';
+
+  @override
+  String get backupErrNotToaudit =>
+      'El archivo debe tener la extensión .toaudit';
+
+  @override
+  String get backupErrVerify =>
+      'La restauración falló y se han recuperado tus datos anteriores';
+
+  @override
+  String get backupErrRestart =>
+      'Reinicia la app para terminar de recuperar los datos';
+
+  @override
+  String get backupErrInspect => 'No se pudo leer la copia';
+
+  @override
+  String get backupRestoreConfirm =>
+      'Se reemplazarán todos los datos actuales por los de la copia. ¿Continuar?';
+
+  @override
+  String get backupCreated => 'Copia creada';
+
+  @override
+  String get backupRestoredInApp => 'Copia restaurada';
+
+  @override
+  String get backupPasswordDialogTitle => 'Contraseña de la copia';
 }

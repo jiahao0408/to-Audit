@@ -880,7 +880,6 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get expLoadError => '无法加载该费用';
 
-  // ---- Fixed costs ----
   @override
   String get fixedCostNewTitle => '新增固定成本';
 
@@ -941,7 +940,6 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get periodicityAnnual => '每年';
 
-  // ---- Payroll ----
   @override
   String get payrollNoEmployees => '本月无在职员工';
 
@@ -990,7 +988,6 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get payrollErrEmployee => '无法保存员工';
 
-  // ---- Withdrawals ----
   @override
   String get withdrawalsPeriodMonth => '本月';
 
@@ -1006,7 +1003,6 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get withdrawalsErrLoad => '无法加载取款记录';
 
-  // ---- Reports ----
   @override
   String get reportPeriodLastMonth => '上个月';
 
@@ -1026,43 +1022,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get reportExportGestor => 'Gestor ZIP';
 
   @override
-  String reportGestorMissing(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '缺少 $count 份凭证',
-      one: '缺少 1 份凭证',
-    );
-    return '警告：$_temp0';
-  }
-
-  @override
   String get reportExportErr => '无法导出';
 
   @override
   String get reportNoData => '此期间无数据';
 
-  // ---- Alerts ----
   @override
   String get alertEmpty => '暂无提醒';
-
-  @override
-  String alertDiscrepancy(String date) => '$date 存在差异';
-
-  @override
-  String alertDayOpen(String date) => '$date 仍处于开放状态';
-
-  @override
-  String alertDayUnregistered(String date) => '$date 未登记';
 
   @override
   String get alertMissingReceipt => '支出缺少凭证';
 
   @override
   String get alertInvoiceOverdue => '发票已逾期';
-
-  @override
-  String alertFloatMismatch(String date) => '$date 备用金不符';
 
   @override
   String get alertBackupOld => '已超过 14 天未备份';
@@ -1076,7 +1048,6 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get alertGoBackup => '立即备份';
 
-  // ---- Settings ----
   @override
   String get settingsRestaurant => '餐厅信息';
 
@@ -1122,7 +1093,6 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get settingsBiometricsNotAvailable => '此设备不支持生物识别';
 
-  // ---- Catalog ----
   @override
   String get catalogNew => '新增';
 
@@ -1141,7 +1111,6 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get catalogEmpty => '暂无数据';
 
-  // ---- History ----
   @override
   String get historyEmpty => '暂无变更记录';
 
@@ -1157,7 +1126,6 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get historyNewValue => '新值';
 
-  // ---- Backup ----
   @override
   String get backupSectionCreate => '创建备份';
 
@@ -1227,7 +1195,6 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get backupLastCopy => '上次备份';
 
-  // ---- Months ----
   @override
   String get monthsClose => '关闭月份';
 
@@ -1241,9 +1208,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get monthsStatusClosed => '已关闭';
 
   @override
-  String monthsErrNotReady(String dates) => '以下日期尚未完成：$dates';
-
-  @override
   String get monthsErrSave => '无法更改月份状态';
 
   @override
@@ -1254,4 +1218,76 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get monthsEmpty => '暂无月份数据';
+
+  @override
+  String reportGestorMissing(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '缺少 $count 份凭证',
+      one: '缺少 1 份凭证',
+    );
+    return '警告：$_temp0';
+  }
+
+  @override
+  String alertDiscrepancy(String date) {
+    return '$date 存在差异';
+  }
+
+  @override
+  String alertDayOpen(String date) {
+    return '$date 仍处于开放状态';
+  }
+
+  @override
+  String alertDayUnregistered(String date) {
+    return '$date 未登记';
+  }
+
+  @override
+  String alertFloatMismatch(String date) {
+    return '$date 备用金不符';
+  }
+
+  @override
+  String monthsErrNotReady(String dates) {
+    return '以下日期尚未完成：$dates';
+  }
+
+  @override
+  String get periodToday => '今天';
+
+  @override
+  String get periodCustom => '自定义';
+
+  @override
+  String get reportSavePdf => '保存 PDF';
+
+  @override
+  String get backupPasswordWarning => '请妥善保管此密码：没有它就无法恢复备份，也无法找回。';
+
+  @override
+  String get backupErrNotToaudit => '文件扩展名必须是 .toaudit';
+
+  @override
+  String get backupErrVerify => '恢复失败，已找回原有数据';
+
+  @override
+  String get backupErrRestart => '请重启应用以完成数据恢复';
+
+  @override
+  String get backupErrInspect => '无法读取备份';
+
+  @override
+  String get backupRestoreConfirm => '当前所有数据将被备份中的数据替换。是否继续？';
+
+  @override
+  String get backupCreated => '备份已创建';
+
+  @override
+  String get backupRestoredInApp => '备份已恢复';
+
+  @override
+  String get backupPasswordDialogTitle => '备份密码';
 }

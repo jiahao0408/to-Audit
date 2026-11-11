@@ -59,8 +59,10 @@ class _EmployeeSheetState extends ConsumerState<_EmployeeSheet> {
       return;
     }
     try {
-      final employees =
-          await ref.read(payrollRepositoryProvider).watchEmployees().first;
+      final employees = await ref
+          .read(payrollRepositoryProvider)
+          .watchEmployees()
+          .first;
       final e = employees.where((e) => e.id == id).firstOrNull;
       if (!mounted) return;
       if (e == null) {
@@ -80,7 +82,8 @@ class _EmployeeSheetState extends ConsumerState<_EmployeeSheet> {
   }
 
   Future<void> _pickDate({required bool hired}) async {
-    final initial = (hired ? _hiredOn : _leftOn) ??
+    final initial =
+        (hired ? _hiredOn : _leftOn) ??
         (hired ? DateTime.utc(2020, 1, 1) : DateTime.now());
     final picked = await showDatePicker(
       context: context,
@@ -141,7 +144,9 @@ class _EmployeeSheetState extends ConsumerState<_EmployeeSheet> {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final locale = Localizations.localeOf(context).languageCode;
-    final title = _isNew ? l.payrollEmployeeNewTitle : l.payrollEmployeeEditTitle;
+    final title = _isNew
+        ? l.payrollEmployeeNewTitle
+        : l.payrollEmployeeEditTitle;
     return Padding(
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,

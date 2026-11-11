@@ -241,7 +241,10 @@ class _FixedCostSheetState extends ConsumerState<_FixedCostSheet> {
                           onChanged: (_) {},
                         ),
                         const SizedBox(height: 12),
-                        Text(l.fieldVat, style: Theme.of(context).textTheme.labelLarge),
+                        Text(
+                          l.fieldVat,
+                          style: Theme.of(context).textTheme.labelLarge,
+                        ),
                         const SizedBox(height: 4),
                         SegmentedButton<int>(
                           key: const ValueKey('fixed-cost-vat'),

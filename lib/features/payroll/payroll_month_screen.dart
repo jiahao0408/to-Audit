@@ -20,18 +20,20 @@ final _employeesProvider = StreamProvider.autoDispose<List<EmployeeRecord>>(
 );
 
 /// Payroll rows for a given month key (`YYYY-MM`).
-final _payrollMonthProvider =
-    FutureProvider.autoDispose.family<List<PayrollRow>, String>(
+final _payrollMonthProvider = FutureProvider.autoDispose
+    .family<List<PayrollRow>, String>(
       (ref, month) => ref.read(payrollRepositoryProvider).month(month),
     );
 
 /// Sales total for a given month via the report service.
-final _monthSalesProvider =
-    FutureProvider.autoDispose.family<Money, String>((ref, month) async {
-      final range = rangeMonth(month);
-      final report = await ref.read(reportServiceProvider).build(range);
-      return report.pnl.sales;
-    });
+final _monthSalesProvider = FutureProvider.autoDispose.family<Money, String>((
+  ref,
+  month,
+) async {
+  final range = rangeMonth(month);
+  final report = await ref.read(reportServiceProvider).build(range);
+  return report.pnl.sales;
+});
 
 /// The payroll month screen. [month] is `YYYY-MM`.
 class PayrollMonthScreen extends ConsumerStatefulWidget {
@@ -40,8 +42,7 @@ class PayrollMonthScreen extends ConsumerStatefulWidget {
   final String month;
 
   @override
-  ConsumerState<PayrollMonthScreen> createState() =>
-      _PayrollMonthScreenState();
+  ConsumerState<PayrollMonthScreen> createState() => _PayrollMonthScreenState();
 }
 
 class _PayrollMonthScreenState extends ConsumerState<PayrollMonthScreen> {
@@ -237,11 +238,7 @@ class _PayrollBody extends ConsumerWidget {
             ],
           ),
         ),
-        _TotalsBar(
-          totalCost: totalCost,
-          pct: pct,
-          locale: locale,
-        ),
+        _TotalsBar(totalCost: totalCost, pct: pct, locale: locale),
       ],
     );
   }
@@ -315,8 +312,7 @@ class _EmployeeRow extends ConsumerWidget {
               _InfoRow(l.export_colGross, p.gross.format(locale)),
               _InfoRow(l.export_colNet, p.net.format(locale)),
               _InfoRow(l.export_colEmployerSs, p.employerSs.format(locale)),
-              if (methodName != null)
-                _InfoRow(l.expFieldPayment, methodName),
+              if (methodName != null) _InfoRow(l.expFieldPayment, methodName),
               const SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -364,8 +360,7 @@ class _EmployeeRow extends ConsumerWidget {
   ) async {
     final l = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
-    final reason =
-        await askReason(context, title: l.payrollVoidReasonTitle);
+    final reason = await askReason(context, title: l.payrollVoidReasonTitle);
     if (reason == null || !context.mounted) return;
     try {
       await ref.read(payrollRepositoryProvider).voidPayment(paymentId, reason);
@@ -407,12 +402,13 @@ class _InfoRow extends StatelessWidget {
     padding: const EdgeInsets.symmetric(vertical: 2),
     child: Row(
       children: [
-        Expanded(child: Text(label, style: Theme.of(context).textTheme.bodySmall)),
+        Expanded(
+          child: Text(label, style: Theme.of(context).textTheme.bodySmall),
+        ),
         Text(
           value,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            fontVariations: const [FontVariation('wght', 600)],
-          ),
+          style: Theme.of(context).textTheme.bodySmall
+              ?.copyWith(fontVariations: const [FontVariation('wght', 600)]),
         ),
       ],
     ),
@@ -438,9 +434,7 @@ class _TotalsBar extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceContainerHigh,
-        border: Border(
-          top: BorderSide(color: Theme.of(context).dividerColor),
-        ),
+        border: Border(top: BorderSide(color: Theme.of(context).dividerColor)),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
@@ -461,22 +455,23 @@ class _TotalsBar extends StatelessWidget {
               ],
             ),
           ),
-          if (pct != null)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  l.payrollPercentOfSales,
-                  style: Theme.of(context).textTheme.labelSmall,
-                ),
-                Text(
-                  '${pct!.toStringAsFixed(1)} %',
-                  key: const ValueKey('payroll-pct'),
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-              ],
-            ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                l.payrollPercentOfSales,
+                style: Theme.of(context).textTheme.labelSmall,
+              ),
+              Text(
+                pct == null
+                    ? '—'
+                    : '${NumberFormat('0.0', locale).format(pct!)} %',
+                key: const ValueKey('payroll-pct'),
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -576,14 +571,16 @@ class _PaymentSheetState extends ConsumerState<_PaymentSheet> {
     }
     setState(() => _busy = true);
     try {
-      await ref.read(payrollRepositoryProvider).savePayment(
-        employeeId: widget.employeeId,
-        month: widget.month,
-        gross: gross,
-        net: net,
-        employerSs: ss,
-        paymentMethodId: _methodId!,
-      );
+      await ref
+          .read(payrollRepositoryProvider)
+          .savePayment(
+            employeeId: widget.employeeId,
+            month: widget.month,
+            gross: gross,
+            net: net,
+            employerSs: ss,
+            paymentMethodId: _methodId!,
+          );
       if (mounted) Navigator.of(context).pop(true);
     } on PeriodLockedException {
       if (mounted) {
@@ -621,10 +618,7 @@ class _PaymentSheetState extends ConsumerState<_PaymentSheet> {
                 widget.employeeName,
                 style: Theme.of(context).textTheme.titleLarge,
               ),
-              Text(
-                widget.month,
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
+              Text(widget.month, style: Theme.of(context).textTheme.bodySmall),
               const SizedBox(height: 16),
               MoneyField(
                 key: const ValueKey('payroll-field-gross'),

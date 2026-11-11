@@ -1778,144 +1778,791 @@ abstract class AppLocalizations {
   /// **'No se pudo cargar el gasto'**
   String get expLoadError;
 
-  // ---- Fixed costs ----
+  /// No description provided for @fixedCostNewTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Nuevo gasto fijo'**
   String get fixedCostNewTitle;
+
+  /// No description provided for @fixedCostEditTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar gasto fijo'**
   String get fixedCostEditTitle;
+
+  /// No description provided for @fixedCostFieldConcept.
+  ///
+  /// In es, this message translates to:
+  /// **'Concepto'**
   String get fixedCostFieldConcept;
+
+  /// No description provided for @fixedCostFieldPeriodicity.
+  ///
+  /// In es, this message translates to:
+  /// **'Periodicidad'**
   String get fixedCostFieldPeriodicity;
+
+  /// No description provided for @fixedCostFieldChargeDay.
+  ///
+  /// In es, this message translates to:
+  /// **'Día de cargo (1–31)'**
   String get fixedCostFieldChargeDay;
+
+  /// No description provided for @fixedCostFieldStartMonth.
+  ///
+  /// In es, this message translates to:
+  /// **'Mes de inicio (AAAA-MM)'**
   String get fixedCostFieldStartMonth;
+
+  /// No description provided for @fixedCostFieldPlanned.
+  ///
+  /// In es, this message translates to:
+  /// **'Importe previsto (€)'**
   String get fixedCostFieldPlanned;
+
+  /// No description provided for @fixedCostSectionDefs.
+  ///
+  /// In es, this message translates to:
+  /// **'Definiciones'**
   String get fixedCostSectionDefs;
+
+  /// No description provided for @fixedCostSectionPending.
+  ///
+  /// In es, this message translates to:
+  /// **'Por confirmar'**
   String get fixedCostSectionPending;
+
+  /// No description provided for @fixedCostNone.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay gastos fijos definidos'**
   String get fixedCostNone;
+
+  /// No description provided for @fixedCostNonePending.
+  ///
+  /// In es, this message translates to:
+  /// **'Ninguno pendiente de confirmar'**
   String get fixedCostNonePending;
+
+  /// No description provided for @fixedCostConfirmTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirmar importe real'**
   String get fixedCostConfirmTitle;
+
+  /// No description provided for @fixedCostActive.
+  ///
+  /// In es, this message translates to:
+  /// **'Activo'**
   String get fixedCostActive;
+
+  /// No description provided for @fixedCostDeactivate.
+  ///
+  /// In es, this message translates to:
+  /// **'Desactivar'**
   String get fixedCostDeactivate;
+
+  /// No description provided for @fixedCostActivate.
+  ///
+  /// In es, this message translates to:
+  /// **'Activar'**
   String get fixedCostActivate;
+
+  /// No description provided for @fixedCostErrSave.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo guardar el gasto fijo'**
   String get fixedCostErrSave;
+
+  /// No description provided for @periodicityMonthly.
+  ///
+  /// In es, this message translates to:
+  /// **'Mensual'**
   String get periodicityMonthly;
+
+  /// No description provided for @periodicityBimonthly.
+  ///
+  /// In es, this message translates to:
+  /// **'Bimestral'**
   String get periodicityBimonthly;
+
+  /// No description provided for @periodicityQuarterly.
+  ///
+  /// In es, this message translates to:
+  /// **'Trimestral'**
   String get periodicityQuarterly;
+
+  /// No description provided for @periodicityAnnual.
+  ///
+  /// In es, this message translates to:
+  /// **'Anual'**
   String get periodicityAnnual;
 
-  // ---- Payroll ----
+  /// No description provided for @payrollNoEmployees.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay empleados activos este mes'**
   String get payrollNoEmployees;
+
+  /// No description provided for @payrollErrSave.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo guardar la nómina'**
   String get payrollErrSave;
+
+  /// No description provided for @payrollTotalCost.
+  ///
+  /// In es, this message translates to:
+  /// **'Coste total del mes'**
   String get payrollTotalCost;
+
+  /// No description provided for @payrollPercentOfSales.
+  ///
+  /// In es, this message translates to:
+  /// **'% sobre ventas'**
   String get payrollPercentOfSales;
+
+  /// No description provided for @payrollPaymentSave.
+  ///
+  /// In es, this message translates to:
+  /// **'Registrar nómina'**
   String get payrollPaymentSave;
+
+  /// No description provided for @payrollPaymentVoid.
+  ///
+  /// In es, this message translates to:
+  /// **'Anular nómina'**
   String get payrollPaymentVoid;
+
+  /// No description provided for @payrollVoidReasonTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Motivo de anulación de nómina'**
   String get payrollVoidReasonTitle;
+
+  /// No description provided for @payrollFieldGross.
+  ///
+  /// In es, this message translates to:
+  /// **'Bruto (€)'**
   String get payrollFieldGross;
+
+  /// No description provided for @payrollFieldNet.
+  ///
+  /// In es, this message translates to:
+  /// **'Neto (€)'**
   String get payrollFieldNet;
+
+  /// No description provided for @payrollFieldEmployerSs.
+  ///
+  /// In es, this message translates to:
+  /// **'SS empresa (€)'**
   String get payrollFieldEmployerSs;
+
+  /// No description provided for @payrollEmployeeNewTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Nuevo empleado'**
   String get payrollEmployeeNewTitle;
+
+  /// No description provided for @payrollEmployeeEditTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar empleado'**
   String get payrollEmployeeEditTitle;
+
+  /// No description provided for @payrollFieldHiredOn.
+  ///
+  /// In es, this message translates to:
+  /// **'Fecha de alta'**
   String get payrollFieldHiredOn;
+
+  /// No description provided for @payrollFieldLeftOn.
+  ///
+  /// In es, this message translates to:
+  /// **'Fecha de baja (opcional)'**
   String get payrollFieldLeftOn;
+
+  /// No description provided for @payrollNoPayment.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin nómina registrada'**
   String get payrollNoPayment;
+
+  /// No description provided for @payrollErrEmployee.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo guardar el empleado'**
   String get payrollErrEmployee;
 
-  // ---- Withdrawals ----
+  /// No description provided for @withdrawalsPeriodMonth.
+  ///
+  /// In es, this message translates to:
+  /// **'Este mes'**
   String get withdrawalsPeriodMonth;
+
+  /// No description provided for @withdrawalsPeriodWeek.
+  ///
+  /// In es, this message translates to:
+  /// **'Esta semana'**
   String get withdrawalsPeriodWeek;
+
+  /// No description provided for @withdrawalsTotalsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Totales por tipo'**
   String get withdrawalsTotalsTitle;
+
+  /// No description provided for @withdrawalsEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay retiradas en este período'**
   String get withdrawalsEmpty;
+
+  /// No description provided for @withdrawalsErrLoad.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudieron cargar las retiradas'**
   String get withdrawalsErrLoad;
 
-  // ---- Reports ----
+  /// No description provided for @reportPeriodLastMonth.
+  ///
+  /// In es, this message translates to:
+  /// **'Mes anterior'**
   String get reportPeriodLastMonth;
+
+  /// No description provided for @reportErrLoad.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo cargar el informe'**
   String get reportErrLoad;
+
+  /// No description provided for @reportExportPdf.
+  ///
+  /// In es, this message translates to:
+  /// **'PDF'**
   String get reportExportPdf;
+
+  /// No description provided for @reportExportXlsx.
+  ///
+  /// In es, this message translates to:
+  /// **'Excel'**
   String get reportExportXlsx;
+
+  /// No description provided for @reportExportCsv.
+  ///
+  /// In es, this message translates to:
+  /// **'CSV'**
   String get reportExportCsv;
+
+  /// No description provided for @reportExportGestor.
+  ///
+  /// In es, this message translates to:
+  /// **'Gestor ZIP'**
   String get reportExportGestor;
-  String reportGestorMissing(int count);
+
+  /// No description provided for @reportExportErr.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo exportar'**
   String get reportExportErr;
+
+  /// No description provided for @reportNoData.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin datos para este período'**
   String get reportNoData;
 
-  // ---- Alerts ----
+  /// No description provided for @alertEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay alertas pendientes'**
   String get alertEmpty;
-  String alertDiscrepancy(String date);
-  String alertDayOpen(String date);
-  String alertDayUnregistered(String date);
+
+  /// No description provided for @alertMissingReceipt.
+  ///
+  /// In es, this message translates to:
+  /// **'Gasto sin justificante'**
   String get alertMissingReceipt;
+
+  /// No description provided for @alertInvoiceOverdue.
+  ///
+  /// In es, this message translates to:
+  /// **'Factura vencida'**
   String get alertInvoiceOverdue;
-  String alertFloatMismatch(String date);
+
+  /// No description provided for @alertBackupOld.
+  ///
+  /// In es, this message translates to:
+  /// **'No has hecho una copia en más de 14 días'**
   String get alertBackupOld;
+
+  /// No description provided for @alertGoDay.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver día'**
   String get alertGoDay;
+
+  /// No description provided for @alertGoExpense.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver gasto'**
   String get alertGoExpense;
+
+  /// No description provided for @alertGoBackup.
+  ///
+  /// In es, this message translates to:
+  /// **'Hacer copia'**
   String get alertGoBackup;
 
-  // ---- Settings ----
+  /// No description provided for @settingsRestaurant.
+  ///
+  /// In es, this message translates to:
+  /// **'Datos del restaurante'**
   String get settingsRestaurant;
+
+  /// No description provided for @settingsLanguage.
+  ///
+  /// In es, this message translates to:
+  /// **'Idioma'**
   String get settingsLanguage;
+
+  /// No description provided for @settingsThreshold.
+  ///
+  /// In es, this message translates to:
+  /// **'Umbral de descuadre (€)'**
   String get settingsThreshold;
+
+  /// No description provided for @settingsBackupEvery.
+  ///
+  /// In es, this message translates to:
+  /// **'Recordar copia cada (días)'**
   String get settingsBackupEvery;
+
+  /// No description provided for @settingsChangePin.
+  ///
+  /// In es, this message translates to:
+  /// **'Cambiar PIN'**
   String get settingsChangePin;
+
+  /// No description provided for @settingsBiometrics.
+  ///
+  /// In es, this message translates to:
+  /// **'Biometría'**
   String get settingsBiometrics;
+
+  /// No description provided for @settingsCatalogPayments.
+  ///
+  /// In es, this message translates to:
+  /// **'Formas de pago'**
   String get settingsCatalogPayments;
+
+  /// No description provided for @settingsCatalogCategories.
+  ///
+  /// In es, this message translates to:
+  /// **'Categorías de gasto'**
   String get settingsCatalogCategories;
+
+  /// No description provided for @settingsCatalogWithdrawals.
+  ///
+  /// In es, this message translates to:
+  /// **'Tipos de retirada'**
   String get settingsCatalogWithdrawals;
+
+  /// No description provided for @settingsMonths.
+  ///
+  /// In es, this message translates to:
+  /// **'Cierre de períodos'**
   String get settingsMonths;
+
+  /// No description provided for @settingsSaved.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardado'**
   String get settingsSaved;
+
+  /// No description provided for @settingsErrSave.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo guardar'**
   String get settingsErrSave;
+
+  /// No description provided for @settingsPinChanged.
+  ///
+  /// In es, this message translates to:
+  /// **'PIN cambiado correctamente'**
   String get settingsPinChanged;
+
+  /// No description provided for @settingsErrPin.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo cambiar el PIN'**
   String get settingsErrPin;
+
+  /// No description provided for @settingsBiometricsNotAvailable.
+  ///
+  /// In es, this message translates to:
+  /// **'La biometría no está disponible en este dispositivo'**
   String get settingsBiometricsNotAvailable;
 
-  // ---- Catalog ----
+  /// No description provided for @catalogNew.
+  ///
+  /// In es, this message translates to:
+  /// **'Nuevo'**
   String get catalogNew;
+
+  /// No description provided for @catalogFieldName.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre'**
   String get catalogFieldName;
+
+  /// No description provided for @catalogActive.
+  ///
+  /// In es, this message translates to:
+  /// **'Activo'**
   String get catalogActive;
+
+  /// No description provided for @catalogInactive.
+  ///
+  /// In es, this message translates to:
+  /// **'Inactivo'**
   String get catalogInactive;
+
+  /// No description provided for @catalogErrSave.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo guardar'**
   String get catalogErrSave;
+
+  /// No description provided for @catalogEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin elementos'**
   String get catalogEmpty;
 
-  // ---- History ----
+  /// No description provided for @historyEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay cambios registrados'**
   String get historyEmpty;
+
+  /// No description provided for @historyErrLoad.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo cargar el historial'**
   String get historyErrLoad;
+
+  /// No description provided for @historyField.
+  ///
+  /// In es, this message translates to:
+  /// **'Campo'**
   String get historyField;
+
+  /// No description provided for @historyOldValue.
+  ///
+  /// In es, this message translates to:
+  /// **'Antes'**
   String get historyOldValue;
+
+  /// No description provided for @historyNewValue.
+  ///
+  /// In es, this message translates to:
+  /// **'Después'**
   String get historyNewValue;
 
-  // ---- Backup ----
+  /// No description provided for @backupSectionCreate.
+  ///
+  /// In es, this message translates to:
+  /// **'Nueva copia'**
   String get backupSectionCreate;
+
+  /// No description provided for @backupSectionRestore.
+  ///
+  /// In es, this message translates to:
+  /// **'Restaurar copia'**
   String get backupSectionRestore;
+
+  /// No description provided for @backupPasswordLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Contraseña (mín. 8 caracteres)'**
   String get backupPasswordLabel;
+
+  /// No description provided for @backupPasswordConfirm.
+  ///
+  /// In es, this message translates to:
+  /// **'Repite la contraseña'**
   String get backupPasswordConfirm;
+
+  /// No description provided for @backupPasswordMismatch.
+  ///
+  /// In es, this message translates to:
+  /// **'Las contraseñas no coinciden'**
   String get backupPasswordMismatch;
+
+  /// No description provided for @backupPasswordTooShort.
+  ///
+  /// In es, this message translates to:
+  /// **'Mínimo 8 caracteres'**
   String get backupPasswordTooShort;
+
+  /// No description provided for @backupCreateButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Crear y exportar'**
   String get backupCreateButton;
+
+  /// No description provided for @backupPickFile.
+  ///
+  /// In es, this message translates to:
+  /// **'Elegir archivo .toaudit'**
   String get backupPickFile;
+
+  /// No description provided for @backupInspecting.
+  ///
+  /// In es, this message translates to:
+  /// **'Verificando copia…'**
   String get backupInspecting;
+
+  /// No description provided for @backupPreviewTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Vista previa de la copia'**
   String get backupPreviewTitle;
+
+  /// No description provided for @backupPreviewDate.
+  ///
+  /// In es, this message translates to:
+  /// **'Fecha de la copia'**
   String get backupPreviewDate;
+
+  /// No description provided for @backupPreviewDays.
+  ///
+  /// In es, this message translates to:
+  /// **'Días'**
   String get backupPreviewDays;
+
+  /// No description provided for @backupPreviewExpenses.
+  ///
+  /// In es, this message translates to:
+  /// **'Gastos'**
   String get backupPreviewExpenses;
+
+  /// No description provided for @backupRestoreButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Restaurar ahora'**
   String get backupRestoreButton;
+
+  /// No description provided for @backupRestoring.
+  ///
+  /// In es, this message translates to:
+  /// **'Restaurando…'**
   String get backupRestoring;
+
+  /// No description provided for @backupRestoredTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Copia restaurada'**
   String get backupRestoredTitle;
+
+  /// No description provided for @backupRestoredBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Los datos se han restaurado correctamente. Cierra y vuelve a abrir la app para aplicar los cambios.'**
   String get backupRestoredBody;
+
+  /// No description provided for @backupErrDecrypt.
+  ///
+  /// In es, this message translates to:
+  /// **'Contraseña incorrecta o archivo dañado'**
   String get backupErrDecrypt;
+
+  /// No description provided for @backupErrTooNew.
+  ///
+  /// In es, this message translates to:
+  /// **'Esta copia fue creada con una versión más reciente de la app'**
   String get backupErrTooNew;
+
+  /// No description provided for @backupErrRestore.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo restaurar la copia'**
   String get backupErrRestore;
+
+  /// No description provided for @backupErrCreate.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo crear la copia'**
   String get backupErrCreate;
+
+  /// No description provided for @backupCancelDelete.
+  ///
+  /// In es, this message translates to:
+  /// **'Cancelar y limpiar'**
   String get backupCancelDelete;
+
+  /// No description provided for @backupLastCopy.
+  ///
+  /// In es, this message translates to:
+  /// **'Última copia'**
   String get backupLastCopy;
 
-  // ---- Months ----
+  /// No description provided for @monthsClose.
+  ///
+  /// In es, this message translates to:
+  /// **'Cerrar mes'**
   String get monthsClose;
+
+  /// No description provided for @monthsReopen.
+  ///
+  /// In es, this message translates to:
+  /// **'Reabrir mes'**
   String get monthsReopen;
+
+  /// No description provided for @monthsStatusOpen.
+  ///
+  /// In es, this message translates to:
+  /// **'Abierto'**
   String get monthsStatusOpen;
+
+  /// No description provided for @monthsStatusClosed.
+  ///
+  /// In es, this message translates to:
+  /// **'Cerrado'**
   String get monthsStatusClosed;
-  String monthsErrNotReady(String dates);
+
+  /// No description provided for @monthsErrSave.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo cambiar el estado del mes'**
   String get monthsErrSave;
+
+  /// No description provided for @monthsReopenReasonTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Motivo para reabrir el mes'**
   String get monthsReopenReasonTitle;
+
+  /// No description provided for @monthsErrAlreadyClosed.
+  ///
+  /// In es, this message translates to:
+  /// **'El mes ya está cerrado'**
   String get monthsErrAlreadyClosed;
+
+  /// No description provided for @monthsEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'Aún no hay meses con actividad'**
   String get monthsEmpty;
+
+  /// No description provided for @reportGestorMissing.
+  ///
+  /// In es, this message translates to:
+  /// **'Advertencia: {count, plural, one{1 justificante no encontrado} other{{count} justificantes no encontrados}}'**
+  String reportGestorMissing(int count);
+
+  /// No description provided for @alertDiscrepancy.
+  ///
+  /// In es, this message translates to:
+  /// **'Descuadre el {date}'**
+  String alertDiscrepancy(String date);
+
+  /// No description provided for @alertDayOpen.
+  ///
+  /// In es, this message translates to:
+  /// **'El día {date} sigue abierto'**
+  String alertDayOpen(String date);
+
+  /// No description provided for @alertDayUnregistered.
+  ///
+  /// In es, this message translates to:
+  /// **'El día {date} no está registrado'**
+  String alertDayUnregistered(String date);
+
+  /// No description provided for @alertFloatMismatch.
+  ///
+  /// In es, this message translates to:
+  /// **'Fondo inicial incorrecto el {date}'**
+  String alertFloatMismatch(String date);
+
+  /// No description provided for @monthsErrNotReady.
+  ///
+  /// In es, this message translates to:
+  /// **'Días pendientes: {dates}'**
+  String monthsErrNotReady(String dates);
+
+  /// No description provided for @periodToday.
+  ///
+  /// In es, this message translates to:
+  /// **'Hoy'**
+  String get periodToday;
+
+  /// No description provided for @periodCustom.
+  ///
+  /// In es, this message translates to:
+  /// **'Desde–hasta'**
+  String get periodCustom;
+
+  /// No description provided for @reportSavePdf.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar PDF'**
+  String get reportSavePdf;
+
+  /// No description provided for @backupPasswordWarning.
+  ///
+  /// In es, this message translates to:
+  /// **'Guarda esta contraseña en un lugar seguro: sin ella no se puede restaurar la copia y no hay forma de recuperarla.'**
+  String get backupPasswordWarning;
+
+  /// No description provided for @backupErrNotToaudit.
+  ///
+  /// In es, this message translates to:
+  /// **'El archivo debe tener la extensión .toaudit'**
+  String get backupErrNotToaudit;
+
+  /// No description provided for @backupErrVerify.
+  ///
+  /// In es, this message translates to:
+  /// **'La restauración falló y se han recuperado tus datos anteriores'**
+  String get backupErrVerify;
+
+  /// No description provided for @backupErrRestart.
+  ///
+  /// In es, this message translates to:
+  /// **'Reinicia la app para terminar de recuperar los datos'**
+  String get backupErrRestart;
+
+  /// No description provided for @backupErrInspect.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo leer la copia'**
+  String get backupErrInspect;
+
+  /// No description provided for @backupRestoreConfirm.
+  ///
+  /// In es, this message translates to:
+  /// **'Se reemplazarán todos los datos actuales por los de la copia. ¿Continuar?'**
+  String get backupRestoreConfirm;
+
+  /// No description provided for @backupCreated.
+  ///
+  /// In es, this message translates to:
+  /// **'Copia creada'**
+  String get backupCreated;
+
+  /// No description provided for @backupRestoredInApp.
+  ///
+  /// In es, this message translates to:
+  /// **'Copia restaurada'**
+  String get backupRestoredInApp;
+
+  /// No description provided for @backupPasswordDialogTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Contraseña de la copia'**
+  String get backupPasswordDialogTitle;
 }
 
 class _AppLocalizationsDelegate

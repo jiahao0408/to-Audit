@@ -22,7 +22,7 @@ import '../../support/app_harness.dart';
 /// zero for everything else — avoids touching the real Drift stream that
 /// deadlocks inside widget-test pump cycles.
 class _FakeReportService extends Fake implements ReportService {
-  _FakeReportService() : sales = Money.zero;
+  _FakeReportService([this.sales = Money.zero]);
 
   final Money sales;
 
@@ -129,7 +129,10 @@ void main() {
 
   /// Common pump helper — sets up the view, warms up the DB, and pumps
   /// the PayrollMonthScreen with the required overrides.
-  Future<void> pumpScreen(WidgetTester tester) async {
+  Future<void> pumpScreen(
+    WidgetTester tester, {
+    Money sales = Money.zero,
+  }) async {
     tester.view.physicalSize = const Size(800, 1600);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
@@ -144,7 +147,7 @@ void main() {
             clock: () => DateTime.utc(2026, 11, 9, 10),
             documents: Directory.systemTemp,
           ),
-          reportServiceProvider.overrideWithValue(_FakeReportService()),
+          reportServiceProvider.overrideWithValue(_FakeReportService(sales)),
         ],
         child: const MaterialApp(
           locale: Locale('es'),
@@ -157,8 +160,7 @@ void main() {
     await settle(tester);
   }
 
-  testWidgets('shows 2 employees, total cost 3900 and 30.0% of 13000 sales',
-      (tester) async {
+  testWidgets('shows 2 employees, total cost 3900 ', (tester) async {
     // Seed before pumping so DB transactions complete in real async.
     await seedScenario(tester);
     await pumpScreen(tester);
@@ -176,14 +178,20 @@ void main() {
     await disposeApp(tester);
   });
 
-  testWidgets('% of sales shows 30.0 when sales = 13000', (tester) async {
-    // Seed before pumping so DB transactions complete in real async.
+  testWidgets('% of sales is 30,0 % with 13.000,00 € of sales', (tester) async {
+    await seedScenario(tester);
+    await pumpScreen(tester, sales: const Money(1300000));
+
+    expect(find.text(es(const Money(390000))), findsOneWidget);
+    expect(find.text('30,0 %'), findsOneWidget);
+    await disposeApp(tester);
+  });
+
+  testWidgets('no sales: the percentage is not shown', (tester) async {
     await seedScenario(tester);
     await pumpScreen(tester);
 
-    // With no closed days (fake ReportService returns zero sales) → ratio
-    // widget is absent.
-    expect(find.byKey(const ValueKey('payroll-pct')), findsNothing);
+    expect(find.text('—'), findsOneWidget);
     await disposeApp(tester);
   });
 

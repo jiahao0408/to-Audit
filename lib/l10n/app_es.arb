@@ -355,5 +355,178 @@
   "suppNewTitle": "Nuevo proveedor",
   "suppEditTitle": "Editar proveedor",
   "suppErrSave": "No se pudo guardar el proveedor",
-  "expLoadError": "No se pudo cargar el gasto"
+  "expLoadError": "No se pudo cargar el gasto",
+  "fixedCostNewTitle": "Nuevo gasto fijo",
+  "fixedCostEditTitle": "Editar gasto fijo",
+  "fixedCostFieldConcept": "Concepto",
+  "fixedCostFieldPeriodicity": "Periodicidad",
+  "fixedCostFieldChargeDay": "Día de cargo (1–31)",
+  "fixedCostFieldStartMonth": "Mes de inicio (AAAA-MM)",
+  "fixedCostFieldPlanned": "Importe previsto (€)",
+  "fixedCostSectionDefs": "Definiciones",
+  "fixedCostSectionPending": "Por confirmar",
+  "fixedCostNone": "No hay gastos fijos definidos",
+  "fixedCostNonePending": "Ninguno pendiente de confirmar",
+  "fixedCostConfirmTitle": "Confirmar importe real",
+  "fixedCostActive": "Activo",
+  "fixedCostDeactivate": "Desactivar",
+  "fixedCostActivate": "Activar",
+  "fixedCostErrSave": "No se pudo guardar el gasto fijo",
+  "periodicityMonthly": "Mensual",
+  "periodicityBimonthly": "Bimestral",
+  "periodicityQuarterly": "Trimestral",
+  "periodicityAnnual": "Anual",
+  "payrollNoEmployees": "No hay empleados activos este mes",
+  "payrollErrSave": "No se pudo guardar la nómina",
+  "payrollTotalCost": "Coste total del mes",
+  "payrollPercentOfSales": "% sobre ventas",
+  "payrollPaymentSave": "Registrar nómina",
+  "payrollPaymentVoid": "Anular nómina",
+  "payrollVoidReasonTitle": "Motivo de anulación de nómina",
+  "payrollFieldGross": "Bruto (€)",
+  "payrollFieldNet": "Neto (€)",
+  "payrollFieldEmployerSs": "SS empresa (€)",
+  "payrollEmployeeNewTitle": "Nuevo empleado",
+  "payrollEmployeeEditTitle": "Editar empleado",
+  "payrollFieldHiredOn": "Fecha de alta",
+  "payrollFieldLeftOn": "Fecha de baja (opcional)",
+  "payrollNoPayment": "Sin nómina registrada",
+  "payrollErrEmployee": "No se pudo guardar el empleado",
+  "withdrawalsPeriodMonth": "Este mes",
+  "withdrawalsPeriodWeek": "Esta semana",
+  "withdrawalsTotalsTitle": "Totales por tipo",
+  "withdrawalsEmpty": "No hay retiradas en este período",
+  "withdrawalsErrLoad": "No se pudieron cargar las retiradas",
+  "reportPeriodLastMonth": "Mes anterior",
+  "reportErrLoad": "No se pudo cargar el informe",
+  "reportExportPdf": "PDF",
+  "reportExportXlsx": "Excel",
+  "reportExportCsv": "CSV",
+  "reportExportGestor": "Gestor ZIP",
+  "reportExportErr": "No se pudo exportar",
+  "reportNoData": "Sin datos para este período",
+  "alertEmpty": "No hay alertas pendientes",
+  "alertMissingReceipt": "Gasto sin justificante",
+  "alertInvoiceOverdue": "Factura vencida",
+  "alertBackupOld": "No has hecho una copia en más de 14 días",
+  "alertGoDay": "Ver día",
+  "alertGoExpense": "Ver gasto",
+  "alertGoBackup": "Hacer copia",
+  "settingsRestaurant": "Datos del restaurante",
+  "settingsLanguage": "Idioma",
+  "settingsThreshold": "Umbral de descuadre (€)",
+  "settingsBackupEvery": "Recordar copia cada (días)",
+  "settingsChangePin": "Cambiar PIN",
+  "settingsBiometrics": "Biometría",
+  "settingsCatalogPayments": "Formas de pago",
+  "settingsCatalogCategories": "Categorías de gasto",
+  "settingsCatalogWithdrawals": "Tipos de retirada",
+  "settingsMonths": "Cierre de períodos",
+  "settingsSaved": "Guardado",
+  "settingsErrSave": "No se pudo guardar",
+  "settingsPinChanged": "PIN cambiado correctamente",
+  "settingsErrPin": "No se pudo cambiar el PIN",
+  "settingsBiometricsNotAvailable": "La biometría no está disponible en este dispositivo",
+  "catalogNew": "Nuevo",
+  "catalogFieldName": "Nombre",
+  "catalogActive": "Activo",
+  "catalogInactive": "Inactivo",
+  "catalogErrSave": "No se pudo guardar",
+  "catalogEmpty": "Sin elementos",
+  "historyEmpty": "No hay cambios registrados",
+  "historyErrLoad": "No se pudo cargar el historial",
+  "historyField": "Campo",
+  "historyOldValue": "Antes",
+  "historyNewValue": "Después",
+  "backupSectionCreate": "Nueva copia",
+  "backupSectionRestore": "Restaurar copia",
+  "backupPasswordLabel": "Contraseña (mín. 8 caracteres)",
+  "backupPasswordConfirm": "Repite la contraseña",
+  "backupPasswordMismatch": "Las contraseñas no coinciden",
+  "backupPasswordTooShort": "Mínimo 8 caracteres",
+  "backupCreateButton": "Crear y exportar",
+  "backupPickFile": "Elegir archivo .toaudit",
+  "backupInspecting": "Verificando copia…",
+  "backupPreviewTitle": "Vista previa de la copia",
+  "backupPreviewDate": "Fecha de la copia",
+  "backupPreviewDays": "Días",
+  "backupPreviewExpenses": "Gastos",
+  "backupRestoreButton": "Restaurar ahora",
+  "backupRestoring": "Restaurando…",
+  "backupRestoredTitle": "Copia restaurada",
+  "backupRestoredBody": "Los datos se han restaurado correctamente. Cierra y vuelve a abrir la app para aplicar los cambios.",
+  "backupErrDecrypt": "Contraseña incorrecta o archivo dañado",
+  "backupErrTooNew": "Esta copia fue creada con una versión más reciente de la app",
+  "backupErrRestore": "No se pudo restaurar la copia",
+  "backupErrCreate": "No se pudo crear la copia",
+  "backupCancelDelete": "Cancelar y limpiar",
+  "backupLastCopy": "Última copia",
+  "monthsClose": "Cerrar mes",
+  "monthsReopen": "Reabrir mes",
+  "monthsStatusOpen": "Abierto",
+  "monthsStatusClosed": "Cerrado",
+  "monthsErrSave": "No se pudo cambiar el estado del mes",
+  "monthsReopenReasonTitle": "Motivo para reabrir el mes",
+  "monthsErrAlreadyClosed": "El mes ya está cerrado",
+  "monthsEmpty": "Aún no hay meses con actividad",
+  "reportGestorMissing": "Advertencia: {count, plural, one{1 justificante no encontrado} other{{count} justificantes no encontrados}}",
+  "@reportGestorMissing": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "alertDiscrepancy": "Descuadre el {date}",
+  "@alertDiscrepancy": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "alertDayOpen": "El día {date} sigue abierto",
+  "@alertDayOpen": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "alertDayUnregistered": "El día {date} no está registrado",
+  "@alertDayUnregistered": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "alertFloatMismatch": "Fondo inicial incorrecto el {date}",
+  "@alertFloatMismatch": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "monthsErrNotReady": "Días pendientes: {dates}",
+  "@monthsErrNotReady": {
+    "placeholders": {
+      "dates": {
+        "type": "String"
+      }
+    }
+  },
+  "periodToday": "Hoy",
+  "periodCustom": "Desde–hasta",
+  "reportSavePdf": "Guardar PDF",
+  "backupPasswordWarning": "Guarda esta contraseña en un lugar seguro: sin ella no se puede restaurar la copia y no hay forma de recuperarla.",
+  "backupErrNotToaudit": "El archivo debe tener la extensión .toaudit",
+  "backupErrVerify": "La restauración falló y se han recuperado tus datos anteriores",
+  "backupErrRestart": "Reinicia la app para terminar de recuperar los datos",
+  "backupErrInspect": "No se pudo leer la copia",
+  "backupRestoreConfirm": "Se reemplazarán todos los datos actuales por los de la copia. ¿Continuar?",
+  "backupCreated": "Copia creada",
+  "backupRestoredInApp": "Copia restaurada",
+  "backupPasswordDialogTitle": "Contraseña de la copia"
 }

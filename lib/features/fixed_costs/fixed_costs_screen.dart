@@ -34,15 +34,18 @@ final _pendingFixedExpensesProvider =
         daysInMonth(endYear, endMonth),
       );
       final range = DateRange(start, end);
-      return ref.watch(expensesRepositoryProvider).watchRange(range).map(
-        (all) => [
-          for (final e in all)
-            if (e.origin == ExpenseOrigin.fixed &&
-                e.fixedStatus != FixedStatus.confirmed &&
-                !e.voided)
-              e,
-        ],
-      );
+      return ref
+          .watch(expensesRepositoryProvider)
+          .watchRange(range)
+          .map(
+            (all) => [
+              for (final e in all)
+                if (e.origin == ExpenseOrigin.fixed &&
+                    e.fixedStatus != FixedStatus.confirmed &&
+                    !e.voided)
+                  e,
+            ],
+          );
     });
 
 /// Fixed costs: list of definitions and a "Por confirmar" section of planned
@@ -89,9 +92,8 @@ class FixedCostsScreen extends ConsumerWidget {
                                 ),
                             ],
                           ),
-                    loading: () => const Center(
-                      child: CircularProgressIndicator(),
-                    ),
+                    loading: () =>
+                        const Center(child: CircularProgressIndicator()),
                     error: (e, st) => _Empty(l.fixedCostErrSave),
                   ),
                   const SizedBox(height: 24),
@@ -175,9 +177,8 @@ class _SectionTitle extends StatelessWidget {
     padding: const EdgeInsets.only(top: 8, bottom: 8),
     child: Text(
       text,
-      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-        fontWeight: FontWeight.bold,
-      ),
+      style: Theme.of(context).textTheme.titleMedium
+          ?.copyWith(fontWeight: FontWeight.bold),
     ),
   );
 }
