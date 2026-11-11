@@ -14,9 +14,10 @@ import 'data/security/key_store.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final documents = await getApplicationDocumentsDirectory();
   final keyStore = SecureKeyStore();
+  Directory? documents;
   try {
+    final docs = documents = await getApplicationDocumentsDirectory();
     // Work files of an export or restore that was cut short. A failing
     // cleanup must not look like a broken database.
     try {
@@ -24,16 +25,16 @@ Future<void> main() async {
     } catch (e) {
       debugPrint('Temp cleanup failed: ${e.runtimeType}');
     }
-    final db = await openAppDatabase(
-      file: File(p.join(documents.path, databaseFileName)),
+    final db = await openAndProbe(
+      file: File(p.join(docs.path, databaseFileName)),
       keys: DbKeyManager(keyStore),
-      filesRoot: documents,
+      filesRoot: docs,
     );
     runApp(
       ProviderScope(
         overrides: [
           databaseProvider.overrideWith(() => DatabaseNotifier(db)),
-          documentsDirProvider.overrideWithValue(documents),
+          documentsDirProvider.overrideWithValue(docs),
           keyStoreProvider.overrideWithValue(keyStore),
         ],
         child: const ToAuditApp(),

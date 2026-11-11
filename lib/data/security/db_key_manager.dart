@@ -19,6 +19,9 @@ class DbKeyManager {
   Future<String> getOrCreateKey() =>
       _creating ??= _getOrCreate().whenComplete(() => _creating = null);
 
+  /// Forgets the stored key. Only for undoing a key this process just created.
+  Future<void> deleteKey() => _store.delete(storageKey);
+
   Future<String> _getOrCreate() async {
     final existing = await existingKey();
     if (existing != null) return existing;

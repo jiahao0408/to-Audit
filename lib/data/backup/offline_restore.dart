@@ -68,6 +68,9 @@ Future<void> applyPreviewWithoutOpenDb({
     } catch (_) {}
   }
 
+  // True when this call created the key: a rollback then deletes it again, so
+  // the next start sees "key missing" instead of a key for nothing.
+  var createdKey = false;
   try {
     final leftovers =
         await paths.marker.exists() ||
@@ -82,6 +85,7 @@ Future<void> applyPreviewWithoutOpenDb({
       // instead of blocking the restore for good.
       await _orphan(paths);
     }
+    createdKey = await keys.existingKey() == null;
     final key = await keys.getOrCreateKey();
     await dbFile.parent.create(recursive: true);
     await deleteDbFiles(paths.dbStaged);
@@ -163,6 +167,9 @@ Future<void> applyPreviewWithoutOpenDb({
     }
     await step(() => deleteDbFiles(paths.dbBak));
     await step(() => deleteDirIfExists(paths.receiptsBak));
+  } catch (_) {
+    if (createdKey) await step(keys.deleteKey);
+    rethrow;
   } finally {
     await step(() => deleteDirIfExists(source));
   }

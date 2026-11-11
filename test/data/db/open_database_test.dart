@@ -151,4 +151,51 @@ void main() {
       expect(await file.exists(), isFalse);
     });
   }
+
+  group('openAndProbe', () {
+    test('returns a working database', () async {
+      final db = await openAndProbe(
+        file: file,
+        keys: DbKeyManager(MemoryKeyStore()),
+        filesRoot: dir,
+      );
+      expect(await db.select(db.days).get(), isEmpty);
+      await db.close();
+    });
+
+    test('a wrong key throws at once instead of at the first screen', () async {
+      final created = await openEncryptedDatabase(file: file, hexKey: keyA);
+      await insertDay(created);
+      await created.close();
+
+      final store = MemoryKeyStore();
+      await store.write(DbKeyManager.storageKey, keyB);
+      await expectLater(
+        openAndProbe(file: file, keys: DbKeyManager(store), filesRoot: dir),
+        throwsA(anything),
+      );
+    });
+
+    test('a damaged file throws', () async {
+      await file.writeAsBytes(List.filled(4096, 7));
+      final store = MemoryKeyStore();
+      await store.write(DbKeyManager.storageKey, keyA);
+      await expectLater(
+        openAndProbe(file: file, keys: DbKeyManager(store), filesRoot: dir),
+        throwsA(anything),
+      );
+    });
+
+    test('a missing key stays DatabaseKeyMissingException', () async {
+      await file.writeAsBytes(List.filled(4096, 7));
+      await expectLater(
+        openAndProbe(
+          file: file,
+          keys: DbKeyManager(MemoryKeyStore()),
+          filesRoot: dir,
+        ),
+        throwsA(isA<DatabaseKeyMissingException>()),
+      );
+    });
+  });
 }

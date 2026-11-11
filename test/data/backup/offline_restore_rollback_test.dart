@@ -142,6 +142,27 @@ void main() {
     expectOriginal(bytes);
   });
 
+  test('a rollback deletes the key this call created', () async {
+    final store = MemoryKeyStore();
+    db().writeAsStringSync('damaged');
+    await expectLater(
+      runWith(DbKeyManager(store), dayDelta: 1),
+      throwsA(isA<BackupVerifyException>()),
+    );
+    expect(store.values, isEmpty);
+    expect(db().readAsStringSync(), 'damaged');
+  });
+
+  test('a rollback keeps a key that already existed', () async {
+    final (keys, bytes) = await original();
+    await expectLater(
+      runWith(keys, dayDelta: 1),
+      throwsA(isA<BackupVerifyException>()),
+    );
+    expect(await keys.existingKey(), keyB);
+    expectOriginal(bytes);
+  });
+
   test('with no original, a failed verify leaves nothing behind', () async {
     final keys = DbKeyManager(MemoryKeyStore());
     await expectLater(

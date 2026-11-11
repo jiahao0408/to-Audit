@@ -216,16 +216,13 @@ final backupServiceProvider = Provider<BackupService>((ref) {
     settings: ref.watch(settingsRepositoryProvider),
     closeDb: db.close,
     // openEncryptedDatabase, not openAppDatabase: start-up recovery must not
-    // run in the middle of a restore. The database reopened last is the live
-    // one, so it is published to every dependent provider.
-    reopenDb: () async {
-      final reopened = await openEncryptedDatabase(
-        file: dbFile,
-        hexKey: await keys.getOrCreateKey(),
-      );
-      holder.replace(reopened);
-      return reopened;
-    },
+    // run in the middle of a restore. The service publishes the live one to
+    // every dependent provider only after its counts were verified.
+    reopenDb: () async => openEncryptedDatabase(
+      file: dbFile,
+      hexKey: await keys.getOrCreateKey(),
+    ),
+    publishDb: holder.replace,
     dbFile: dbFile,
     hexKey: keys.getOrCreateKey,
     deriveKey: ref.watch(keyDeriverProvider),

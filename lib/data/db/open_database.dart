@@ -67,3 +67,27 @@ Future<AppDatabase> openAppDatabase({
   }
   return openEncryptedDatabase(file: file, hexKey: await keys.getOrCreateKey());
 }
+
+/// [openAppDatabase] plus a real query. The key is only applied on the first
+/// query, so a wrong key or a damaged file would otherwise surface later,
+/// inside the UI. On failure the database is closed and the error rethrown.
+Future<AppDatabase> openAndProbe({
+  required File file,
+  required DbKeyManager keys,
+  required Directory filesRoot,
+}) async {
+  final db = await openAppDatabase(
+    file: file,
+    keys: keys,
+    filesRoot: filesRoot,
+  );
+  try {
+    await db.customSelect('select count(*) from dia_caja').get();
+    return db;
+  } catch (_) {
+    try {
+      await db.close();
+    } catch (_) {}
+    rethrow;
+  }
+}

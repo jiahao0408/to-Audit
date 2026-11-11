@@ -71,6 +71,7 @@ class BackupService {
     required this._hexKey,
     this._iterations = 600000,
     this._deriveKey = _defaultDeriver,
+    this._publishDb,
   });
 
   final AppDatabase _db;
@@ -83,6 +84,11 @@ class BackupService {
   final File _dbFile;
   final Future<String> Function() _hexKey;
   final int _iterations;
+
+  /// Called with the database that is live after [restore]: the verified new
+  /// one, or the original reopened after a rollback. Never called with a
+  /// database that failed verification.
+  final void Function(AppDatabase db)? _publishDb;
 
   /// PBKDF2 runner; the app passes [isolateKeyDeriver] so the 600k
   /// iterations do not block the UI isolate (the database stays on the main
@@ -309,6 +315,7 @@ class BackupService {
           );
         }
         await paths.marker.delete();
+        _publishDb?.call(db);
       } catch (e, st) {
         final db = reopened;
         if (db != null) await step(db.close);
@@ -323,7 +330,12 @@ class BackupService {
           await step(() async {
             if (await paths.marker.exists()) await paths.marker.delete();
           });
-          if (closed) await step(() => _reopenDb());
+          if (closed) {
+            await step(() async {
+              final original = await _reopenDb();
+              _publishDb?.call(original);
+            });
+          }
         }
         Error.throwWithStackTrace(e, st);
       }

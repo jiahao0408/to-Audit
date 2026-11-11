@@ -67,6 +67,7 @@ class Phone {
   BackupService service({
     DbSnapshotter? snapshotter,
     Future<AppDatabase> Function()? reopenDb,
+    void Function(AppDatabase db)? publishDb,
   }) => BackupService(
     db: db,
     snapshotter:
@@ -80,6 +81,7 @@ class Phone {
     dbFile: dbFile,
     hexKey: () async => hexKey ?? '',
     iterations: _iterations,
+    publishDb: publishDb,
   );
 
   /// 2 days, 3 expenses (one voided) and 2 receipt files.
@@ -253,7 +255,8 @@ void main() {
 
     final target = await phone('backup_dst');
     expect(await target.count('dia_caja'), 0);
-    final service = target.service();
+    final published = <AppDatabase>[];
+    final service = target.service(publishDb: published.add);
     final preview = await service.inspect(backup, _password);
     expect(preview.days, 2);
     expect(preview.expenses, 3);
@@ -261,6 +264,15 @@ void main() {
     expect(preview.createdAt, now);
 
     await service.restore(preview);
+    // Published once, after the counts were verified.
+    expect(published, hasLength(1));
+    expect(
+      (await published.single
+              .customSelect('SELECT COUNT(*) AS c FROM dia_caja')
+              .getSingle())
+          .read<int>('c'),
+      2,
+    );
     expect(await target.count('dia_caja'), 2);
     expect(await target.count('gasto'), 3);
     expect(
@@ -348,8 +360,10 @@ void main() {
     final target = await phone('backup_dst');
     await target.seed();
     await target.db.customStatement("DELETE FROM gasto WHERE id = 'e3'");
+    final published = <AppDatabase>[];
     final service = target.service(
       snapshotter: JournalImport(PlainSnapshotter(target.db)),
+      publishDb: published.add,
     );
     final real = await service.inspect(backup, _password);
     final wrong = BackupPreview(
@@ -364,6 +378,9 @@ void main() {
       service.restore(wrong),
       throwsA(isA<BackupVerifyException>()),
     );
+    // Only the original reopened after the rollback is published, never the
+    // restored database that failed verification.
+    expect(published, hasLength(1));
     expect(await target.count('dia_caja'), 2);
     expect(await target.count('gasto'), 2);
     expect(
