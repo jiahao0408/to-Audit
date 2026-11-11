@@ -1230,7 +1230,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get monthsReopenReasonTitle => 'Motivo para reabrir el mes';
 
   @override
-  String get monthsErrAlreadyClosed => 'El mes ya está cerrado';
+  String get monthsErrAlreadyClosed => 'Este mes ya está cerrado';
 
   @override
   String get monthsEmpty => 'Aún no hay meses con actividad';

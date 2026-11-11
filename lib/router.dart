@@ -16,6 +16,7 @@ import 'features/onboarding/onboarding_flow.dart';
 import 'features/payroll/payroll_screen.dart';
 import 'features/reports/reports_screen.dart';
 import 'features/settings/catalog_screen.dart';
+import 'features/settings/months_screen.dart';
 import 'features/settings/settings_screen.dart';
 import 'features/suppliers/suppliers_screen.dart';
 import 'features/withdrawals/withdrawals_screen.dart';
@@ -103,6 +104,10 @@ GoRouter buildRouter(Ref ref, {String initialLocation = '/'}) => GoRouter(
           path: 'catalogs/:kind',
           builder: (context, state) =>
               CatalogScreen(kind: state.pathParameters['kind']!),
+        ),
+        GoRoute(
+          path: 'months',
+          builder: (context, state) => const MonthsScreen(),
         ),
       ],
     ),

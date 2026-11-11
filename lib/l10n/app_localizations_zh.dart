@@ -1214,7 +1214,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get monthsReopenReasonTitle => '重开月份的原因';
 
   @override
-  String get monthsErrAlreadyClosed => '月份已关闭';
+  String get monthsErrAlreadyClosed => '该月份已关闭';
 
   @override
   String get monthsEmpty => '暂无月份数据';

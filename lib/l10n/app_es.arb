@@ -467,7 +467,7 @@
   "monthsStatusClosed": "Cerrado",
   "monthsErrSave": "No se pudo cambiar el estado del mes",
   "monthsReopenReasonTitle": "Motivo para reabrir el mes",
-  "monthsErrAlreadyClosed": "El mes ya está cerrado",
+  "monthsErrAlreadyClosed": "Este mes ya está cerrado",
   "monthsEmpty": "Aún no hay meses con actividad",
   "reportGestorMissing": "Advertencia: {count, plural, one{1 justificante no encontrado} other{{count} justificantes no encontrados}}",
   "@reportGestorMissing": {

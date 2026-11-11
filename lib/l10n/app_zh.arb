@@ -391,7 +391,7 @@
   "monthsStatusClosed": "已关闭",
   "monthsErrSave": "无法更改月份状态",
   "monthsReopenReasonTitle": "重开月份的原因",
-  "monthsErrAlreadyClosed": "月份已关闭",
+  "monthsErrAlreadyClosed": "该月份已关闭",
   "monthsEmpty": "暂无月份数据",
   "@reportGestorMissing": {
     "placeholders": {

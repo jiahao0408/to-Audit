@@ -2447,7 +2447,7 @@ abstract class AppLocalizations {
   /// No description provided for @monthsErrAlreadyClosed.
   ///
   /// In es, this message translates to:
-  /// **'El mes ya está cerrado'**
+  /// **'Este mes ya está cerrado'**
   String get monthsErrAlreadyClosed;
 
   /// No description provided for @monthsEmpty.
