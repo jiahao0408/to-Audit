@@ -528,5 +528,12 @@
   "backupRestoreConfirm": "Se reemplazarán todos los datos actuales por los de la copia. ¿Continuar?",
   "backupCreated": "Copia creada",
   "backupRestoredInApp": "Copia restaurada",
-  "backupPasswordDialogTitle": "Contraseña de la copia"
+  "backupPasswordDialogTitle": "Contraseña de la copia",
+  "catalogFieldKind": "Tipo",
+  "catalogKindPurchase": "Compra de mercancía",
+  "payrollFieldRole": "Puesto",
+  "catalogKindCash": "Efectivo",
+  "catalogKindCard": "Tarjeta",
+  "fixedCostFieldActual": "Importe real (€)",
+  "fixedCostConfirmed": "Importe confirmado"
 }

@@ -1290,4 +1290,25 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get backupPasswordDialogTitle => '备份密码';
+
+  @override
+  String get catalogFieldKind => '类型';
+
+  @override
+  String get catalogKindPurchase => '商品采购';
+
+  @override
+  String get payrollFieldRole => '职位';
+
+  @override
+  String get catalogKindCash => '现金';
+
+  @override
+  String get catalogKindCard => '银行卡';
+
+  @override
+  String get fixedCostFieldActual => '实际金额（€）';
+
+  @override
+  String get fixedCostConfirmed => '金额已确认';
 }

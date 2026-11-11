@@ -2563,6 +2563,48 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Contraseña de la copia'**
   String get backupPasswordDialogTitle;
+
+  /// No description provided for @catalogFieldKind.
+  ///
+  /// In es, this message translates to:
+  /// **'Tipo'**
+  String get catalogFieldKind;
+
+  /// No description provided for @catalogKindPurchase.
+  ///
+  /// In es, this message translates to:
+  /// **'Compra de mercancía'**
+  String get catalogKindPurchase;
+
+  /// No description provided for @payrollFieldRole.
+  ///
+  /// In es, this message translates to:
+  /// **'Puesto'**
+  String get payrollFieldRole;
+
+  /// No description provided for @catalogKindCash.
+  ///
+  /// In es, this message translates to:
+  /// **'Efectivo'**
+  String get catalogKindCash;
+
+  /// No description provided for @catalogKindCard.
+  ///
+  /// In es, this message translates to:
+  /// **'Tarjeta'**
+  String get catalogKindCard;
+
+  /// No description provided for @fixedCostFieldActual.
+  ///
+  /// In es, this message translates to:
+  /// **'Importe real (€)'**
+  String get fixedCostFieldActual;
+
+  /// No description provided for @fixedCostConfirmed.
+  ///
+  /// In es, this message translates to:
+  /// **'Importe confirmado'**
+  String get fixedCostConfirmed;
 }
 
 class _AppLocalizationsDelegate

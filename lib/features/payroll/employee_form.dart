@@ -204,8 +204,7 @@ class _EmployeeSheetState extends ConsumerState<_EmployeeSheet> {
                           key: const ValueKey('employee-role'),
                           controller: _role,
                           decoration: InputDecoration(
-                            labelText: l.payrollFieldHiredOn.split('(')[0],
-                            hintText: l.export_colRole,
+                            labelText: l.payrollFieldRole,
                           ),
                           textCapitalization: TextCapitalization.words,
                         ),

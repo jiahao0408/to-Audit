@@ -81,7 +81,7 @@ final _withdrawalsRangeProvider = StreamProvider.autoDispose
 final _totalsByTypeProvider = FutureProvider.autoDispose
     .family<Map<String, Money>, DateRange>(
       (ref, range) =>
-          ref.read(withdrawalsRepositoryProvider).totalsByType(range),
+          ref.watch(withdrawalsRepositoryProvider).totalsByType(range),
     );
 
 // ----------------------------------------------------------- widgets

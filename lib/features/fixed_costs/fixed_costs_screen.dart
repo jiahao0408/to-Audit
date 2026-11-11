@@ -18,22 +18,12 @@ final _fixedCostsProvider = StreamProvider.autoDispose<List<FixedCostRecord>>(
   (ref) => ref.watch(fixedCostsRepositoryProvider).watchAll(),
 );
 
-/// Pending (planned, not yet confirmed) fixed cost expenses in the current and
-/// next 3 months. Voided ones are excluded.
+/// Every unconfirmed planned fixed expense, however old (a bill from two
+/// months ago that was never confirmed must not disappear). Voided ones are
+/// excluded.
 final _pendingFixedExpensesProvider =
     StreamProvider.autoDispose<List<ExpenseRecord>>((ref) {
-      final now = ref.watch(clockProvider)();
-      final start = DateTime.utc(now.year, now.month, 1);
-      // End = last day of month+3
-      final endRaw = now.month + 3;
-      final endYear = now.year + (endRaw > 12 ? 1 : 0);
-      final endMonth = ((endRaw - 1) % 12) + 1;
-      final end = DateTime.utc(
-        endYear,
-        endMonth,
-        daysInMonth(endYear, endMonth),
-      );
-      final range = DateRange(start, end);
+      final range = DateRange(DateTime.utc(2000), DateTime.utc(2100, 12, 31));
       return ref
           .watch(expensesRepositoryProvider)
           .watchRange(range)
@@ -59,6 +49,10 @@ class FixedCostsScreen extends ConsumerWidget {
     final locale = Localizations.localeOf(context).languageCode;
     final defs = ref.watch(_fixedCostsProvider);
     final pending = ref.watch(_pendingFixedExpensesProvider);
+    final concepts = {
+      for (final fc in defs.value ?? const <FixedCostRecord>[])
+        fc.id: fc.concept,
+    };
     return Scaffold(
       appBar: AppBar(title: Text(l.screenFixedCosts)),
       floatingActionButton: FloatingActionButton(
@@ -88,7 +82,8 @@ class FixedCostsScreen extends ConsumerWidget {
                                   locale: locale,
                                   onEdit: () =>
                                       showFixedCostForm(context, id: fc.id),
-                                  onToggle: () => _toggleActive(ref, fc),
+                                  onToggle: () =>
+                                      _toggleActive(context, ref, fc),
                                 ),
                             ],
                           ),
@@ -106,6 +101,7 @@ class FixedCostsScreen extends ConsumerWidget {
                               for (final e in list)
                                 _PendingCard(
                                   expense: e,
+                                  concept: concepts[e.fixedCostId],
                                   locale: locale,
                                   onConfirm: () =>
                                       _confirmExpense(context, ref, e),
@@ -125,12 +121,17 @@ class FixedCostsScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _toggleActive(WidgetRef ref, FixedCostRecord fc) async {
-    final repo = ref.read(fixedCostsRepositoryProvider);
+  Future<void> _toggleActive(
+    BuildContext context,
+    WidgetRef ref,
+    FixedCostRecord fc,
+  ) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final l = AppLocalizations.of(context)!;
     try {
-      await repo.setActive(fc.id, !fc.active);
+      await ref.read(fixedCostsRepositoryProvider).setActive(fc.id, !fc.active);
     } catch (_) {
-      // Stream will refresh; error is transient.
+      messenger.showSnackBar(SnackBar(content: Text(l.fixedCostErrSave)));
     }
   }
 
@@ -145,7 +146,7 @@ class FixedCostsScreen extends ConsumerWidget {
       context: context,
       builder: (_) => _ConfirmDialog(
         title: l.fixedCostConfirmTitle,
-        label: l.fixedCostFieldPlanned,
+        label: l.fixedCostFieldActual,
         initial: expense.total,
       ),
     );
@@ -153,7 +154,7 @@ class FixedCostsScreen extends ConsumerWidget {
     try {
       await ref.read(fixedCostsRepositoryProvider).confirm(expense.id, actual);
       if (context.mounted) {
-        messenger.showSnackBar(SnackBar(content: Text(l.actionSave)));
+        messenger.showSnackBar(SnackBar(content: Text(l.fixedCostConfirmed)));
       }
     } on PeriodLockedException {
       if (context.mounted) {
@@ -252,11 +253,13 @@ class _FixedCostCard extends StatelessWidget {
 class _PendingCard extends StatelessWidget {
   const _PendingCard({
     required this.expense,
+    required this.concept,
     required this.locale,
     required this.onConfirm,
   });
 
   final ExpenseRecord expense;
+  final String? concept;
   final String locale;
   final VoidCallback onConfirm;
 
@@ -266,8 +269,9 @@ class _PendingCard extends StatelessWidget {
     return Card(
       child: ListTile(
         key: ValueKey('pending-fixed-${expense.id}'),
-        title: Text(expense.total.format(locale)),
+        title: Text(concept ?? expense.total.format(locale)),
         subtitle: Text(
+          '${expense.total.format(locale)} · '
           '${DateFormat.yMMMMd(locale).format(expense.date)}'
           '${expense.invoiceNumber != null ? ' · ${expense.invoiceNumber}' : ''}',
         ),

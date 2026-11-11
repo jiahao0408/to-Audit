@@ -139,4 +139,30 @@ void main() {
     expect(visited, ['/expenses/abc-123']);
     await tester.pumpWidget(const SizedBox());
   });
+
+  for (final (type, expected) in [
+    (AlertType.floatMismatch, '/day/2026-11-06'),
+    (AlertType.discrepancy, '/day/2026-11-06'),
+    (AlertType.dayUnregistered, '/day/2026-11-06'),
+  ]) {
+    testWidgets('$type navigates to its day', (tester) async {
+      final (:visited) = await pumpAlerts(tester, [
+        Alert(type: type, date: DateTime.utc(2026, 11, 6)),
+      ]);
+      await tester.tap(find.text('Ver día'));
+      await settle(tester);
+      expect(visited, [expected]);
+      await tester.pumpWidget(const SizedBox());
+    });
+  }
+
+  testWidgets('invoiceOverdue navigates to /expenses/:id', (tester) async {
+    final (:visited) = await pumpAlerts(tester, [
+      const Alert(type: AlertType.invoiceOverdue, recordId: 'inv-9'),
+    ]);
+    await tester.tap(find.text('Ver gasto'));
+    await settle(tester);
+    expect(visited, ['/expenses/inv-9']);
+    await tester.pumpWidget(const SizedBox());
+  });
 }

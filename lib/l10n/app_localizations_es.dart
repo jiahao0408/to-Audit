@@ -1311,4 +1311,25 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get backupPasswordDialogTitle => 'Contraseña de la copia';
+
+  @override
+  String get catalogFieldKind => 'Tipo';
+
+  @override
+  String get catalogKindPurchase => 'Compra de mercancía';
+
+  @override
+  String get payrollFieldRole => 'Puesto';
+
+  @override
+  String get catalogKindCash => 'Efectivo';
+
+  @override
+  String get catalogKindCard => 'Tarjeta';
+
+  @override
+  String get fixedCostFieldActual => 'Importe real (€)';
+
+  @override
+  String get fixedCostConfirmed => 'Importe confirmado';
 }

@@ -572,7 +572,9 @@ class _NewPinDialogState extends ConsumerState<_NewPinDialog> {
                     _firstPin = null;
                     _error = l.onbPinMismatch;
                   });
-                  return const PinWrong(2);
+                  // Not a wrong PIN to check: the pad just clears, and the
+                  // message above says what happened.
+                  return const PinOk();
                 }
                 try {
                   await pinManager.setPin(pin);
@@ -586,7 +588,7 @@ class _NewPinDialogState extends ConsumerState<_NewPinDialog> {
                     _confirming = false;
                     _firstPin = null;
                   }
-                  return const PinWrong(1);
+                  return const PinOk();
                 }
               },
               onSuccess: () {},

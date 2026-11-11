@@ -7,6 +7,7 @@ import '../../data/providers.dart';
 import '../../data/repositories/payroll_repository.dart';
 import '../../domain/dates.dart';
 import '../../domain/money.dart';
+import '../../domain/pnl_calc.dart';
 import '../../l10n/app_localizations.dart';
 import '../common/catalog_label.dart';
 import '../common/catalog_providers.dart';
@@ -14,25 +15,21 @@ import '../common/confirm_reason_dialog.dart';
 import '../common/money_field.dart';
 import 'employee_form.dart';
 
-/// All employees (stream, for management actions).
-final _employeesProvider = StreamProvider.autoDispose<List<EmployeeRecord>>(
-  (ref) => ref.watch(payrollRepositoryProvider).watchEmployees(),
-);
-
 /// Payroll rows for a given month key (`YYYY-MM`).
 final _payrollMonthProvider = FutureProvider.autoDispose
     .family<List<PayrollRow>, String>(
-      (ref, month) => ref.read(payrollRepositoryProvider).month(month),
+      (ref, month) => ref.watch(payrollRepositoryProvider).month(month),
     );
 
-/// Sales total for a given month via the report service.
-final _monthSalesProvider = FutureProvider.autoDispose.family<Money, String>((
+/// P&L of a month from the report service: personnel cost and sales.
+final _monthPnlProvider = FutureProvider.autoDispose.family<PnlResult, String>((
   ref,
   month,
 ) async {
-  final range = rangeMonth(month);
-  final report = await ref.read(reportServiceProvider).build(range);
-  return report.pnl.sales;
+  final report = await ref
+      .watch(reportServiceProvider)
+      .build(rangeMonth(month));
+  return report.pnl;
 });
 
 /// The payroll month screen. [month] is `YYYY-MM`.
@@ -71,8 +68,7 @@ class _PayrollMonthScreenState extends ConsumerState<PayrollMonthScreen> {
     final l = AppLocalizations.of(context)!;
     final locale = Localizations.localeOf(context).languageCode;
     final rows = ref.watch(_payrollMonthProvider(_month));
-    final sales = ref.watch(_monthSalesProvider(_month));
-    final employees = ref.watch(_employeesProvider);
+    final pnl = ref.watch(_monthPnlProvider(_month));
     return Scaffold(
       appBar: AppBar(
         title: Text(l.screenPayroll),
@@ -83,8 +79,8 @@ class _PayrollMonthScreenState extends ConsumerState<PayrollMonthScreen> {
             icon: const Icon(Icons.person_add_outlined),
             onPressed: () async {
               await showEmployeeForm(context);
-              // Refresh by invalidating providers
-              ref.invalidate(_employeesProvider);
+              ref.invalidate(_payrollMonthProvider(_month));
+              ref.invalidate(_monthPnlProvider(_month));
             },
           ),
         ],
@@ -110,8 +106,7 @@ class _PayrollMonthScreenState extends ConsumerState<PayrollMonthScreen> {
                       rows: list,
                       month: _month,
                       locale: locale,
-                      sales: sales.value,
-                      employees: employees.value ?? const [],
+                      pnl: pnl.value,
                     ),
                     loading: () =>
                         const Center(child: CircularProgressIndicator()),
@@ -181,15 +176,18 @@ class _PayrollBody extends ConsumerWidget {
     required this.rows,
     required this.month,
     required this.locale,
-    required this.sales,
-    required this.employees,
+    required this.pnl,
   });
 
   final List<PayrollRow> rows;
   final String month;
   final String locale;
-  final Money? sales;
-  final List<EmployeeRecord> employees;
+  final PnlResult? pnl;
+
+  void _refresh(WidgetRef ref) {
+    ref.invalidate(_payrollMonthProvider(month));
+    ref.invalidate(_monthPnlProvider(month));
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -216,9 +214,10 @@ class _PayrollBody extends ConsumerWidget {
         totalCost += p.gross + p.employerSs;
       }
     }
-    final s = sales;
-    final pct = (s != null && !s.isZero)
-        ? (totalCost.cents / s.cents * 100)
+    // Personnel cost over sales of the month, both from the report service.
+    final sales = pnl?.sales;
+    final pct = (pnl != null && sales != null && !sales.isZero)
+        ? pnl!.personnel.cents / sales.cents * 100
         : null;
 
     return Column(
@@ -232,8 +231,8 @@ class _PayrollBody extends ConsumerWidget {
                   row: row,
                   month: month,
                   locale: locale,
-                  onSave: () => ref.invalidate(_payrollMonthProvider(month)),
-                  onVoid: () => ref.invalidate(_payrollMonthProvider(month)),
+                  onSave: () => _refresh(ref),
+                  onVoid: () => _refresh(ref),
                 ),
             ],
           ),

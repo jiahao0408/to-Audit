@@ -8,7 +8,7 @@ import '../../domain/alerts_calc.dart';
 import '../../domain/dates.dart';
 import '../../l10n/app_localizations.dart';
 
-final _alertsProvider = FutureProvider<List<Alert>>((ref) {
+final _alertsProvider = FutureProvider.autoDispose<List<Alert>>((ref) {
   final clock = ref.watch(clockProvider);
   return ref.watch(alertsServiceProvider).current(clock());
 });

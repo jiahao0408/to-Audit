@@ -417,5 +417,12 @@
   "backupRestoreConfirm": "当前所有数据将被备份中的数据替换。是否继续？",
   "backupCreated": "备份已创建",
   "backupRestoredInApp": "备份已恢复",
-  "backupPasswordDialogTitle": "备份密码"
+  "backupPasswordDialogTitle": "备份密码",
+  "catalogFieldKind": "类型",
+  "catalogKindPurchase": "商品采购",
+  "payrollFieldRole": "职位",
+  "catalogKindCash": "现金",
+  "catalogKindCard": "银行卡",
+  "fixedCostFieldActual": "实际金额（€）",
+  "fixedCostConfirmed": "金额已确认"
 }

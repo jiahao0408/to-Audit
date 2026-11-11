@@ -324,7 +324,6 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
         ],
       ),
     );
-    ctl.dispose();
     return result;
   }
 
