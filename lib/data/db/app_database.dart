@@ -40,8 +40,11 @@ class AppDatabase extends _$AppDatabase {
 
   factory AppDatabase.memory() => AppDatabase(NativeDatabase.memory());
 
+  /// Schema version of the database; backups of a higher one are refused.
+  static const currentSchemaVersion = 1;
+
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => currentSchemaVersion;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(

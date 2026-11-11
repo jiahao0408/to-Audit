@@ -103,7 +103,14 @@ class BackupService {
   /// Writes `to-audit-YYYY-MM-DD.toaudit` (date of [now]) in the temp root,
   /// encrypted with [password] (at least 8 characters, else
   /// [ArgumentError]), and records [now] as the last backup.
-  Future<File> export(String password, {required DateTime now}) async {
+  ///
+  /// With [record] false the last-backup time is not stored: the caller
+  /// records it once the file was actually handed over (shared).
+  Future<File> export(
+    String password, {
+    required DateTime now,
+    bool record = true,
+  }) async {
     if (password.length < minPasswordLength) {
       throw ArgumentError('The password must have at least 8 characters');
     }
@@ -164,7 +171,7 @@ class BackupService {
     } finally {
       await work.delete(recursive: true);
     }
-    await _settings.setLastBackupAt(now);
+    if (record) await _settings.setLastBackupAt(now);
     return out;
   }
 
@@ -254,10 +261,7 @@ class BackupService {
       if (await paths.marker.exists() ||
           await paths.dbBak.exists() ||
           await paths.receiptsBak.exists()) {
-        throw StateError(
-          'An earlier restore was not finished: restart the app to recover '
-          'it before restoring again',
-        );
+        throw RestoreNeedsRestartException();
       }
       if (!await paths.dbFile.exists()) {
         throw StateError('There is no database file to replace');

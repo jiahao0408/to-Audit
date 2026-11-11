@@ -3,6 +3,16 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:sqlite3/sqlite3.dart';
 
+/// A restore cannot start because an earlier one left its marker or `.bak`
+/// files: the app must be restarted so start-up recovery can decide.
+class RestoreNeedsRestartException extends StateError {
+  RestoreNeedsRestartException()
+    : super(
+        'An earlier restore was not finished: restart the app to recover '
+        'it before restoring again',
+      );
+}
+
 /// Files a restore works with, next to the database and the receipts.
 ///
 /// A restore stages the new data in `.restoring`, writes the [marker], moves
@@ -24,6 +34,11 @@ class RestorePaths {
   Directory get receiptsBak => Directory('${receipts.path}.bak');
   Directory get receiptsStaged => Directory('${receipts.path}.restoring');
 }
+
+/// Marker payload words: there was no database / receipts folder before the
+/// restore.
+const markerNoDb = 'no-db';
+const markerNoReceipts = 'no-receipts';
 
 /// SQLite files that belong to a database file and must follow it.
 const _siblings = ['-journal', '-wal', '-shm'];
@@ -126,6 +141,16 @@ Future<void> recoverInterruptedRestore({
   final paths = RestorePaths(dbFile: dbFile, filesRoot: filesRoot);
 
   if (await paths.marker.exists()) {
+    // The payload says what did not exist before the restore, so the
+    // unverified restored data is removed instead of being left in place.
+    final payload = await paths.marker.readAsString();
+    if (payload.contains(markerNoDb) && !await paths.dbBak.exists()) {
+      await deleteDbFiles(dbFile);
+    }
+    if (payload.contains(markerNoReceipts) &&
+        !await paths.receiptsBak.exists()) {
+      await deleteDirIfExists(paths.receipts);
+    }
     await putBackupsBack(paths);
     await paths.marker.delete();
   } else {

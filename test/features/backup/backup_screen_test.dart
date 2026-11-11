@@ -24,14 +24,16 @@ import '../../support/app_harness.dart';
 import '../../support/sqlcipher.dart';
 
 class _FakeSharer implements FileSharer {
+  bool result = true;
   final List<String> shared = [];
   final List<Uint8List> headers = [];
 
   @override
-  Future<void> shareFile(File file, {String? mimeType}) async {
+  Future<bool> shareFile(File file, {String? mimeType}) async {
     expect(file.existsSync(), isTrue, reason: 'the copy exists while sharing');
     shared.add(file.uri.pathSegments.last);
     headers.add(file.readAsBytesSync().sublist(0, 8));
+    return result;
   }
 
   @override
@@ -282,6 +284,38 @@ void main() {
     );
     // The password fields were cleared.
     expect(find.text('long-enough'), findsNothing);
+    // Shared: the backup reminder is reset.
+    final last = await tester.runAsync(
+      () => container.read(settingsRepositoryProvider).lastBackupAt(),
+    );
+    expect(last, isNotNull);
+  });
+
+  testWidgets('a dismissed share sheet is not a backup', (tester) async {
+    sharer.result = false;
+    await pump(tester);
+    await tester.enterText(
+      find.byKey(const ValueKey('backup-pass')),
+      'long-enough',
+    );
+    await tester.enterText(
+      find.byKey(const ValueKey('backup-pass-confirm')),
+      'long-enough',
+    );
+    await tester.pump();
+    await tester.tap(find.text('Crear y exportar'));
+    await tester.pump();
+    await waitFor(tester, () => sharer.shared.isNotEmpty && !_busy());
+
+    expect(find.text('Copia creada'), findsNothing);
+    final last = await tester.runAsync(
+      () => container.read(settingsRepositoryProvider).lastBackupAt(),
+    );
+    expect(last, isNull);
+    expect(
+      tempRoot.listSync().where((e) => e.path.endsWith('.toaudit')),
+      isEmpty,
+    );
   });
 
   testWidgets('a file that is not .toaudit is refused', (tester) async {

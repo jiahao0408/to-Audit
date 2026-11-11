@@ -3,14 +3,12 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:sqlite3/sqlite3.dart';
 
+import '../db/app_database.dart';
 import '../security/db_key_manager.dart';
 import 'backup_service.dart';
 import 'db_snapshotter.dart';
 import 'restore_recovery.dart';
 import 'toaudit_format.dart';
-
-/// Schema version of the app database (see `AppDatabase.schemaVersion`).
-const currentSchemaVersion = 1;
 
 /// Restores a `.toaudit` copy when the app has NO open database (start-up
 /// error screen: lost key, damaged file).
@@ -38,7 +36,7 @@ Future<void> restoreWithoutOpenDb({
     backup,
     password,
     tempRoot: tempRoot,
-    currentSchemaVersion: currentSchemaVersion,
+    currentSchemaVersion: AppDatabase.currentSchemaVersion,
     deriveKey: deriveKey,
   );
   await applyPreviewWithoutOpenDb(
@@ -71,19 +69,23 @@ Future<void> applyPreviewWithoutOpenDb({
   }
 
   try {
-    if (await paths.marker.exists() ||
+    final leftovers =
+        await paths.marker.exists() ||
         await paths.dbBak.exists() ||
-        await paths.receiptsBak.exists()) {
-      throw StateError(
-        'An earlier restore was not finished: restart the app to recover '
-        'it before restoring again',
-      );
+        await paths.receiptsBak.exists();
+    if (leftovers) {
+      if (await keys.existingKey() != null) {
+        throw RestoreNeedsRestartException();
+      }
+      // No key: what a half-done restore left cannot be opened (its key is
+      // gone) and start-up recovery will never run, so it is moved aside
+      // instead of blocking the restore for good.
+      await _orphan(paths);
     }
     final key = await keys.getOrCreateKey();
     await dbFile.parent.create(recursive: true);
     await deleteDbFiles(paths.dbStaged);
     await deleteDirIfExists(paths.receiptsStaged);
-    await paths.receipts.create(recursive: true);
 
     try {
       await importPlain(
@@ -112,12 +114,24 @@ Future<void> applyPreviewWithoutOpenDb({
       rethrow;
     }
 
+    // What exists now is never deleted unless the new data was already put in
+    // its place (`*Placed`) and there was nothing before it.
+    final hadDb = await dbFile.exists();
+    final hadReceipts = await paths.receipts.exists();
+    var dbPlaced = false;
+    var receiptsPlaced = false;
     try {
-      await paths.marker.writeAsString('restore', flush: true);
-      if (await dbFile.exists()) await moveDbFiles(dbFile, paths.dbBak);
-      await paths.receipts.rename(paths.receiptsBak.path);
+      await paths.marker.writeAsString(
+        [if (!hadDb) markerNoDb, if (!hadReceipts) markerNoReceipts].join(',') +
+            (hadDb && hadReceipts ? 'restore' : ''),
+        flush: true,
+      );
+      if (hadDb) await moveDbFiles(dbFile, paths.dbBak);
+      if (hadReceipts) await paths.receipts.rename(paths.receiptsBak.path);
       await moveDbFiles(paths.dbStaged, dbFile);
+      dbPlaced = true;
       await paths.receiptsStaged.rename(paths.receipts.path);
+      receiptsPlaced = true;
 
       final (days, expenses) = _counts(dbFile, key);
       if (days != preview.days || expenses != preview.expenses) {
@@ -130,8 +144,10 @@ Future<void> applyPreviewWithoutOpenDb({
     } catch (_) {
       var putBack = true;
       try {
-        // A database that had no `.bak` (none existed) must not stay.
-        if (!await paths.dbBak.exists()) await deleteDbFiles(dbFile);
+        if (dbPlaced && !hadDb) await deleteDbFiles(dbFile);
+        if (receiptsPlaced && !hadReceipts) {
+          await deleteDirIfExists(paths.receipts);
+        }
         await putBackupsBack(paths);
       } catch (_) {
         putBack = false;
@@ -149,6 +165,21 @@ Future<void> applyPreviewWithoutOpenDb({
     await step(() => deleteDirIfExists(paths.receiptsBak));
   } finally {
     await step(() => deleteDirIfExists(source));
+  }
+}
+
+/// Moves the leftovers of an unfinished restore to `*.orphan`.
+Future<void> _orphan(RestorePaths paths) async {
+  if (await paths.marker.exists()) await paths.marker.delete();
+  if (await paths.dbBak.exists()) {
+    final orphan = File('${paths.dbFile.path}.orphan');
+    await deleteDbFiles(orphan);
+    await moveDbFiles(paths.dbBak, orphan);
+  }
+  if (await paths.receiptsBak.exists()) {
+    final orphan = Directory('${paths.receipts.path}.orphan');
+    await deleteDirIfExists(orphan);
+    await paths.receiptsBak.rename(orphan.path);
   }
 }
 

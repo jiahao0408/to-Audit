@@ -9,8 +9,9 @@ import 'package:share_plus/share_plus.dart';
 /// Sharing and saving files through the system. Behind an interface so tests
 /// never reach the platform channels.
 abstract class FileSharer {
-  /// Opens the system share menu for [file]. Returns when the menu is done.
-  Future<void> shareFile(File file, {String? mimeType});
+  /// Opens the system share menu for [file]. Returns when the menu is done:
+  /// false when the user dismissed it without sharing.
+  Future<bool> shareFile(File file, {String? mimeType});
 
   /// Lets the user save or print a PDF (system dialog).
   Future<void> savePdf(Uint8List bytes, String filename);
@@ -18,10 +19,12 @@ abstract class FileSharer {
 
 class PlatformFileSharer implements FileSharer {
   @override
-  Future<void> shareFile(File file, {String? mimeType}) async {
-    await SharePlus.instance.share(
+  Future<bool> shareFile(File file, {String? mimeType}) async {
+    final result = await SharePlus.instance.share(
       ShareParams(files: [XFile(file.path, mimeType: mimeType)]),
     );
+    // `unavailable` (the platform cannot tell) is treated as shared.
+    return result.status != ShareResultStatus.dismissed;
   }
 
   @override

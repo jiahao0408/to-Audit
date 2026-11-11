@@ -8,7 +8,9 @@ import 'package:path/path.dart' as p;
 
 import '../../data/backup/backup_service.dart';
 import '../../data/backup/offline_restore.dart';
+import '../../data/backup/restore_recovery.dart';
 import '../../data/backup/toaudit_format.dart';
+import '../../data/db/app_database.dart';
 import '../../data/providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../common/platform_services.dart';
@@ -228,12 +230,18 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     File? file;
     try {
       final now = ref.read(clockProvider)();
-      file = await ref.read(backupServiceProvider).export(pass, now: now);
-      await ref.read(fileSharerProvider).shareFile(file);
-      if (mounted) {
-        _passCtl.clear();
-        _confirmCtl.clear();
-        _snack(l.backupCreated);
+      file = await ref
+          .read(backupServiceProvider)
+          .export(pass, now: now, record: false);
+      final shared = await ref.read(fileSharerProvider).shareFile(file);
+      // A dismissed share sheet is not a backup: no success, no reminder reset.
+      if (shared) {
+        await ref.read(settingsRepositoryProvider).setLastBackupAt(now);
+        if (mounted) {
+          _passCtl.clear();
+          _confirmCtl.clear();
+          _snack(l.backupCreated);
+        }
       }
     } catch (_) {
       _snack(l.backupErrCreate);
@@ -266,7 +274,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
           picked,
           password,
           tempRoot: ref.read(tempRootProvider),
-          currentSchemaVersion: currentSchemaVersion,
+          currentSchemaVersion: AppDatabase.currentSchemaVersion,
           deriveKey: ref.read(keyDeriverProvider),
         );
       } else {
@@ -378,12 +386,8 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
       }
     } on BackupVerifyException {
       _snack(l.backupErrVerify);
-    } on StateError catch (e) {
-      _snack(
-        e.message.toLowerCase().contains('restart')
-            ? l.backupErrRestart
-            : l.backupErrRestore,
-      );
+    } on RestoreNeedsRestartException {
+      _snack(l.backupErrRestart);
     } catch (_) {
       _snack(l.backupErrRestore);
     } finally {

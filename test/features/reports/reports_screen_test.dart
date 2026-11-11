@@ -74,10 +74,11 @@ class FakeSharer implements FileSharer {
   final List<String> saved = [];
 
   @override
-  Future<void> shareFile(File file, {String? mimeType}) async {
+  Future<bool> shareFile(File file, {String? mimeType}) async {
     expect(file.existsSync(), isTrue, reason: 'file exists while sharing');
     shared.add(file.uri.pathSegments.last);
     mimes.add(mimeType);
+    return true;
   }
 
   @override
